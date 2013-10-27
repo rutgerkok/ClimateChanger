@@ -2,17 +2,19 @@
 
 Little tool to change biome ids in an existing Minecraft map.
 
-## Usage
+![Screenshot of the tool](http://i.imgur.com/4Wzfpnh.png)
+
+## Usage (GUI)
 Execute the command `java -jar ClimateChanger.jar` should start the JAR. A window should pop up.
 
-Windows users can right click the jar and select Open with -> Java.
+Instead of typing the command, on most operating systems you can also right click the jar and select Open with -> Java.
 
 The program shouldn't be too difficult to use: just select the region folder (not the world folder), enter the biome ids and press start.
 
 ## Download
 [See here](https://github.com/rutgerkok/ClimateChanger/releases).
 
-### Command line
+### Usage (command line)
 On a headless server, or just prefer to type commands? Start the program like this:
 
 `jar -jar ClimateChanger.jar <regionFolder> <idFrom> <idTo>`
