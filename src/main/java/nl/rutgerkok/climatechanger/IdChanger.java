@@ -108,6 +108,7 @@ public class IdChanger {
                 }
             }
         }
+        regionFile.close();
         return changedChunks;
     }
 
