@@ -14,9 +14,9 @@ import nl.rutgerkok.climatechanger.ProgressUpdater;
 public class StartButton extends JButton implements ActionListener, ProgressUpdater {
     private final FileChooserPanel directoryPanel;
     private final IdChooserPanel idChooserPanel;
-    private final ProgressBar progressBar;
+    private final ProgressPanel progressBar;
 
-    public StartButton(String text, FileChooserPanel directory, IdChooserPanel idChooserPanel, ProgressBar progressBar) {
+    public StartButton(String text, FileChooserPanel directory, IdChooserPanel idChooserPanel, ProgressPanel progressBar) {
         super(text);
         this.directoryPanel = directory;
         this.idChooserPanel = idChooserPanel;
@@ -62,9 +62,9 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
 
     }
 
-    public void setProgressPercentage(float progress) {
+    public void setProgress(int progress) {
         // Forward
-        progressBar.setProgressPercentage(progress);
+        progressBar.setProgress(progress);
     }
 
     public void complete(final int chunksConverted) {
@@ -75,5 +75,10 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
                 setEnabled(true);
             }
         });
+    }
+
+    public void init(int maxProgress) {
+        // Forward
+        progressBar.init(maxProgress);
     }
 }

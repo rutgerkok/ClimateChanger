@@ -42,6 +42,7 @@ public class IdChanger {
     public void convert() {
         int changedChunks = 0;
         File[] filesToConvert = regionFolder.listFiles();
+        progressUpdater.init(filesToConvert.length);
         for (int i = 0; i < filesToConvert.length; i++) {
             File file = filesToConvert[i];
 
@@ -59,7 +60,7 @@ public class IdChanger {
                 }
             }
 
-            progressUpdater.setProgressPercentage(((float) i) / filesToConvert.length);
+            progressUpdater.setProgress(i);
         }
 
         progressUpdater.complete(changedChunks);

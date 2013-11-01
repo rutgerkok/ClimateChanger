@@ -1,24 +1,18 @@
 package nl.rutgerkok.climatechanger;
 
 public class ConsoleProgressUpdater implements ProgressUpdater {
-    private volatile long lastUpdateTime;
+    private int maxProgress;
 
-    public void setProgressPercentage(float progress) {
-        /*
-         * The overhead of synchronization isn't necessary here. Worst that can
-         * happen is that the progress message is displayed twice, and even that
-         * is highly unlikely.
-         */
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - 1000L > lastUpdateTime) {
-            // It's one second since the last progress update, print a message
-            lastUpdateTime = currentTime;
-            System.out.println(((int) progress) + "% done");
-        }
+    public void setProgress(int progress) {
+        System.out.println(progress + "/" + maxProgress + " files done.");
     }
 
     public void complete(int chunksConverted) {
-        System.out.println("Converted " + chunksConverted + " chunks.");
+        System.out.println("Done! Converted " + chunksConverted + " chunks.");
+    }
+
+    public void init(int maxProgress) {
+        this.maxProgress = maxProgress;
     }
 
 }

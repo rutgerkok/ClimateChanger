@@ -6,12 +6,21 @@ package nl.rutgerkok.climatechanger;
  */
 public interface ProgressUpdater {
     /**
+     * Called when the task is started.
+     * 
+     * @param maxProgress
+     *            Defines the scale of the task. When the progress is
+     *            maxProgress, the task is completed.
+     */
+    void init(int maxProgress);
+
+    /**
      * Called whenever the progress is updated.
      * 
      * @param progress
-     *            The current progress.
+     *            The current progress. When this is 1
      */
-    void setProgressPercentage(float progress);
+    void setProgress(int progress);
 
     /**
      * Called when the process is complete.

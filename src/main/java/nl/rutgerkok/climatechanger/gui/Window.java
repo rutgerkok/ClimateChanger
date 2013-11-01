@@ -36,7 +36,7 @@ public class Window {
         
         // Loading bar and start button
         JPanel startButtonPanel = new JPanel();
-        ProgressBar progressBar = new ProgressBar();
+        ProgressPanel progressBar = new ProgressPanel();
         startButtonPanel.add(new StartButton("Convert biome ids", fileChooserPanel, idChooserPanel, progressBar));
         startButtonPanel.add(progressBar);
         jFrame.add(startButtonPanel, BorderLayout.SOUTH);
