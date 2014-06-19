@@ -1,15 +1,19 @@
 package nl.rutgerkok.climatechanger.gui;
 
+import nl.rutgerkok.climatechanger.Converter;
+import nl.rutgerkok.climatechanger.ProgressUpdater;
+import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.IdChanger;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-
-import nl.rutgerkok.climatechanger.IdChanger;
-import nl.rutgerkok.climatechanger.ProgressUpdater;
 
 public class StartButton extends JButton implements ActionListener, ProgressUpdater {
     private final FileChooserPanel directoryPanel;
@@ -56,10 +60,10 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
         // Start converter
         new Thread(new Runnable() {
             public void run() {
-                new IdChanger(StartButton.this, regionDirectory, idFrom, idTo).convert();
+                List<? extends ChunkTask> tasks = Arrays.asList(new IdChanger(idFrom, idTo));
+                new Converter(StartButton.this, regionDirectory, tasks).convert();
             }
         }).start();
-
     }
 
     public void setProgress(int progress) {

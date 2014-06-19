@@ -1,18 +1,23 @@
 package nl.rutgerkok.climatechanger;
 
+import nl.rutgerkok.climatechanger.task.ChunkTask;
+
+import nl.rutgerkok.climatechanger.ProgressUpdater;
+import nl.rutgerkok.climatechanger.RegionFile;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.NbtIo;
 
-public class IdChanger {
+public class Converter {
     private final ProgressUpdater progressUpdater;
     private final File regionFolder;
-    private final byte from;
-    private final byte to;
+    private final List<? extends ChunkTask> tasks;
 
     /**
      * Changes the biome id in all files in the given directory.
@@ -21,17 +26,12 @@ public class IdChanger {
      *            Used to monitor progress.
      * @param regionFolder
      *            The directory containing the region files.
-     * @param from
-     *            The original id, use -1 to convert all ids.
-     * @param to
-     *            The id to convert to, use -1 to let Minecraft recalculate the
-     *            biomes when it loads the world.
+     * @param tasks The tasks to execute for each chunk.
      */
-    public IdChanger(ProgressUpdater progressUpdater, File regionFolder, byte from, byte to) {
+    public Converter(ProgressUpdater progressUpdater, File regionFolder, List<? extends ChunkTask> tasks) {
         this.progressUpdater = progressUpdater;
         this.regionFolder = regionFolder;
-        this.from = from;
-        this.to = to;
+        this.tasks = tasks;
     }
 
     /**
@@ -94,8 +94,8 @@ public class IdChanger {
                         // No chunk tag (!)
                         continue;
                     }
-                    byte[] biomeIds = chunkTag.getByteArray("Biomes");
-                    if (handleByteArray(biomeIds)) {
+                    Chunk chunk = new Chunk(chunkTag);
+                    if (runTasks(chunk)) {
                         // Save when changed
                         outputStream = regionFile.getChunkDataOutputStream(chunkX, chunkZ);
                         NbtIo.write(parentTag, outputStream);
@@ -112,23 +112,20 @@ public class IdChanger {
         regionFile.close();
         return changedChunks;
     }
-
+    
     /**
-     * Converts all ids in the byte array. The original byte array will be
-     * modified.
-     * 
-     * @param biomeIds
-     *            The bytes to convert.
-     * @return Whether changes were made to the array.
+     * Runs all the tasks of this chunk.
+     * @param chunk The chunk to modify.
+     * @return True if one of the tasks changed the chunk data, false otherwise.
      */
-    protected boolean handleByteArray(byte[] biomeIds) {
-        boolean hasChanges = false;
-        for (int i = 0; i < biomeIds.length; i++) {
-            if (from == -1 || biomeIds[i] == from) {
-                biomeIds[i] = to;
-                hasChanges = true;
+    private boolean runTasks(Chunk chunk) {
+        boolean changed = false;
+        for (ChunkTask task : tasks) {
+            if (task.execute(chunk)) {
+                changed = true;
             }
         }
-        return hasChanges;
+        return changed;
     }
+    
 }
