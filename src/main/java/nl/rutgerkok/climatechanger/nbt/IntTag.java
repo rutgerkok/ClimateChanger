@@ -2,52 +2,73 @@ package nl.rutgerkok.climatechanger.nbt;
 
 /**
  * Copyright Mojang AB.
- * 
+ *
  * Don't do evil.
  */
 
-import java.io.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-public class IntTag extends Tag {
-    public int data;
+public class IntTag extends NumberTag {
+    private final int data;
 
-    public IntTag(String name) {
-        super(name);
-    }
-
-    public IntTag(String name, int data) {
-        super(name);
-        this.data = data;
-    }
-
-    void write(DataOutput dos) throws IOException {
-        dos.writeInt(data);
-    }
-
-    void load(DataInput dis) throws IOException {
+    IntTag(DataInput dis) throws IOException {
         data = dis.readInt();
     }
 
-    public byte getId() {
-        return TAG_Int;
+    public IntTag(int data) {
+        this.data = data;
     }
 
+    @Override
+    public Tag copy() {
+        return new IntTag(data);
+    }
+
+    @Override
+    public byte getByte() {
+        return (byte) data;
+    }
+
+    @Override
+    public double getDouble() {
+        return data;
+    }
+
+    @Override
+    public float getFloat() {
+        return data;
+    }
+
+    @Override
+    public int getInt() {
+        return data;
+    }
+
+    @Override
+    public long getLong() {
+        return data;
+    }
+
+    @Override
+    public short getShort() {
+        return (short) data;
+    }
+
+    @Override
+    public TagType<?> getType() {
+        return TagType.INT;
+    }
+
+    @Override
     public String toString() {
         return "" + data;
     }
 
     @Override
-    public Tag copy() {
-        return new IntTag(getName(), data);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            IntTag o = (IntTag) obj;
-            return data == o.data;
-        }
-        return false;
+    void write(DataOutput dos) throws IOException {
+        dos.writeInt(data);
     }
 
 }

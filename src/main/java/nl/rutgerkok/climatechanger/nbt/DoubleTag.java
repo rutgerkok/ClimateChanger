@@ -2,52 +2,73 @@ package nl.rutgerkok.climatechanger.nbt;
 
 /**
  * Copyright Mojang AB.
- * 
+ *
  * Don't do evil.
  */
 
-import java.io.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-public class DoubleTag extends Tag {
-    public double data;
+public class DoubleTag extends NumberTag {
+    private final double data;
 
-    public DoubleTag(String name) {
-        super(name);
-    }
-
-    public DoubleTag(String name, double data) {
-        super(name);
-        this.data = data;
-    }
-
-    void write(DataOutput dos) throws IOException {
-        dos.writeDouble(data);
-    }
-
-    void load(DataInput dis) throws IOException {
+    DoubleTag(DataInput dis) throws IOException {
         data = dis.readDouble();
     }
 
-    public byte getId() {
-        return TAG_Double;
+    public DoubleTag(double data) {
+        this.data = data;
     }
 
+    @Override
+    public Tag copy() {
+        return new DoubleTag(data);
+    }
+
+    @Override
+    public byte getByte() {
+        return (byte) data;
+    }
+
+    @Override
+    public double getDouble() {
+        return data;
+    }
+
+    @Override
+    public float getFloat() {
+        return (float) data;
+    }
+
+    @Override
+    public int getInt() {
+        return (int) data;
+    }
+
+    @Override
+    public long getLong() {
+        return (long) data;
+    }
+
+    @Override
+    public short getShort() {
+        return (short) data;
+    }
+
+    @Override
+    public TagType<?> getType() {
+        return TagType.DOUBLE;
+    }
+
+    @Override
     public String toString() {
         return "" + data;
     }
 
     @Override
-    public Tag copy() {
-        return new DoubleTag(getName(), data);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            DoubleTag o = (DoubleTag) obj;
-            return data == o.data;
-        }
-        return false;
+    void write(DataOutput dos) throws IOException {
+        dos.writeDouble(data);
     }
 
 }

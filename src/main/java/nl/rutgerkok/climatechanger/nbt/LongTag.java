@@ -2,52 +2,73 @@ package nl.rutgerkok.climatechanger.nbt;
 
 /**
  * Copyright Mojang AB.
- * 
+ *
  * Don't do evil.
  */
 
-import java.io.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-public class LongTag extends Tag {
-    public long data;
+public class LongTag extends NumberTag {
+    private final long data;
 
-    public LongTag(String name) {
-        super(name);
-    }
-
-    public LongTag(String name, long data) {
-        super(name);
-        this.data = data;
-    }
-
-    void write(DataOutput dos) throws IOException {
-        dos.writeLong(data);
-    }
-
-    void load(DataInput dis) throws IOException {
+    LongTag(DataInput dis) throws IOException {
         data = dis.readLong();
     }
 
-    public byte getId() {
-        return TAG_Long;
+    public LongTag(long data) {
+        this.data = data;
     }
 
+    @Override
+    public Tag copy() {
+        return new LongTag(data);
+    }
+
+    @Override
+    public byte getByte() {
+        return (byte) data;
+    }
+
+    @Override
+    public double getDouble() {
+        return data;
+    }
+
+    @Override
+    public float getFloat() {
+        return data;
+    }
+
+    @Override
+    public int getInt() {
+        return (int) data;
+    }
+
+    @Override
+    public long getLong() {
+        return data;
+    }
+
+    @Override
+    public short getShort() {
+        return (short) data;
+    }
+
+    @Override
+    public TagType<?> getType() {
+        return TagType.LONG;
+    }
+
+    @Override
     public String toString() {
         return "" + data;
     }
 
     @Override
-    public Tag copy() {
-        return new LongTag(getName(), data);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            LongTag o = (LongTag) obj;
-            return data == o.data;
-        }
-        return false;
+    void write(DataOutput dos) throws IOException {
+        dos.writeLong(data);
     }
 
 }

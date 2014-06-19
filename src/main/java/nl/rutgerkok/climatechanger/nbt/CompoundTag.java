@@ -2,195 +2,41 @@ package nl.rutgerkok.climatechanger.nbt;
 
 /**
  * Copyright Mojang AB.
- * 
+ *
  * Don't do evil.
  */
 
-import java.io.*;
-import java.util.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class CompoundTag extends Tag {
-    private Map<String, Tag> tags = new HashMap<String, Tag>();
+    private final Map<String, Tag> tags = new HashMap<String, Tag>();
 
     public CompoundTag() {
-        super("");
     }
 
-    public CompoundTag(String name) {
-        super(name);
-    }
-
-    void write(DataOutput dos) throws IOException {
-        for (Tag tag : tags.values()) {
-            Tag.writeNamedTag(tag, dos);
+    CompoundTag(DataInput dis) throws IOException {
+        TagType<?> tagType;
+        while ((tagType = TagType.fromByte(dis.readByte())) != TagType.END) {
+            String name = dis.readUTF();
+            Tag tag = tagType.newTag(dis);
+            tags.put(name, tag);
         }
-        dos.writeByte(Tag.TAG_End);
-    }
-
-    void load(DataInput dis) throws IOException {
-        tags.clear();
-        Tag tag;
-        while ((tag = Tag.readNamedTag(dis)).getId() != Tag.TAG_End) {
-            tags.put(tag.getName(), tag);
-        }
-    }
-
-    public Collection<Tag> getAllTags() {
-        return tags.values();
-    }
-
-    public byte getId() {
-        return TAG_Compound;
-    }
-
-    public void put(String name, Tag tag) {
-        tags.put(name, tag.setName(name));
-    }
-
-    public void putByte(String name, byte value) {
-        tags.put(name, new ByteTag(name, value));
-    }
-
-    public void putShort(String name, short value) {
-        tags.put(name, new ShortTag(name, value));
-    }
-
-    public void putInt(String name, int value) {
-        tags.put(name, new IntTag(name, value));
-    }
-
-    public void putLong(String name, long value) {
-        tags.put(name, new LongTag(name, value));
-    }
-
-    public void putFloat(String name, float value) {
-        tags.put(name, new FloatTag(name, value));
-    }
-
-    public void putDouble(String name, double value) {
-        tags.put(name, new DoubleTag(name, value));
-    }
-
-    public void putString(String name, String value) {
-        tags.put(name, new StringTag(name, value));
-    }
-
-    public void putByteArray(String name, byte[] value) {
-        tags.put(name, new ByteArrayTag(name, value));
-    }
-
-    public void putIntArray(String name, int[] value) {
-        tags.put(name, new IntArrayTag(name, value));
-    }
-
-    public void putCompound(String name, CompoundTag value) {
-        tags.put(name, value.setName(name));
-    }
-
-    public void putBoolean(String string, boolean val) {
-        putByte(string, val ? (byte) 1 : 0);
-    }
-
-    public Tag get(String name) {
-        return tags.get(name);
     }
 
     public boolean contains(String name) {
         return tags.containsKey(name);
     }
 
-    public byte getByte(String name) {
-        if (!tags.containsKey(name))
-            return (byte) 0;
-        return ((ByteTag) tags.get(name)).data;
-    }
-
-    public short getShort(String name) {
-        if (!tags.containsKey(name))
-            return (short) 0;
-        return ((ShortTag) tags.get(name)).data;
-    }
-
-    public int getInt(String name) {
-        if (!tags.containsKey(name))
-            return (int) 0;
-        return ((IntTag) tags.get(name)).data;
-    }
-
-    public long getLong(String name) {
-        if (!tags.containsKey(name))
-            return (long) 0;
-        return ((LongTag) tags.get(name)).data;
-    }
-
-    public float getFloat(String name) {
-        if (!tags.containsKey(name))
-            return (float) 0;
-        return ((FloatTag) tags.get(name)).data;
-    }
-
-    public double getDouble(String name) {
-        if (!tags.containsKey(name))
-            return (double) 0;
-        return ((DoubleTag) tags.get(name)).data;
-    }
-
-    public String getString(String name) {
-        if (!tags.containsKey(name))
-            return "";
-        return ((StringTag) tags.get(name)).data;
-    }
-
-    public byte[] getByteArray(String name) {
-        if (!tags.containsKey(name))
-            return new byte[0];
-        return ((ByteArrayTag) tags.get(name)).data;
-    }
-
-    public int[] getIntArray(String name) {
-        if (!tags.containsKey(name))
-            return new int[0];
-        return ((IntArrayTag) tags.get(name)).data;
-    }
-
-    public CompoundTag getCompound(String name) {
-        if (!tags.containsKey(name))
-            return new CompoundTag(name);
-        return (CompoundTag) tags.get(name);
-    }
-
-    @SuppressWarnings("unchecked")
-    public ListTag<? extends Tag> getList(String name) {
-        if (!tags.containsKey(name))
-            return new ListTag<Tag>(name);
-        return (ListTag<? extends Tag>) tags.get(name);
-    }
-
-    public boolean getBoolean(String string) {
-        return getByte(string) != 0;
-    }
-
-    public String toString() {
-        return "" + tags.size() + " entries";
-    }
-
-    public void print(String prefix, PrintStream out) {
-        super.print(prefix, out);
-        out.println(prefix + "{");
-        String orgPrefix = prefix;
-        prefix += "   ";
-        for (Tag tag : tags.values()) {
-            tag.print(prefix, out);
-        }
-        out.println(orgPrefix + "}");
-    }
-
-    public boolean isEmpty() {
-        return tags.isEmpty();
-    }
-
+    @Override
     public Tag copy() {
-        CompoundTag tag = new CompoundTag(getName());
+        CompoundTag tag = new CompoundTag();
         for (String key : tags.keySet()) {
             tag.put(key, tags.get(key).copy());
         }
@@ -204,5 +50,179 @@ public class CompoundTag extends Tag {
             return tags.entrySet().equals(o.tags.entrySet());
         }
         return false;
+    }
+
+    public Tag get(String name) {
+        return tags.get(name);
+    }
+
+    public Collection<Tag> getAllTags() {
+        return tags.values();
+    }
+
+    public boolean getBoolean(String string) {
+        return getByte(string) != 0;
+    }
+
+    public byte getByte(String name) {
+        if (!tags.containsKey(name)) {
+            return (byte) 0;
+        }
+        return ((NumberTag) tags.get(name)).getByte();
+    }
+
+    public byte[] getByteArray(String name) {
+        if (!tags.containsKey(name)) {
+            return new byte[0];
+        }
+        return ((ByteArrayTag) tags.get(name)).data;
+    }
+
+    public CompoundTag getCompound(String name) {
+        if (!tags.containsKey(name)) {
+            return new CompoundTag();
+        }
+        return (CompoundTag) tags.get(name);
+    }
+
+    public double getDouble(String name) {
+        if (!tags.containsKey(name)) {
+            return 0;
+        }
+        return ((NumberTag) tags.get(name)).getDouble();
+    }
+
+    public float getFloat(String name) {
+        if (!tags.containsKey(name)) {
+            return 0;
+        }
+        return ((NumberTag) tags.get(name)).getFloat();
+    }
+
+    public int getInt(String name) {
+        if (!tags.containsKey(name)) {
+            return 0;
+        }
+        return ((NumberTag) tags.get(name)).getInt();
+    }
+
+    public int[] getIntArray(String name) {
+        if (!tags.containsKey(name)) {
+            return new int[0];
+        }
+        return ((IntArrayTag) tags.get(name)).data;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Tag> ListTag<T> getList(String name, TagType<T> type) {
+        if (!tags.containsKey(name)) {
+            return new ListTag<>(type);
+        }
+        return (ListTag<T>) tags.get(name);
+    }
+
+    public long getLong(String name) {
+        if (!tags.containsKey(name)) {
+            return 0;
+        }
+        return ((NumberTag) tags.get(name)).getLong();
+    }
+
+    public short getShort(String name) {
+        if (!tags.containsKey(name)) {
+            return (short) 0;
+        }
+        return ((NumberTag) tags.get(name)).getShort();
+    }
+
+    public String getString(String name) {
+        if (!tags.containsKey(name)) {
+            return "";
+        }
+        return ((StringTag) tags.get(name)).data;
+    }
+
+    @Override
+    public TagType<?> getType() {
+        return TagType.COMPOUND;
+    }
+
+    public boolean isEmpty() {
+        return tags.isEmpty();
+    }
+
+    @Override
+    public void print(String prefix, PrintStream out) {
+        super.print(prefix, out);
+        out.println(prefix + "{");
+        String orgPrefix = prefix;
+        prefix += "   ";
+        for (Entry<String, Tag> tag : tags.entrySet()) {
+            out.print(tag.getKey());
+            out.print(": ");
+            tag.getValue().print(prefix, out);
+        }
+        out.println(orgPrefix + "}");
+    }
+
+    public void put(String name, Tag tag) {
+        tags.put(name, tag);
+    }
+
+    public void putBoolean(String string, boolean val) {
+        putByte(string, val ? (byte) 1 : 0);
+    }
+
+    public void putByte(String name, byte value) {
+        tags.put(name, new ByteTag(value));
+    }
+
+    public void putByteArray(String name, byte[] value) {
+        tags.put(name, new ByteArrayTag(value));
+    }
+
+    public void putCompound(String name, CompoundTag value) {
+        tags.put(name, value);
+    }
+
+    public void putDouble(String name, double value) {
+        tags.put(name, new DoubleTag(value));
+    }
+
+    public void putFloat(String name, float value) {
+        tags.put(name, new FloatTag(value));
+    }
+
+    public void putInt(String name, int value) {
+        tags.put(name, new IntTag(value));
+    }
+
+    public void putIntArray(String name, int[] value) {
+        tags.put(name, new IntArrayTag(value));
+    }
+
+    public void putLong(String name, long value) {
+        tags.put(name, new LongTag(value));
+    }
+
+    public void putShort(String name, short value) {
+        tags.put(name, new ShortTag(value));
+    }
+
+    public void putString(String name, String value) {
+        tags.put(name, new StringTag(value));
+    }
+
+    @Override
+    public String toString() {
+        return "" + tags.size() + " entries";
+    }
+
+    @Override
+    void write(DataOutput dos) throws IOException {
+        for (Entry<String, Tag> tag : tags.entrySet()) {
+            Tag.writeNamedTag(tag.getKey(), tag.getValue(), dos);
+        }
+        dos.writeByte(TagType.END.getId());
     }
 }

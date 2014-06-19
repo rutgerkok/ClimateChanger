@@ -2,51 +2,72 @@ package nl.rutgerkok.climatechanger.nbt;
 
 /**
  * Copyright Mojang AB.
- * 
+ *
  * Don't do evil.
  */
 
-import java.io.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-public class ByteTag extends Tag {
-    public byte data;
+public class ByteTag extends NumberTag {
+    private final byte data;
 
-    public ByteTag(String name) {
-        super(name);
-    }
-
-    public ByteTag(String name, byte data) {
-        super(name);
+    public ByteTag(byte data) {
         this.data = data;
     }
 
-    void write(DataOutput dos) throws IOException {
-        dos.writeByte(data);
-    }
-
-    void load(DataInput dis) throws IOException {
+    ByteTag(DataInput dis) throws IOException {
         data = dis.readByte();
     }
 
-    public byte getId() {
-        return TAG_Byte;
+    @Override
+    public Tag copy() {
+        return new ByteTag(data);
     }
 
+    @Override
+    public byte getByte() {
+        return data;
+    }
+
+    @Override
+    public double getDouble() {
+        return data;
+    }
+
+    @Override
+    public float getFloat() {
+        return data;
+    }
+
+    @Override
+    public int getInt() {
+        return data;
+    }
+
+    @Override
+    public long getLong() {
+        return data;
+    }
+
+    @Override
+    public short getShort() {
+        return data;
+    }
+
+    @Override
+    public TagType<?> getType() {
+        return TagType.BYTE;
+    }
+
+    @Override
     public String toString() {
         return "" + data;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (super.equals(obj)) {
-            ByteTag o = (ByteTag) obj;
-            return data == o.data;
-        }
-        return false;
-    }
-
-    @Override
-    public Tag copy() {
-        return new ByteTag(getName(), data);
+    void write(DataOutput dos) throws IOException {
+        dos.writeByte(data);
     }
 }
