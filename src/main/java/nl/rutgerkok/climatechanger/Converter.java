@@ -1,18 +1,14 @@
 package nl.rutgerkok.climatechanger;
 
+import nl.rutgerkok.climatechanger.nbt.CompoundTag;
+import nl.rutgerkok.climatechanger.nbt.NbtIo;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
-
-import nl.rutgerkok.climatechanger.ProgressUpdater;
-import nl.rutgerkok.climatechanger.RegionFile;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
-import nl.rutgerkok.climatechanger.nbt.CompoundTag;
-import nl.rutgerkok.climatechanger.nbt.NbtIo;
 
 public class Converter {
     private final ProgressUpdater progressUpdater;
@@ -21,12 +17,13 @@ public class Converter {
 
     /**
      * Changes the biome id in all files in the given directory.
-     * 
+     *
      * @param progressUpdater
      *            Used to monitor progress.
      * @param regionFolder
      *            The directory containing the region files.
-     * @param tasks The tasks to execute for each chunk.
+     * @param tasks
+     *            The tasks to execute for each chunk.
      */
     public Converter(ProgressUpdater progressUpdater, File regionFolder, List<? extends ChunkTask> tasks) {
         this.progressUpdater = progressUpdater;
@@ -36,7 +33,7 @@ public class Converter {
 
     /**
      * Converts the files.
-     * 
+     *
      * @return How many chunks were converted.
      */
     public void convert() {
@@ -68,7 +65,7 @@ public class Converter {
 
     /**
      * Converts a single region file.
-     * 
+     *
      * @param file
      *            The file to convert.
      * @return The number of chunks changed in the file.
@@ -102,30 +99,38 @@ public class Converter {
                         changedChunks++;
                     }
                 } finally {
-                    if (inputStream != null)
+                    if (inputStream != null) {
                         inputStream.close();
-                    if (outputStream != null)
+                    }
+                    if (outputStream != null) {
                         outputStream.close();
+                    }
                 }
             }
         }
         regionFile.close();
         return changedChunks;
     }
-    
+
     /**
      * Runs all the tasks of this chunk.
-     * @param chunk The chunk to modify.
+     *
+     * @param chunk
+     *            The chunk to modify.
      * @return True if one of the tasks changed the chunk data, false otherwise.
      */
     private boolean runTasks(Chunk chunk) {
-        boolean changed = false;
-        for (ChunkTask task : tasks) {
-            if (task.execute(chunk)) {
-                changed = true;
+        try {
+            boolean changed = false;
+            for (ChunkTask task : tasks) {
+                if (task.execute(chunk)) {
+                    changed = true;
+                }
             }
+            return changed;
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Exception in chunk " + chunk.getChunkX() + "," + chunk.getChunkZ(), e);
         }
-        return changed;
     }
-    
+
 }

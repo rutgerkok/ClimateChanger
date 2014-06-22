@@ -2,7 +2,7 @@ package nl.rutgerkok.climatechanger.task;
 
 import nl.rutgerkok.climatechanger.Chunk;
 
-public class IdChanger implements ChunkTask {
+public class BiomeIdChanger implements ChunkTask {
     private final byte from;
     private final byte to;
 
@@ -19,11 +19,12 @@ public class IdChanger implements ChunkTask {
      *            The id to convert to, use -1 to let Minecraft recalculate the
      *            biomes when it loads the world.
      */
-    public IdChanger(byte from, byte to) {
+    public BiomeIdChanger(byte from, byte to) {
         this.from = from;
         this.to = to;
     }
 
+    @Override
     public boolean execute(Chunk chunk) {
         return handleByteArray(chunk.getBiomeArray());
     }

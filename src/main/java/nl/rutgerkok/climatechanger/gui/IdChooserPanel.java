@@ -27,7 +27,6 @@ public class IdChooserPanel extends JPanel {
         this.idTo.setPreferredSize(new Dimension(25, 22));
         add(this.idTo);
     }
-    
 
     public String getFrom() {
         return this.idFrom.getText();

@@ -10,24 +10,26 @@ package nl.rutgerkok.climatechanger;
 
 import nl.rutgerkok.climatechanger.gui.Window;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
-import nl.rutgerkok.climatechanger.task.IdChanger;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 
 public class Startup {
     public static void main(String[] args) {
-        if (args.length != 3) {
-            if (args.length == 0 && !GraphicsEnvironment.isHeadless()) {
-                // Show gui instead
-                new Window();
-                return;
-            }
-            System.out.println("Usage: <regionFolderName> <idFrom> <idTo>");
-            System.out.println("idFrom can be -1 to replace all biomes");
-            System.out.println("idTo can be -1 to let Minecraft recalculate the biome");
+        if (args.length == 0 && !GraphicsEnvironment.isHeadless()) {
+
+            // Show gui instead
+            new Window();
+            return;
+
+        }
+
+        LineParser parser = new LineParser();
+        if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("help"))) {
+            showHelp(parser);
             return;
         }
 
@@ -35,18 +37,28 @@ public class Startup {
         if (!regionFolder.exists() || !regionFolder.isDirectory() || !regionFolder.getName().equals("region")) {
             System.err.println("Please specify the path to a region folder, as the path");
             System.err.println(regionFolder.getAbsolutePath() + " is invalid.");
+            System.exit(1);
+            return;
         }
 
         try {
-            byte from = (byte) Short.parseShort(args[1]);
-            byte to = (byte) Short.parseShort(args[2]);
-
+            List<String> strings = Arrays.asList(args).subList(1, args.length);
             // Convert!
-            List<? extends ChunkTask> tasks = Arrays.asList(new IdChanger(from, to));
+            List<ChunkTask> tasks = parser.parse(strings);
             new Converter(new ConsoleProgressUpdater(), new File(args[0]), tasks).convert();
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid biome id (use numeric ids).");
+        } catch (ParseException e) {
+            System.err.println("Invalid syntax: " + e.getMessage());
+            showHelp(parser);
+            System.exit(1);
         }
+    }
 
+    private static void showHelp(LineParser parser) {
+        System.out.println("Usage: <regionFolder> <action> [and <action> [and ...]]");
+        System.out.println("<action> can be:");
+        for (String helpLine : parser.getActionsHelp()) {
+            System.out.print("*  ");
+            System.out.println(helpLine);
+        }
     }
 }

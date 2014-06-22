@@ -3,7 +3,7 @@ package nl.rutgerkok.climatechanger.gui;
 import nl.rutgerkok.climatechanger.Converter;
 import nl.rutgerkok.climatechanger.ProgressUpdater;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
-import nl.rutgerkok.climatechanger.task.IdChanger;
+import nl.rutgerkok.climatechanger.task.BiomeIdChanger;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -60,7 +60,7 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
         // Start converter
         new Thread(new Runnable() {
             public void run() {
-                List<? extends ChunkTask> tasks = Arrays.asList(new IdChanger(idFrom, idTo));
+                List<? extends ChunkTask> tasks = Arrays.asList(new BiomeIdChanger(idFrom, idTo));
                 new Converter(StartButton.this, regionDirectory, tasks).convert();
             }
         }).start();
