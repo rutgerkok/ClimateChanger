@@ -52,6 +52,7 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
 
     @Override
     public void complete(final int chunksConverted) {
+        progressBar.complete(chunksConverted);
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
