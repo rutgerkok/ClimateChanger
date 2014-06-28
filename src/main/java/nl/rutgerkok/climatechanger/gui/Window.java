@@ -30,7 +30,7 @@ public class Window {
         startButtonPanel.setLayout(new BoxLayout(startButtonPanel, BoxLayout.X_AXIS));
         startButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 2, 10));
         ProgressPanel progressBar = new ProgressPanel();
-        startButtonPanel.add(new StartButton("Convert biome ids", information, progressBar));
+        startButtonPanel.add(new StartButton("Execute tasks", information, progressBar));
         startButtonPanel.add(progressBar);
         jFrame.add(startButtonPanel, BorderLayout.SOUTH);
 
