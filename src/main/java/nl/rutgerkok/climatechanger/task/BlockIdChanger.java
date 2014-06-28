@@ -8,8 +8,9 @@ public class BlockIdChanger implements ChunkTask {
 
     private final byte newBlockData;
     private final byte newBlockIdHighestBytes;
-
     private final byte newBlockIdLowestBytes;
+    private final short newBlockId;
+    
     private final byte oldBlockData;
     private final short oldBlockId;
 
@@ -29,6 +30,7 @@ public class BlockIdChanger implements ChunkTask {
         this.oldBlockId = oldBlockId;
         this.oldBlockData = oldBlockData;
 
+        this.newBlockId = newBlockId;
         this.newBlockIdLowestBytes = (byte) newBlockId;
         this.newBlockIdHighestBytes = (byte) (newBlockId >> 8);
         this.newBlockData = newBlockData;
@@ -87,6 +89,11 @@ public class BlockIdChanger implements ChunkTask {
         }
 
         return changed;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Change blocks with id " + oldBlockId + ":" + oldBlockData + " into " + newBlockId + ":" + newBlockData;
     }
 
 }

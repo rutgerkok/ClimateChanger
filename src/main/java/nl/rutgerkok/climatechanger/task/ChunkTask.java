@@ -15,4 +15,10 @@ public interface ChunkTask {
      * @return True if the chunk was changed, false otherwise.
      */
     boolean execute(Chunk chunk);
+    
+    /**
+     * Gets a description of this task.
+     * @return A description.
+     */
+    String getDescription();
 }

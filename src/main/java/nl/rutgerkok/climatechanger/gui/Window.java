@@ -1,14 +1,14 @@
 package nl.rutgerkok.climatechanger.gui;
 
+import nl.rutgerkok.climatechanger.gui.task.TaskPanel;
+
 import java.awt.BorderLayout;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 public class Window {
 
-    public Window() {
+    public Window(GuiInformation information) {
         // Set the look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -18,26 +18,19 @@ public class Window {
 
         // Create window
         JFrame jFrame = new JFrame();
-        jFrame.setSize(500, 150);
-        jFrame.setResizable(false);
+        jFrame.setSize(500, 350);
+        // jFrame.setResizable(false);
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel mainPanel = new JPanel();
 
-        // Field for directory name
-        FileChooserPanel fileChooserPanel = new FileChooserPanel("Region directory:", "");
-        mainPanel.add(fileChooserPanel);
-        
-        // Field for ids
-        IdChooserPanel idChooserPanel = new IdChooserPanel();
-        mainPanel.add(idChooserPanel);
-        
-        // Add main panel to window
-        jFrame.add(mainPanel);
-        
+        // Main panel
+        jFrame.add(new TaskPanel(information), BorderLayout.CENTER);
+
         // Loading bar and start button
         JPanel startButtonPanel = new JPanel();
+        startButtonPanel.setLayout(new BoxLayout(startButtonPanel, BoxLayout.X_AXIS));
+        startButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 2, 10));
         ProgressPanel progressBar = new ProgressPanel();
-        startButtonPanel.add(new StartButton("Convert biome ids", fileChooserPanel, idChooserPanel, progressBar));
+        startButtonPanel.add(new StartButton("Convert biome ids", information, progressBar));
         startButtonPanel.add(progressBar);
         jFrame.add(startButtonPanel, BorderLayout.SOUTH);
 

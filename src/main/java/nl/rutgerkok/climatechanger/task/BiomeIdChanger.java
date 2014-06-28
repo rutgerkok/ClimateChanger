@@ -47,4 +47,9 @@ public class BiomeIdChanger implements ChunkTask {
         }
         return hasChanges;
     }
+
+    @Override
+    public String getDescription() {
+        return "Change biome id " + from + " into " + to;
+    }
 }

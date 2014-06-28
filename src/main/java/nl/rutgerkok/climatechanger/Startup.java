@@ -8,6 +8,8 @@ package nl.rutgerkok.climatechanger;
  * Do whatever you want with it.
  */
 
+import nl.rutgerkok.climatechanger.gui.GuiInformation;
+
 import nl.rutgerkok.climatechanger.gui.Window;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
 
@@ -22,7 +24,7 @@ public class Startup {
         if (args.length == 0 && !GraphicsEnvironment.isHeadless()) {
 
             // Show gui instead
-            new Window();
+            new Window(new GuiInformation());
             return;
 
         }

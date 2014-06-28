@@ -6,11 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class FileChooserPanel extends JPanel {
     private final JTextField textField;
@@ -30,6 +26,7 @@ public class FileChooserPanel extends JPanel {
         // Browse button
         JButton button = new JButton("Browse...");
         button.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 File opened = chooseDirectory();
                 if (opened != null) {
@@ -39,11 +36,11 @@ public class FileChooserPanel extends JPanel {
         });
         add(button);
     }
-    
+
     /**
      * Opens a file chooser. Returns the selected file. Returns null when no
      * file was selected.
-     * 
+     *
      * @return The file, or null if nothing was selected.
      */
     private File chooseDirectory() {
