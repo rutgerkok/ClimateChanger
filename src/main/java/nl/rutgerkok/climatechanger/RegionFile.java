@@ -1,85 +1,101 @@
 package nl.rutgerkok.climatechanger;
 
 /*
- ** 2011 January 5
- **
- ** The author disclaims copyright to this source code.  In place of
- ** a legal notice, here is a blessing:
- **
- **    May you do good and not evil.
- **    May you find forgiveness for yourself and forgive others.
- **    May you share freely, never taking more than you give.
- **/
+ * * 2011 January 5** The author disclaims copyright to this source code. In
+ * place of* a legal notice, here is a blessing:** May you do good and not evil.
+ * * May you find forgiveness for yourself and forgive others.* May you share
+ * freely, never taking more than you give.
+ */
 
 /*
  * 2011 February 16
- *
- * This source code is based on the work of Scaevolus (see notice above).
- * It has been slightly modified by Mojang AB (constants instead of magic
- * numbers, a chunk timestamp header, and auto-formatted according to our
- * formatter template).
- *
+ * 
+ * This source code is based on the work of Scaevolus (see notice above). It has
+ * been slightly modified by Mojang AB (constants instead of magic numbers, a
+ * chunk timestamp header, and auto-formatted according to our formatter
+ * template).
  */
 
 // Interfaces with region files on the disk
 
 /*
-
- Region File Format
-
- Concept: The minimum unit of storage on hard drives is 4KB. 90% of Minecraft
- chunks are smaller than 4KB. 99% are smaller than 8KB. Write a simple
- container to store chunks in single files in runs of 4KB sectors.
-
- Each region file represents a 32x32 group of chunks. The conversion from
- chunk number to region number is floor(coord / 32): a chunk at (30, -3)
- would be in region (0, -1), and one at (70, -30) would be at (3, -1).
- Region files are named "r.x.z.data", where x and z are the region coordinates.
-
- A region file begins with a 4KB header that describes where chunks are stored
- in the file. A 4-byte big-endian integer represents sector offsets and sector
- counts. The chunk offset for a chunk (x, z) begins at byte 4*(x+z*32) in the
- file. The bottom byte of the chunk offset indicates the number of sectors the
- chunk takes up, and the top 3 bytes represent the sector number of the chunk.
- Given a chunk offset o, the chunk data begins at byte 4096*(o/256) and takes up
- at most 4096*(o%256) bytes. A chunk cannot exceed 1MB in size. If a chunk
- offset is 0, the corresponding chunk is not stored in the region file.
-
- Chunk data begins with a 4-byte big-endian integer representing the chunk data
- length in bytes, not counting the length field. The length must be smaller than
- 4096 times the number of sectors. The next byte is a version field, to allow
- backwards-compatible updates to how chunks are encoded.
-
- A version of 1 represents a gzipped NBT file. The gzipped data is the chunk
- length - 1.
-
- A version of 2 represents a deflated (zlib compressed) NBT file. The deflated
- data is the chunk length - 1.
-
+ * 
+ * Region File Format
+ * 
+ * Concept: The minimum unit of storage on hard drives is 4KB. 90% of Minecraft
+ * chunks are smaller than 4KB. 99% are smaller than 8KB. Write a simple
+ * container to store chunks in single files in runs of 4KB sectors.
+ * 
+ * Each region file represents a 32x32 group of chunks. The conversion from
+ * chunk number to region number is floor(coord / 32): a chunk at (30, -3) would
+ * be in region (0, -1), and one at (70, -30) would be at (3, -1). Region files
+ * are named "r.x.z.data", where x and z are the region coordinates.
+ * 
+ * A region file begins with a 4KB header that describes where chunks are stored
+ * in the file. A 4-byte big-endian integer represents sector offsets and sector
+ * counts. The chunk offset for a chunk (x, z) begins at byte 4*(x+z*32) in the
+ * file. The bottom byte of the chunk offset indicates the number of sectors the
+ * chunk takes up, and the top 3 bytes represent the sector number of the chunk.
+ * Given a chunk offset o, the chunk data begins at byte 4096*(o/256) and takes
+ * up at most 4096*(o%256) bytes. A chunk cannot exceed 1MB in size. If a chunk
+ * offset is 0, the corresponding chunk is not stored in the region file.
+ * 
+ * Chunk data begins with a 4-byte big-endian integer representing the chunk
+ * data length in bytes, not counting the length field. The length must be
+ * smaller than 4096 times the number of sectors. The next byte is a version
+ * field, to allow backwards-compatible updates to how chunks are encoded.
+ * 
+ * A version of 1 represents a gzipped NBT file. The gzipped data is the chunk
+ * length - 1.
+ * 
+ * A version of 2 represents a deflated (zlib compressed) NBT file. The deflated
+ * data is the chunk length - 1.
  */
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.zip.*;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 public class RegionFile {
 
-    private static final int VERSION_GZIP = 1;
-    private static final int VERSION_DEFLATE = 2;
+    /*
+     * lets chunk writing be multithreaded by not locking the whole file as a
+     * chunk is serializing -- only writes when serialization is over
+     */
+    class ChunkBuffer extends ByteArrayOutputStream {
+        private int x, z;
 
-    private static final int SECTOR_BYTES = 4096;
-    private static final int SECTOR_INTS = SECTOR_BYTES / 4;
+        public ChunkBuffer(int x, int z) {
+            super(8096); // initialize to 8KB
+            this.x = x;
+            this.z = z;
+        }
+
+        @Override
+        public void close() {
+            RegionFile.this.write(x, z, buf, count);
+        }
+    }
 
     static final int CHUNK_HEADER_SIZE = 5;
-    private static final byte emptySector[] = new byte[4096];
 
-    private final File fileName;
-    private RandomAccessFile file;
-    private final int offsets[];
+    private static final byte emptySector[] = new byte[4096];
+    private static final int SECTOR_BYTES = 4096;
+
+    private static final int SECTOR_INTS = SECTOR_BYTES / 4;
+    private static final int VERSION_DEFLATE = 2;
+
+    private static final int VERSION_GZIP = 1;
     private final int chunkTimestamps[];
-    private ArrayList<Boolean> sectorFree;
-    private int sizeDelta;
+    private RandomAccessFile file;
+    private final File fileName;
     private long lastModified = 0;
+    private final int offsets[];
+    private ArrayList<Boolean> sectorFree;
+
+    private int sizeDelta;
 
     public RegionFile(File path) {
         offsets = new int[SECTOR_INTS];
@@ -147,16 +163,8 @@ public class RegionFile {
         }
     }
 
-    /* the modification date of the region file when it was first opened */
-    public long lastModified() {
-        return lastModified;
-    }
-
-    /* gets how much the region file has grown since it was last checked */
-    public synchronized int getSizeDelta() {
-        int ret = sizeDelta;
-        sizeDelta = 0;
-        return ret;
+    public void close() throws IOException {
+        file.close();
     }
 
     // various small debug printing helpers
@@ -164,16 +172,16 @@ public class RegionFile {
         // System.out.print(in);
     }
 
-    private void debugln(String in) {
-        debug(in + "\n");
+    private void debug(String mode, int x, int z, int count, String in) {
+        debug("REGION " + mode + " " + fileName.getName() + "[" + x + "," + z + "] " + count + "B = " + in);
     }
 
     private void debug(String mode, int x, int z, String in) {
         debug("REGION " + mode + " " + fileName.getName() + "[" + x + "," + z + "] = " + in);
     }
 
-    private void debug(String mode, int x, int z, int count, String in) {
-        debug("REGION " + mode + " " + fileName.getName() + "[" + x + "," + z + "] " + count + "B = " + in);
+    private void debugln(String in) {
+        debug(in + "\n");
     }
 
     private void debugln(String mode, int x, int z, String in) {
@@ -237,28 +245,57 @@ public class RegionFile {
     }
 
     public DataOutputStream getChunkDataOutputStream(int x, int z) {
-        if (outOfBounds(x, z))
+        if (outOfBounds(x, z)) {
             return null;
+        }
 
         return new DataOutputStream(new DeflaterOutputStream(new ChunkBuffer(x, z)));
     }
 
-    /*
-     * lets chunk writing be multithreaded by not locking the whole file as a
-     * chunk is serializing -- only writes when serialization is over
-     */
-    class ChunkBuffer extends ByteArrayOutputStream {
-        private int x, z;
+    private int getOffset(int x, int z) {
+        return offsets[x + z * 32];
+    }
 
-        public ChunkBuffer(int x, int z) {
-            super(8096); // initialize to 8KB
-            this.x = x;
-            this.z = z;
-        }
+    /* gets how much the region file has grown since it was last checked */
+    public synchronized int getSizeDelta() {
+        int ret = sizeDelta;
+        sizeDelta = 0;
+        return ret;
+    }
 
-        public void close() {
-            RegionFile.this.write(x, z, buf, count);
-        }
+    public boolean hasChunk(int x, int z) {
+        return getOffset(x, z) != 0;
+    }
+
+    /* the modification date of the region file when it was first opened */
+    public long lastModified() {
+        return lastModified;
+    }
+
+    /* is this an invalid chunk coordinate? */
+    private boolean outOfBounds(int x, int z) {
+        return x < 0 || x >= 32 || z < 0 || z >= 32;
+    }
+
+    private void setOffset(int x, int z, int offset) throws IOException {
+        offsets[x + z * 32] = offset;
+        file.seek((x + z * 32) * 4);
+        file.writeInt(offset);
+    }
+
+    private void setTimestamp(int x, int z, int value) throws IOException {
+        chunkTimestamps[x + z * 32] = value;
+        file.seek(SECTOR_BYTES + (x + z * 32) * 4);
+        file.writeInt(value);
+    }
+
+    /* write a chunk data to the region file at specified sector number */
+    private void write(int sectorNumber, byte[] data, int length) throws IOException {
+        debugln(" " + sectorNumber);
+        file.seek(sectorNumber * SECTOR_BYTES);
+        file.writeInt(length + 1); // chunk length
+        file.writeByte(VERSION_DEFLATE); // chunk version number
+        file.write(data, 0, length); // chunk data
     }
 
     /* write a chunk at (x,z) with length bytes of data to disk */
@@ -292,10 +329,11 @@ public class RegionFile {
                 if (runStart != -1) {
                     for (int i = runStart; i < sectorFree.size(); ++i) {
                         if (runLength != 0) {
-                            if (sectorFree.get(i))
+                            if (sectorFree.get(i)) {
                                 runLength++;
-                            else
+                            } else {
                                 runLength = 0;
+                            }
                         } else if (sectorFree.get(i)) {
                             runStart = i;
                             runLength = 1;
@@ -337,43 +375,5 @@ public class RegionFile {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    /* write a chunk data to the region file at specified sector number */
-    private void write(int sectorNumber, byte[] data, int length) throws IOException {
-        debugln(" " + sectorNumber);
-        file.seek(sectorNumber * SECTOR_BYTES);
-        file.writeInt(length + 1); // chunk length
-        file.writeByte(VERSION_DEFLATE); // chunk version number
-        file.write(data, 0, length); // chunk data
-    }
-
-    /* is this an invalid chunk coordinate? */
-    private boolean outOfBounds(int x, int z) {
-        return x < 0 || x >= 32 || z < 0 || z >= 32;
-    }
-
-    private int getOffset(int x, int z) {
-        return offsets[x + z * 32];
-    }
-
-    public boolean hasChunk(int x, int z) {
-        return getOffset(x, z) != 0;
-    }
-
-    private void setOffset(int x, int z, int offset) throws IOException {
-        offsets[x + z * 32] = offset;
-        file.seek((x + z * 32) * 4);
-        file.writeInt(offset);
-    }
-
-    private void setTimestamp(int x, int z, int value) throws IOException {
-        chunkTimestamps[x + z * 32] = value;
-        file.seek(SECTOR_BYTES + (x + z * 32) * 4);
-        file.writeInt(value);
-    }
-
-    public void close() throws IOException {
-        file.close();
     }
 }

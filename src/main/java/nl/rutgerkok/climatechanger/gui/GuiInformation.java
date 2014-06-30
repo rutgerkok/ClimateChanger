@@ -1,10 +1,9 @@
 package nl.rutgerkok.climatechanger.gui;
 
+import nl.rutgerkok.climatechanger.World;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
 import nl.rutgerkok.climatechanger.util.Consumer;
-import nl.rutgerkok.climatechanger.util.Supplier;
 
-import java.io.File;
 import java.util.*;
 
 public class GuiInformation {
@@ -15,20 +14,16 @@ public class GuiInformation {
         REMOVE_SELECTED;
     }
 
-    private Supplier<File> folder = new Supplier<File>() {
-        @Override
-        public File get() {
-            return null;
-        }
-    };
-
     private final Collection<ChunkTask> selectedTasks = new ArrayList<ChunkTask>();
+
     private final List<Consumer<UpdateType>> taskChangeListeners = new ArrayList<>();
     private final List<ChunkTask> tasks = new ArrayList<>();
+    private World world = null;
+    private final List<Runnable> worldChangeListeners = new ArrayList<>();
 
     /**
      * Adds a task to the task list.
-     * 
+     *
      * @param task
      *            The task to add.
      * @throws NullPointerException
@@ -47,17 +42,8 @@ public class GuiInformation {
     }
 
     /**
-     * Gets the region folder, may be null or invalid.
-     * 
-     * @return The region folder, may be null or invalid.
-     */
-    public File getRegionDirectory() {
-        return folder.get();
-    }
-
-    /**
      * Gets all currently selected tasks.
-     * 
+     *
      * @return All currently selected tasks.
      */
     public Collection<ChunkTask> getSelectedTasks() {
@@ -66,7 +52,7 @@ public class GuiInformation {
 
     /**
      * Gets all tasks that must be executed. List will be immutable.
-     * 
+     *
      * @return All tasks.
      */
     public List<ChunkTask> getTasks() {
@@ -74,8 +60,17 @@ public class GuiInformation {
     }
 
     /**
+     * Gets the world, may be null.
+     *
+     * @return The world, may be null.
+     */
+    public World getWorld() {
+        return world;
+    }
+
+    /**
      * Gets whether the given tasks is selected.
-     * 
+     *
      * @param task
      *            The task.
      * @return Whether the task is selected.
@@ -90,16 +85,8 @@ public class GuiInformation {
     }
 
     /**
-     * Marks all selected tasks as unselected tasks. Does nothing if no tasks
-     * were selected.
-     */
-    public void markAllUnselected() {
-        selectedTasks.clear();
-    }
-
-    /**
      * Marks a task as selected.
-     * 
+     *
      * @param task
      *            The task to mark.
      * @throws IllegalArgumentException
@@ -124,7 +111,7 @@ public class GuiInformation {
 
     /**
      * Marks a selected task as unselected.
-     * 
+     *
      * @param task
      *            The task to mark.
      * @throws IllegalArgumentException
@@ -143,39 +130,59 @@ public class GuiInformation {
 
     /**
      * Removes a task.
-     * 
+     *
      * @param task
      *            The task to remove.
      * @throws IllegalArgumentException
      *             If this task was not in the task list.
      */
     public void removeTask(ChunkTask task) throws IllegalArgumentException {
+        if (selectedTasks.contains(task)) {
+            markUnselected(task);
+        }
         if (!tasks.remove(task)) {
             throw new IllegalArgumentException(task + " not in task list " + tasks);
         }
-        selectedTasks.remove(task);
         callTaskListChangeListeners(UpdateType.REMOVE_ELEMENT);
     }
 
     /**
-     * Sets a supplier for the region folder. The supplier may return null or
-     * invalid files. The supplier itself may not be null.
+     * Sets the world, may be null.
      * 
-     * @param file
-     *            The region folder provider.
+     * @param world
+     *            The world, may be null.
      */
-    public void setRegionDirectory(Supplier<File> file) {
-        this.folder = Objects.requireNonNull(file);
+    public void setWorld(World world) {
+        this.world = world;
+        for (Runnable runnable : worldChangeListeners) {
+            runnable.run();
+        }
+
+        // New world, remove all tasks
+        for (ChunkTask task : getTasks()) {
+            removeTask(task);
+        }
     }
 
     /**
-     * Adds a runnable that will be run after a task has been
+     * Adds a consumer that will be run after a task has been
      * added/removed/selected/unselected.
+     *
+     * @param consumer
+     *            The consumer to run.
+     */
+    public void subscribeToTaskChanges(Consumer<UpdateType> consumer) {
+        taskChangeListeners.add(consumer);
+    }
+
+    /**
+     * Adds a runnable that will be run after {@link #setWorld(World)} has been
+     * called.
      * 
      * @param runnable
      *            The runnable to run.
      */
-    public void subscribeToTaskChanges(Consumer<UpdateType> runnable) {
-        taskChangeListeners.add(runnable);
+    public void subscribeToWorldChanges(Runnable runnable) {
+        worldChangeListeners.add(runnable);
     }
 }

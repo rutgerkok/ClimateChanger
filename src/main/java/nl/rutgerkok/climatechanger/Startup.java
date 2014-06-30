@@ -2,19 +2,19 @@ package nl.rutgerkok.climatechanger;
 
 /*
  * Little program to change the ids in a Minecraft map.
- *
+ * 
  * RegionFile and the NBT classes are written by Mojang. See the headers of
  * those files for their respective licenses. All other code is public domain.
  * Do whatever you want with it.
  */
 
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
-
 import nl.rutgerkok.climatechanger.gui.Window;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
@@ -35,22 +35,27 @@ public class Startup {
             return;
         }
 
-        File regionFolder = new File(args[0]);
-        if (!regionFolder.exists() || !regionFolder.isDirectory() || !regionFolder.getName().equals("region")) {
-            System.err.println("Please specify the path to a region folder, as the path");
-            System.err.println(regionFolder.getAbsolutePath() + " is invalid.");
+        File levelDat = new File(args[0]);
+        if (!levelDat.exists() || !levelDat.isFile() || !levelDat.getName().equals(World.LEVEL_DAT_NAME)) {
+            System.err.println("Please specify the path to the level.dat, as the path");
+            System.err.println(levelDat.getAbsolutePath() + " is invalid.");
             System.exit(1);
             return;
         }
 
         try {
+            World world = new World(levelDat);
             List<String> strings = Arrays.asList(args).subList(1, args.length);
             // Convert!
-            List<ChunkTask> tasks = parser.parse(strings);
-            new Converter(new ConsoleProgressUpdater(), new File(args[0]), tasks).convert();
+            List<ChunkTask> tasks = parser.parse(world.getMaterialMap(), strings);
+            new Converter(new ConsoleProgressUpdater(), world, tasks).convert();
         } catch (ParseException e) {
             System.err.println("Invalid syntax: " + e.getMessage());
             showHelp(parser);
+            System.exit(1);
+        } catch (IOException e) {
+            System.err.println("Cannot read " + World.LEVEL_DAT_NAME);
+            e.printStackTrace();
             System.exit(1);
         }
     }

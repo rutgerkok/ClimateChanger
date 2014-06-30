@@ -1,6 +1,7 @@
 package nl.rutgerkok.climatechanger.gui.task.window;
 
 import nl.rutgerkok.climatechanger.gui.LabelWithField;
+import nl.rutgerkok.climatechanger.material.MaterialMap;
 import nl.rutgerkok.climatechanger.task.BiomeIdChanger;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
@@ -11,7 +12,9 @@ public class BiomeIdChangerPanel extends TaskPanel {
     private final LabelWithField idFrom;
     private final LabelWithField idTo;
 
-    public BiomeIdChangerPanel() {
+    public BiomeIdChangerPanel(MaterialMap map) {
+        super(map);
+
         // Align right
         setLayout(new FlowLayout(FlowLayout.LEFT));
 

@@ -1,9 +1,11 @@
 package nl.rutgerkok.climatechanger;
 
-import nl.rutgerkok.climatechanger.task.BlockIdChanger;
+import nl.rutgerkok.climatechanger.material.Material;
+import nl.rutgerkok.climatechanger.material.MaterialMap;
 import nl.rutgerkok.climatechanger.task.BiomeIdChanger;
-import nl.rutgerkok.climatechanger.util.ParseUtil;
+import nl.rutgerkok.climatechanger.task.BlockIdChanger;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.util.ParseUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -11,7 +13,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public class LineParser {
-    public List<ChunkTask> parse(List<String> args) throws ParseException {
+    private void assureSize(List<?> args, int minSize) throws ParseException {
+        if (args.size() != minSize) {
+            throw new ParseException("Expected " + minSize + " args, found " + args.size() + " args.", 0);
+        }
+    }
+
+    public List<String> getActionsHelp() {
+        return Arrays.asList(
+                "changeBiome <fromId> <toId>",
+                "changeBlock <fromId> <fromData> <toId> <toData>"
+                );
+    }
+
+    public List<ChunkTask> parse(MaterialMap materialMap, List<String> args) throws ParseException {
         List<ChunkTask> parsed = new ArrayList<>();
         List<String> currentParts = new ArrayList<>();
 
@@ -21,7 +36,7 @@ public class LineParser {
                 if (parsed.isEmpty()) {
                     throw new ParseException("\"and\" on wrong position", 0);
                 }
-                parsed.add(parseChunkTask(currentParts));
+                parsed.add(parseChunkTask(materialMap, currentParts));
                 currentParts.clear();
                 continue;
             }
@@ -29,7 +44,7 @@ public class LineParser {
             // Add to current parts
             currentParts.add(arg);
         }
-        
+
         // Add remaining args
         if (currentParts.isEmpty()) {
             // No args at the end, this is an error
@@ -41,19 +56,12 @@ public class LineParser {
                 throw new ParseException("\"and\" may not be at the end of the line", 0);
             }
         }
-        parsed.add(parseChunkTask(currentParts));
+        parsed.add(parseChunkTask(materialMap, currentParts));
 
         return parsed;
     }
 
-    public List<String> getActionsHelp() {
-        return Arrays.asList(
-                "changeBiome <fromId> <toId>",
-                "changeBlock <fromId> <fromData> <toId> <toData>"
-                );
-    }
-
-    private ChunkTask parseChunkTask(List<String> parts) throws ParseException {
+    private ChunkTask parseChunkTask(MaterialMap materialMap, List<String> parts) throws ParseException {
         if (parts.isEmpty()) {
             throw new ParseException("No parameters given", 0);
         }
@@ -67,19 +75,13 @@ public class LineParser {
                 return new BiomeIdChanger((byte) fromId, (byte) toId);
             case "changeblock":
                 assureSize(parts, 5);
-                int fromBlockId = ParseUtil.parseInt(parts.get(1), -1, Chunk.MAX_BLOCK_ID);
+                Material fromBlock = ParseUtil.parseMaterial(parts.get(1), materialMap);
                 int fromBlockData = ParseUtil.parseInt(parts.get(2), -1, Chunk.MAX_BLOCK_DATA);
-                int toBlockId = ParseUtil.parseInt(parts.get(3), 0, Chunk.MAX_BLOCK_ID);
+                Material toBlock = ParseUtil.parseMaterial(parts.get(3), materialMap);
                 int toBlockData = ParseUtil.parseInt(parts.get(4), 0, Chunk.MAX_BLOCK_DATA);
-                return new BlockIdChanger((short) fromBlockId, (byte) fromBlockData, (short) toBlockId, (byte) toBlockData);
+                return new BlockIdChanger(fromBlock, (byte) fromBlockData, toBlock, (byte) toBlockData);
         }
         throw new ParseException("Unknown task: " + taskName, 0);
-    }
-
-    private void assureSize(List<?> args, int minSize) throws ParseException {
-        if (args.size() != minSize) {
-            throw new ParseException("Expected " + minSize + " args, found " + args.size() + " args.", 0);
-        }
     }
 
 }

@@ -2,6 +2,7 @@ package nl.rutgerkok.climatechanger.gui;
 
 import nl.rutgerkok.climatechanger.ProgressUpdater;
 
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JLabel;
@@ -32,6 +33,13 @@ public class ProgressPanel extends JPanel implements ProgressUpdater {
                 progressBar.setValue(progressBar.getMaximum());
             }
         });
+    }
+
+    @Override
+    public void failed(Exception reason) {
+        progressBar.setForeground(Color.RED);
+        progressBar.setStringPainted(true);
+        progressBar.setString("Failed: " + reason.getMessage());
     }
 
     @Override

@@ -8,59 +8,42 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 
 public class Converter {
     private final ProgressUpdater progressUpdater;
-    private final File regionFolder;
     private final List<? extends ChunkTask> tasks;
+    private final World world;
 
     /**
      * Changes the biome id in all files in the given directory.
      *
      * @param progressUpdater
      *            Used to monitor progress.
-     * @param regionFolder
-     *            The directory containing the region files.
+     * @param world
+     *            The world
      * @param tasks
      *            The tasks to execute for each chunk.
      */
-    public Converter(ProgressUpdater progressUpdater, File regionFolder, List<? extends ChunkTask> tasks) {
+    public Converter(ProgressUpdater progressUpdater, World world, List<? extends ChunkTask> tasks) {
         this.progressUpdater = progressUpdater;
-        this.regionFolder = regionFolder;
+        this.world = world;
         this.tasks = tasks;
     }
 
     /**
      * Converts the files.
-     *
-     * @return How many chunks were converted.
      */
     public void convert() {
-        int changedChunks = 0;
-        File[] filesToConvert = regionFolder.listFiles();
-        progressUpdater.init(filesToConvert.length);
-        for (int i = 0; i < filesToConvert.length; i++) {
-            File file = filesToConvert[i];
-
-            if (file.getName().endsWith(".mca")) {
-                try {
-                    changedChunks += convertFile(file);
-                    try {
-                        // Give processor some rest
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                    }
-                } catch (IOException e) {
-                    System.err.println("Failed to convert file " + file.getAbsolutePath());
-                    e.printStackTrace();
-                }
-            }
-
-            progressUpdater.setProgress(i);
+        try {
+            convertThrows();
+        } catch (IOException e) {
+            progressUpdater.failed(e);
         }
-
-        progressUpdater.complete(changedChunks);
     }
 
     /**
@@ -98,6 +81,12 @@ public class Converter {
                         NbtIo.write(parentTag, outputStream);
                         changedChunks++;
                     }
+                } catch (IOException e) {
+                    // Rethrow with location information and same stacktrace
+                    IOException newE = new IOException("[Chunk " + chunkX + ","
+                            + chunkZ + " in region file " + file.getName() + "] " + e.getMessage());
+                    newE.setStackTrace(e.getStackTrace());
+                    throw newE;
                 } finally {
                     if (inputStream != null) {
                         inputStream.close();
@@ -110,6 +99,52 @@ public class Converter {
         }
         regionFile.close();
         return changedChunks;
+    }
+
+    /**
+     * Same as {@link #convert()}, but throws IOException.
+     *
+     * @throws IOException
+     *             When something goes wrong.
+     */
+    private void convertThrows() throws IOException {
+        int processedFiles = 0;
+        int changedChunks = 0;
+        Collection<File> regionDirectories = world.getRegionFolders();
+        progressUpdater.init(getTotalFileCount(regionDirectories));
+        for (File regionDirectory : regionDirectories) {
+            for (File regionFile : regionDirectory.listFiles()) {
+                if (regionFile.getName().endsWith(".mca")) {
+                    changedChunks += convertFile(regionFile);
+                }
+                processedFiles++;
+                progressUpdater.setProgress(processedFiles);
+            }
+        }
+        progressUpdater.complete(changedChunks);
+    }
+
+    /**
+     * Gets the sum of the file count in each directory. Only counts files
+     * directly in each directory, not in subdirectories.
+     *
+     * @param directories
+     *            The directories to scan.
+     * @return The total amount of files.
+     * @throws IOException
+     *             If counting fails.
+     */
+    private int getTotalFileCount(Collection<File> directories) throws IOException {
+        int size = 0;
+        for (File directory : directories) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory.toPath())) {
+                for (@SuppressWarnings("unused")
+                Path file : stream) {
+                    size++;
+                }
+            }
+        }
+        return size;
     }
 
     /**

@@ -1,6 +1,7 @@
 package nl.rutgerkok.climatechanger.task;
 
 import nl.rutgerkok.climatechanger.Chunk;
+import nl.rutgerkok.climatechanger.material.Material;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.util.NibbleArray;
 
@@ -9,10 +10,11 @@ public class BlockIdChanger implements ChunkTask {
     private final byte newBlockData;
     private final byte newBlockIdHighestBytes;
     private final byte newBlockIdLowestBytes;
-    private final short newBlockId;
+    private final Material newBlock;
     
     private final byte oldBlockData;
     private final short oldBlockId;
+    private final Material oldBlock;
 
     /**
      * Creates a new block id change task.
@@ -26,13 +28,14 @@ public class BlockIdChanger implements ChunkTask {
      * @param newBlockData
      *            New block data.
      */
-    public BlockIdChanger(short oldBlockId, byte oldBlockData, short newBlockId, byte newBlockData) {
-        this.oldBlockId = oldBlockId;
+    public BlockIdChanger(Material oldBlock, byte oldBlockData, Material newBlock, byte newBlockData) {
+        this.oldBlock = oldBlock;
+        this.oldBlockId = oldBlock.getId();
         this.oldBlockData = oldBlockData;
 
-        this.newBlockId = newBlockId;
-        this.newBlockIdLowestBytes = (byte) newBlockId;
-        this.newBlockIdHighestBytes = (byte) (newBlockId >> 8);
+        this.newBlock = newBlock;
+        this.newBlockIdLowestBytes = (byte) newBlock.getId();
+        this.newBlockIdHighestBytes = (byte) (newBlock.getId() >> 8);
         this.newBlockData = newBlockData;
     }
 
@@ -93,7 +96,7 @@ public class BlockIdChanger implements ChunkTask {
 
     @Override
     public String getDescription() {
-        return "Change blocks with id " + oldBlockId + ":" + oldBlockData + " into " + newBlockId + ":" + newBlockData;
+        return "Change blocks with id " + oldBlock + ":" + oldBlockData + " into " + newBlock + ":" + newBlockData;
     }
 
 }

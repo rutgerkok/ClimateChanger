@@ -1,5 +1,6 @@
 package nl.rutgerkok.climatechanger.gui.task.window;
 
+import nl.rutgerkok.climatechanger.material.MaterialMap;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
 import nl.rutgerkok.climatechanger.util.Consumer;
 
@@ -22,14 +23,14 @@ public class TaskChooserWindow extends JDialog {
     private final Consumer<ChunkTask> onSuccess;
     private final JTabbedPane tabs;
 
-    public TaskChooserWindow(JPanel panel, Consumer<ChunkTask> onSuccess, final Runnable onAbort) {
+    public TaskChooserWindow(JPanel alignTo, MaterialMap materialMap, Consumer<ChunkTask> onSuccess, final Runnable onAbort) {
         this.onSuccess = onSuccess;
 
         setSize(300, 400);
         setTitle("Add a task");
 
         // Set above original component
-        Point windowLocation = panel.getLocationOnScreen();
+        Point windowLocation = alignTo.getLocationOnScreen();
         windowLocation.x += 30;
         windowLocation.y -= 100;
         setLocation(windowLocation);
@@ -46,8 +47,8 @@ public class TaskChooserWindow extends JDialog {
         tabs = new JTabbedPane();
         tabs.setBorder(BorderFactory.createEmptyBorder(7, 7, 0, 7));
 
-        tabs.addTab("Change biome id", new BiomeIdChangerPanel());
-        tabs.addTab("Change block id", new BlockIdChangerPanel());
+        tabs.addTab("Change biome id", new BiomeIdChangerPanel(materialMap));
+        tabs.addTab("Change block id", new BlockIdChangerPanel(materialMap));
 
         add(tabs, BorderLayout.CENTER);
 

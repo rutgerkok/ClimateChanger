@@ -1,6 +1,7 @@
 package nl.rutgerkok.climatechanger.gui.task;
 
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
+import nl.rutgerkok.climatechanger.gui.GuiInformation.UpdateType;
 import nl.rutgerkok.climatechanger.gui.task.window.TaskChooserWindow;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
 import nl.rutgerkok.climatechanger.util.Consumer;
@@ -17,23 +18,27 @@ public class TaskListButtonsPanel extends JPanel {
 
     private final JButton addTaskButton;
     private final GuiInformation information;
+    private boolean popupWindowOpen;
+    private JButton removeSelectedTasksButton;
 
-    public TaskListButtonsPanel(GuiInformation information) {
+    public TaskListButtonsPanel(final GuiInformation information) {
         this.information = information;
 
         setLayout(new FlowLayout(FlowLayout.RIGHT));
         setBorder(BorderFactory.createEmptyBorder(5, 0, 15, 0));
 
-        JButton removeTaskButton = new JButton("Remove selected");
-        removeTaskButton.addActionListener(new ActionListener() {
+        removeSelectedTasksButton = new JButton("Remove selected");
+        removeSelectedTasksButton.setEnabled(false);
+        removeSelectedTasksButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 removeSelectedActions();
             }
         });
-        add(removeTaskButton);
+        add(removeSelectedTasksButton);
 
         addTaskButton = new JButton("Add a task...");
+        addTaskButton.setEnabled(false);
         addTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -41,20 +46,40 @@ public class TaskListButtonsPanel extends JPanel {
             }
         });
         add(addTaskButton);
+
+        // Update "Add task" button when needed
+        information.subscribeToWorldChanges(new Runnable() {
+            @Override
+            public void run() {
+                updateAddTaskButton();
+            }
+        });
+
+        // Update "Remove selected" button when needed
+        information.subscribeToTaskChanges(new Consumer<UpdateType>() {
+            @Override
+            public void accept(UpdateType type) {
+                if (type == UpdateType.ADD_SELECTED || type == UpdateType.REMOVE_SELECTED) {
+                    updateRemoveSelectedTasksButton();
+                }
+            }
+        });
     }
 
     private void openTaskWindow() {
         addTaskButton.setEnabled(false);
-        new TaskChooserWindow(this, new Consumer<ChunkTask>() {
+        new TaskChooserWindow(this, information.getWorld().getMaterialMap(), new Consumer<ChunkTask>() {
             @Override
             public void accept(ChunkTask task) {
                 information.addTask(task);
-                addTaskButton.setEnabled(true);
+                popupWindowOpen = false;
+                updateAddTaskButton();
             }
         }, new Runnable() {
             @Override
             public void run() {
-                addTaskButton.setEnabled(true);
+                popupWindowOpen = false;
+                updateAddTaskButton();
             }
         });
     }
@@ -62,6 +87,32 @@ public class TaskListButtonsPanel extends JPanel {
     private void removeSelectedActions() {
         for (ChunkTask task : information.getSelectedTasks()) {
             information.removeTask(task);
+        }
+    }
+
+    /**
+     * Updates the enabled state of the "Add task" button.
+     */
+    private void updateAddTaskButton() {
+        if (information.getWorld() == null) {
+            addTaskButton.setEnabled(false);
+            return;
+        }
+        if (popupWindowOpen) {
+            addTaskButton.setEnabled(false);
+            return;
+        }
+        addTaskButton.setEnabled(true);
+    }
+
+    /**
+     * Updates the enabled state of the "Remove selected tasks" button.
+     */
+    private void updateRemoveSelectedTasksButton() {
+        if (information.getSelectedTasks().isEmpty()) {
+            removeSelectedTasksButton.setEnabled(false);
+        } else {
+            removeSelectedTasksButton.setEnabled(true);
         }
     }
 }

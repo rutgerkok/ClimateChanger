@@ -23,7 +23,7 @@ public class NbtIo {
     }
 
     public static CompoundTag decompress(byte[] buffer) throws IOException {
-        DataInputStream dis = new DataInputStream(new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(buffer))));
+        DataInputStream dis = new DataInputStream(new GZIPInputStream(new ByteArrayInputStream(buffer)));
         try {
             return read(dis);
         } finally {
@@ -45,13 +45,13 @@ public class NbtIo {
         return tag;
     }
 
-    public static CompoundTag read(File file) throws IOException {
+    public static CompoundTag readCompressedFile(File file) throws IOException {
         if (!file.exists()) {
-            return null;
+            return new CompoundTag();
         }
-        DataInputStream dis = new DataInputStream(new FileInputStream(file));
+        BufferedInputStream dis = new BufferedInputStream(new FileInputStream(file));
         try {
-            return read(dis);
+            return readCompressed(dis);
         } finally {
             dis.close();
         }
