@@ -10,7 +10,7 @@ public final class Material {
 
     /**
      * Creates a new material.
-     * 
+     *
      * @param name
      *            Name of the material, may not be null.
      * @param id
@@ -28,7 +28,7 @@ public final class Material {
 
     /**
      * Gets the id of this material.
-     * 
+     *
      * @return The id.
      */
     public short getId() {
@@ -37,7 +37,7 @@ public final class Material {
 
     /**
      * Gets the name of this material.
-     * 
+     *
      * @return The name.
      */
     public String getName() {

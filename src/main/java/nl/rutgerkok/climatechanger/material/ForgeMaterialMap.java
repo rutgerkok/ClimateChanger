@@ -18,7 +18,8 @@ public class ForgeMaterialMap implements MaterialMap {
 
     public ForgeMaterialMap(ListTag<CompoundTag> itemDataTag) {
         for (CompoundTag mapping : itemDataTag) {
-            register(mapping.getString("K"), mapping.getInt("V"));
+            // Forge seems to a strange character before the key
+            register(mapping.getString("K").replaceAll("[^\\w\\-:]", ""), mapping.getInt("V"));
         }
     }
 

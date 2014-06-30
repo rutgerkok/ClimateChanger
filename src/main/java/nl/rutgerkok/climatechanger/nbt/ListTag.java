@@ -31,8 +31,39 @@ public class ListTag<T extends Tag> extends Tag implements List<T> {
         this.type = type;
     }
 
+    @Override
+    public void add(int index, T element) {
+        list.add(index, element);
+    }
+
+    @Override
     public boolean add(T tag) {
         return list.add(tag);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends T> c) {
+        return list.addAll(c);
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends T> c) {
+        return list.addAll(index, c);
+    }
+
+    @Override
+    public void clear() {
+        list.clear();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return list.contains(o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return list.containsAll(c);
     }
 
     @Override
@@ -58,6 +89,7 @@ public class ListTag<T extends Tag> extends Tag implements List<T> {
         return false;
     }
 
+    @Override
     public T get(int index) {
         return list.get(index);
     }
@@ -68,39 +100,8 @@ public class ListTag<T extends Tag> extends Tag implements List<T> {
     }
 
     @Override
-    public void print(String prefix, PrintStream out) {
-        super.print(prefix, out);
-
-        out.println(prefix + "{");
-        String orgPrefix = prefix;
-        prefix += "   ";
-        for (int i = 0; i < list.size(); i++) {
-            list.get(i).print(prefix, out);
-        }
-        out.println(orgPrefix + "}");
-    }
-
-    public int size() {
-        return list.size();
-    }
-
-    @Override
-    public String toString() {
-        return "" + list.size() + " entries of type " + type.getTagName();
-    }
-
-    @Override
-    void write(DataOutput dos) throws IOException {
-        dos.writeByte(type.getId());
-        dos.writeInt(list.size());
-        for (int i = 0; i < list.size(); i++) {
-            list.get(i).write(dos);
-        }
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return list.iterator();
+    public int indexOf(Object o) {
+        return list.indexOf(o);
     }
 
     @Override
@@ -109,73 +110,8 @@ public class ListTag<T extends Tag> extends Tag implements List<T> {
     }
 
     @Override
-    public boolean contains(Object o) {
-        return list.contains(o);
-    }
-
-    @Override
-    public Object[] toArray() {
-        return list.toArray();
-    }
-
-    @Override
-    public <E> E[] toArray(E[] a) {
-        return list.toArray(a);
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        return list.remove(o);
-    }
-
-    @Override
-    public boolean containsAll(Collection<?> c) {
-        return list.containsAll(c);
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends T> c) {
-        return list.addAll(c);
-    }
-
-    @Override
-    public boolean addAll(int index, Collection<? extends T> c) {
-        return list.addAll(index, c);
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> c) {
-        return list.removeAll(c);
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> c) {
-        return list.retainAll(c);
-    }
-
-    @Override
-    public void clear() {
-        list.clear();
-    }
-
-    @Override
-    public T set(int index, T element) {
-        return list.set(index, element);
-    }
-
-    @Override
-    public void add(int index, T element) {
-        list.add(index, element);
-    }
-
-    @Override
-    public T remove(int index) {
-        return list.remove(index);
-    }
-
-    @Override
-    public int indexOf(Object o) {
-        return list.indexOf(o);
+    public Iterator<T> iterator() {
+        return list.iterator();
     }
 
     @Override
@@ -194,8 +130,75 @@ public class ListTag<T extends Tag> extends Tag implements List<T> {
     }
 
     @Override
+    public void print(String prefix, PrintStream out) {
+        super.print(prefix, out);
+
+        out.println(prefix + "{");
+        String orgPrefix = prefix;
+        prefix += "   ";
+        for (int i = 0; i < list.size(); i++) {
+            list.get(i).print(prefix, out);
+        }
+        out.println(orgPrefix + "}");
+    }
+
+    @Override
+    public T remove(int index) {
+        return list.remove(index);
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return list.remove(o);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        return list.removeAll(c);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        return list.retainAll(c);
+    }
+
+    @Override
+    public T set(int index, T element) {
+        return list.set(index, element);
+    }
+
+    @Override
+    public int size() {
+        return list.size();
+    }
+
+    @Override
     public List<T> subList(int fromIndex, int toIndex) {
         return list.subList(fromIndex, toIndex);
+    }
+
+    @Override
+    public Object[] toArray() {
+        return list.toArray();
+    }
+
+    @Override
+    public <E> E[] toArray(E[] a) {
+        return list.toArray(a);
+    }
+
+    @Override
+    public String toString() {
+        return "" + list.size() + " entries of type " + type.getTagName();
+    }
+
+    @Override
+    void write(DataOutput dos) throws IOException {
+        dos.writeByte(type.getId());
+        dos.writeInt(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            list.get(i).write(dos);
+        }
     }
 
 }

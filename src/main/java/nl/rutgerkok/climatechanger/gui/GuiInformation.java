@@ -148,7 +148,7 @@ public class GuiInformation {
 
     /**
      * Sets the world, may be null.
-     * 
+     *
      * @param world
      *            The world, may be null.
      */
@@ -178,7 +178,7 @@ public class GuiInformation {
     /**
      * Adds a runnable that will be run after {@link #setWorld(World)} has been
      * called.
-     * 
+     *
      * @param runnable
      *            The runnable to run.
      */

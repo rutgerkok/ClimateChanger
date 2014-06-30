@@ -8,15 +8,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
 
 public class FileChooserPanel extends JPanel {
-    private final List<Consumer<File>> changeListeners = new ArrayList<>();
+    private final List<Consumer<Path>> changeListeners = new ArrayList<>();
     private final JTextField textField;
+    private String previousText = "";
 
     public FileChooserPanel(String label, String defaultPath) {
         // Align right
@@ -38,8 +41,8 @@ public class FileChooserPanel extends JPanel {
      * @param file
      *            The file, may be null.
      */
-    private void callChangeListeners(File file) {
-        for (Consumer<File> changeListener : changeListeners) {
+    private void callChangeListeners(Path file) {
+        for (Consumer<Path> changeListener : changeListeners) {
             changeListener.accept(file);
         }
     }
@@ -50,13 +53,13 @@ public class FileChooserPanel extends JPanel {
      *
      * @return The file, or null if nothing was selected.
      */
-    private File chooseFile() {
+    private Path chooseFile() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         int result = fileChooser.showOpenDialog(null);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            return fileChooser.getSelectedFile();
+            return fileChooser.getSelectedFile().toPath();
         } else {
             return null;
         }
@@ -67,10 +70,19 @@ public class FileChooserPanel extends JPanel {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                File opened = chooseFile();
-                if (opened != null) {
-                    FileChooserPanel.this.textField.setText(opened.getAbsolutePath());
+                Path opened = chooseFile();
+                if (opened == null) {
+                    // Cancelled
+                    return;
                 }
+
+                String fileString = opened.toString();
+                if (textField.getText().equals(fileString)) {
+                    // Noting changed
+                    return;
+                }
+
+                textField.setText(opened.toString());
                 callChangeListeners(opened);
             }
         });
@@ -84,8 +96,19 @@ public class FileChooserPanel extends JPanel {
 
             @Override
             public void focusLost(FocusEvent e) {
-                File file = new File(textField.getText());
-                if (file.exists()) {
+                String text = textField.getText().trim();
+                if (text.equals(previousText)) {
+                    // Nothing changed, do nothing
+                    return;
+                }
+                previousText = text;
+                if (text.isEmpty()) {
+                    // Notify of disappeared file
+                    callChangeListeners(null);
+                    return;
+                }
+                Path file = Paths.get(textField.getText().trim());
+                if (Files.exists(file)) {
                     callChangeListeners(file);
                 } else {
                     callChangeListeners(null);
@@ -102,7 +125,7 @@ public class FileChooserPanel extends JPanel {
      *            The code to run. File parameter may be null if no file was
      *            selected.
      */
-    public void subscribeToFileChanges(Consumer<File> consumer) {
+    public void subscribeToFileChanges(Consumer<Path> consumer) {
         changeListeners.add(consumer);
     }
 }

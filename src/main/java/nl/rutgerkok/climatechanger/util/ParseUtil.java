@@ -37,10 +37,14 @@ public final class ParseUtil {
 
     /**
      * Parses a material.
-     * @param string The string to parse.
-     * @param materials The material map.
+     * 
+     * @param string
+     *            The string to parse.
+     * @param materials
+     *            The material map.
      * @return The material.
-     * @throws ParseException If the given string is not a valid material.
+     * @throws ParseException
+     *             If the given string is not a valid material.
      */
     public static Material parseMaterial(String string, MaterialMap materials) throws ParseException {
         try {

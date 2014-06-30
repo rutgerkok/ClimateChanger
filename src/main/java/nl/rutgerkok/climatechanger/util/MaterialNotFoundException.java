@@ -7,18 +7,8 @@ package nl.rutgerkok.climatechanger.util;
 public class MaterialNotFoundException extends Exception {
 
     /**
-     * Constructs a new exception with the given material name.
-     * 
-     * @param materialName
-     *            The material name.
-     */
-    public MaterialNotFoundException(String materialName) {
-        super(materialName);
-    }
-
-    /**
      * Constructs a new exception with the given material id.
-     * 
+     *
      * @param materialId
      *            The material id.
      */
@@ -27,8 +17,18 @@ public class MaterialNotFoundException extends Exception {
     }
 
     /**
+     * Constructs a new exception with the given material name.
+     *
+     * @param materialName
+     *            The material name.
+     */
+    public MaterialNotFoundException(String materialName) {
+        super(materialName);
+    }
+
+    /**
      * Gets the name of the material that was not found.
-     * 
+     *
      * @return The name.
      */
     public String getMaterial() {

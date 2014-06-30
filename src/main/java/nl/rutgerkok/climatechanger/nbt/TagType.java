@@ -27,7 +27,7 @@ public class TagType<T extends Tag> {
 
     /**
      * Gets the tag type with the given id.
-     * 
+     *
      * @param typeId
      *            The tag type id.
      * @return The tag type.
@@ -52,7 +52,7 @@ public class TagType<T extends Tag> {
 
     /**
      * Gets the type id of the type.
-     * 
+     *
      * @return The type id.
      */
     byte getId() {
@@ -62,7 +62,7 @@ public class TagType<T extends Tag> {
     public String getTagName() {
         return name;
     }
-    
+
     @SuppressWarnings("unchecked")
     public T newTag(DataInput input) throws IOException {
         if (this == TagType.END) {

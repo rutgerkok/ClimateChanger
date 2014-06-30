@@ -15,7 +15,7 @@ public interface ProgressUpdater {
 
     /**
      * Called when something goes wrong.
-     * 
+     *
      * @param reason
      *            The exception that caused this.
      */

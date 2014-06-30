@@ -5,17 +5,20 @@ package nl.rutgerkok.climatechanger.util;
  * result. Unlike most other functional interfaces, {@code Consumer} is expected
  * to operate via side-effects.
  *
- * <p>This is a functional interface borrowed from Java 8 whose functional
- * method is {@link #accept(Object)}.
+ * <p>
+ * This is a functional interface borrowed from Java 8 whose functional method
+ * is {@link #accept(Object)}.
  *
- * @param <T> the type of the input to the operation
+ * @param <T>
+ *            the type of the input to the operation
  */
 public interface Consumer<T> {
 
     /**
      * Performs this operation on the given argument.
      *
-     * @param t the input argument
+     * @param t
+     *            the input argument
      */
     void accept(T t);
 }

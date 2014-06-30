@@ -29,6 +29,11 @@ public class BiomeIdChanger implements ChunkTask {
         return handleByteArray(chunk.getBiomeArray());
     }
 
+    @Override
+    public String getDescription() {
+        return "Change biome id " + from + " into " + to;
+    }
+
     /**
      * Converts all ids in the byte array. The original byte array will be
      * modified.
@@ -46,10 +51,5 @@ public class BiomeIdChanger implements ChunkTask {
             }
         }
         return hasChanges;
-    }
-
-    @Override
-    public String getDescription() {
-        return "Change biome id " + from + " into " + to;
     }
 }

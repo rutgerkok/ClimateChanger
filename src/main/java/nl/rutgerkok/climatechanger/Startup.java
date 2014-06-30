@@ -2,7 +2,7 @@ package nl.rutgerkok.climatechanger;
 
 /*
  * Little program to change the ids in a Minecraft map.
- * 
+ *
  * RegionFile and the NBT classes are written by Mojang. See the headers of
  * those files for their respective licenses. All other code is public domain.
  * Do whatever you want with it.
@@ -15,6 +15,8 @@ import nl.rutgerkok.climatechanger.task.ChunkTask;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
@@ -35,10 +37,10 @@ public class Startup {
             return;
         }
 
-        File levelDat = new File(args[0]);
-        if (!levelDat.exists() || !levelDat.isFile() || !levelDat.getName().equals(World.LEVEL_DAT_NAME)) {
+        Path levelDat = new File(args[0]).toPath();
+        if (!Files.isRegularFile(levelDat) || !levelDat.getFileName().toString().equals(World.LEVEL_DAT_NAME)) {
             System.err.println("Please specify the path to the level.dat, as the path");
-            System.err.println(levelDat.getAbsolutePath() + " is invalid.");
+            System.err.println(levelDat + " is invalid.");
             System.exit(1);
             return;
         }

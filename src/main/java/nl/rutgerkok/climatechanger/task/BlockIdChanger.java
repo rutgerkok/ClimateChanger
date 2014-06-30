@@ -7,14 +7,14 @@ import nl.rutgerkok.climatechanger.util.NibbleArray;
 
 public class BlockIdChanger implements ChunkTask {
 
+    private final Material newBlock;
     private final byte newBlockData;
     private final byte newBlockIdHighestBytes;
     private final byte newBlockIdLowestBytes;
-    private final Material newBlock;
-    
+
+    private final Material oldBlock;
     private final byte oldBlockData;
     private final short oldBlockId;
-    private final Material oldBlock;
 
     /**
      * Creates a new block id change task.
@@ -51,6 +51,11 @@ public class BlockIdChanger implements ChunkTask {
         }
 
         return changed;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Change blocks with id " + oldBlock + ":" + oldBlockData + " into " + newBlock + ":" + newBlockData;
     }
 
     private boolean replaceSection(CompoundTag section) {
@@ -92,11 +97,6 @@ public class BlockIdChanger implements ChunkTask {
         }
 
         return changed;
-    }
-
-    @Override
-    public String getDescription() {
-        return "Change blocks with id " + oldBlock + ":" + oldBlockData + " into " + newBlock + ":" + newBlockData;
     }
 
 }

@@ -7,6 +7,8 @@ package nl.rutgerkok.climatechanger.nbt;
  */
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -45,22 +47,22 @@ public class NbtIo {
         return tag;
     }
 
-    public static CompoundTag readCompressedFile(File file) throws IOException {
-        if (!file.exists()) {
-            return new CompoundTag();
-        }
-        BufferedInputStream dis = new BufferedInputStream(new FileInputStream(file));
+    public static CompoundTag readCompressed(InputStream in) throws IOException {
+        DataInputStream dis = new DataInputStream(new BufferedInputStream(new GZIPInputStream(in)));
         try {
-            return readCompressed(dis);
+            return read(dis);
         } finally {
             dis.close();
         }
     }
 
-    public static CompoundTag readCompressed(InputStream in) throws IOException {
-        DataInputStream dis = new DataInputStream(new BufferedInputStream(new GZIPInputStream(in)));
+    public static CompoundTag readCompressedFile(Path levelDat) throws IOException {
+        if (!Files.exists(levelDat)) {
+            return new CompoundTag();
+        }
+        BufferedInputStream dis = new BufferedInputStream(Files.newInputStream(levelDat));
         try {
-            return read(dis);
+            return readCompressed(dis);
         } finally {
             dis.close();
         }

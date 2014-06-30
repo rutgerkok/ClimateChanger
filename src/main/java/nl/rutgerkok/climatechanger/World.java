@@ -7,9 +7,10 @@ import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.NbtIo;
 import nl.rutgerkok.climatechanger.nbt.TagType;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -25,27 +26,28 @@ public class World {
     private static final String PLAYER_DIRECTORY_OLD = "players";
     private static final String REGION_FOLDER_NAME = "region";
 
-    private static FileFilter worldDirectories(final String prefix) {
-        return new FileFilter() {
+    private static DirectoryStream.Filter<Path> worldDirectories(final String prefix) {
+        return new DirectoryStream.Filter<Path>() {
+
             @Override
-            public boolean accept(File file) {
-                return file.isDirectory()
-                        && file.getName().startsWith(prefix)
-                        && new File(file, REGION_FOLDER_NAME).exists();
+            public boolean accept(Path path) throws IOException {
+                return Files.isDirectory(path)
+                        && path.getFileName().toString().startsWith(prefix)
+                        && Files.exists(path.resolve(REGION_FOLDER_NAME));
             }
         };
     }
 
-    private final File levelDat;
+    private final Path levelDat;
     private final MaterialMap materialMap;
 
     private final CompoundTag tag;
 
-    public World(File levelDat) throws IOException {
-        if (!levelDat.getName().equals(LEVEL_DAT_NAME)) {
-            throw new IOException("Expected a " + LEVEL_DAT_NAME + " file, got " + levelDat.getName());
+    public World(Path levelDat) throws IOException {
+        if (!levelDat.getFileName().toString().equals(LEVEL_DAT_NAME)) {
+            throw new IOException("Expected a " + LEVEL_DAT_NAME + " file, got \"" + levelDat.getName(levelDat.getNameCount() - 1)  +"\"");
         }
-        this.levelDat = levelDat.getAbsoluteFile();
+        this.levelDat = levelDat.toAbsolutePath();
         tag = NbtIo.readCompressedFile(levelDat);
         materialMap = initMaterialMap();
     }
@@ -57,9 +59,9 @@ public class World {
      *            Name of the directory.
      * @return The directory, or null if not found.
      */
-    private File getDirectory(String name) {
-        File file = new File(levelDat.getParentFile(), name);
-        if (file.isDirectory()) {
+    private Path getDirectory(String name) {
+        Path file = levelDat.getParent().resolveSibling(name);
+        if (Files.isDirectory(file)) {
             return file;
         }
         return null;
@@ -79,9 +81,9 @@ public class World {
      *
      * @return The player directory.
      */
-    public File getPlayerDirectory() {
+    public Path getPlayerDirectory() {
         // Try modern file
-        File dir = getDirectory(PLAYER_DIRECTORY);
+        Path dir = getDirectory(PLAYER_DIRECTORY);
         if (dir != null) {
             return dir;
         }
@@ -94,33 +96,39 @@ public class World {
      * Gets all region folders of all dimensions of this world.
      *
      * @return All region folders.
+     * @throws IOException
+     *             If the folders cannot be read.
      */
-    public Collection<File> getRegionFolders() {
-        Collection<File> regionFolders = new HashSet<>();
-        File levelDirectory = levelDat.getParentFile();
+    public Collection<Path> getRegionFolders() throws IOException {
+        Collection<Path> regionFolders = new HashSet<>();
+        Path levelDirectory = levelDat.getParent();
 
         // Search for region folder next to level.dat
-        File normalRegionFolder = new File(levelDirectory, REGION_FOLDER_NAME);
-        if (normalRegionFolder.exists() && normalRegionFolder.isDirectory()) {
+        Path normalRegionFolder = getDirectory(REGION_FOLDER_NAME);
+        if (Files.isDirectory(normalRegionFolder)) {
             regionFolders.add(normalRegionFolder);
         }
 
         // Search for other dimensions next to level.dat
-        for (File file : levelDirectory.listFiles(worldDirectories("DIM"))) {
-            regionFolders.add(file);
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(levelDirectory, worldDirectories("DIM"))) {
+            for (Path file : stream) {
+                regionFolders.add(file);
+            }
         }
 
         // Search step above (CraftBukkit and Spigot store dimensions there)
-        String worldDirectoryName = levelDirectory.getName();
-        File aboveLevelDirectory = levelDirectory.getParentFile();
+        String worldDirectoryName = levelDirectory.getFileName().toString();
+        Path aboveLevelDirectory = levelDirectory.getParent();
 
         if (aboveLevelDirectory == null) {
             // World is stored in server root, abort
             return regionFolders;
         }
 
-        for (File file : aboveLevelDirectory.listFiles(worldDirectories(worldDirectoryName + "_"))) {
-            regionFolders.add(new File(file, REGION_FOLDER_NAME));
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(levelDirectory, worldDirectories(worldDirectoryName + "_"))) {
+            for (Path file : stream) {
+                regionFolders.add(file.resolve(REGION_FOLDER_NAME));
+            }
         }
         return regionFolders;
     }

@@ -6,7 +6,6 @@ import nl.rutgerkok.climatechanger.task.ChunkTask;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -55,7 +54,7 @@ public class Converter {
      * @throws IOException
      *             If something went wrong.
      */
-    private int convertFile(File file) throws IOException {
+    private int convertFile(Path file) throws IOException {
         int changedChunks = 0;
         RegionFile regionFile = new RegionFile(file);
         for (int chunkX = 0; chunkX < 32; chunkX++) {
@@ -84,7 +83,7 @@ public class Converter {
                 } catch (IOException e) {
                     // Rethrow with location information and same stacktrace
                     IOException newE = new IOException("[Chunk " + chunkX + ","
-                            + chunkZ + " in region file " + file.getName() + "] " + e.getMessage());
+                            + chunkZ + " in region file " + file.getFileName() + "] " + e.getMessage());
                     newE.setStackTrace(e.getStackTrace());
                     throw newE;
                 } finally {
@@ -110,15 +109,17 @@ public class Converter {
     private void convertThrows() throws IOException {
         int processedFiles = 0;
         int changedChunks = 0;
-        Collection<File> regionDirectories = world.getRegionFolders();
+        Collection<Path> regionDirectories = world.getRegionFolders();
         progressUpdater.init(getTotalFileCount(regionDirectories));
-        for (File regionDirectory : regionDirectories) {
-            for (File regionFile : regionDirectory.listFiles()) {
-                if (regionFile.getName().endsWith(".mca")) {
-                    changedChunks += convertFile(regionFile);
+        for (Path regionDirectory : regionDirectories) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(regionDirectory)) {
+                for (Path regionFile : stream) {
+                    if (regionFile.getFileName().toString().endsWith(".mca")) {
+                        changedChunks += convertFile(regionFile);
+                    }
+                    processedFiles++;
+                    progressUpdater.setProgress(processedFiles);
                 }
-                processedFiles++;
-                progressUpdater.setProgress(processedFiles);
             }
         }
         progressUpdater.complete(changedChunks);
@@ -128,16 +129,16 @@ public class Converter {
      * Gets the sum of the file count in each directory. Only counts files
      * directly in each directory, not in subdirectories.
      *
-     * @param directories
+     * @param regionDirectories
      *            The directories to scan.
      * @return The total amount of files.
      * @throws IOException
      *             If counting fails.
      */
-    private int getTotalFileCount(Collection<File> directories) throws IOException {
+    private int getTotalFileCount(Collection<Path> regionDirectories) throws IOException {
         int size = 0;
-        for (File directory : directories) {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory.toPath())) {
+        for (Path directory : regionDirectories) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
                 for (@SuppressWarnings("unused")
                 Path file : stream) {
                     size++;

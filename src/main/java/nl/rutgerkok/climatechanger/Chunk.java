@@ -41,7 +41,7 @@ public class Chunk {
     /**
      * Gets direct access to the biome array of this chunk. Modifying the byte
      * array will modify the data of this chunk.
-     * 
+     *
      * @return The biome array.
      */
     public byte[] getBiomeArray() {
@@ -50,7 +50,7 @@ public class Chunk {
 
     /**
      * Gets the tags of the chunk sections.
-     * 
+     *
      * @return The tags.
      */
     public ListTag<CompoundTag> getChunkSections() {
@@ -59,7 +59,7 @@ public class Chunk {
 
     /**
      * Gets the chunk x in the world.
-     * 
+     *
      * @return The chunk x.
      */
     public int getChunkX() {
@@ -68,7 +68,7 @@ public class Chunk {
 
     /**
      * Gets the chunk z in the world.
-     * 
+     *
      * @return The chunk z.
      */
     public int getChunkZ() {

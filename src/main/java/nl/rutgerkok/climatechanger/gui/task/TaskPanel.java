@@ -6,8 +6,8 @@ import nl.rutgerkok.climatechanger.gui.GuiInformation;
 import nl.rutgerkok.climatechanger.util.Consumer;
 
 import java.awt.BorderLayout;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
@@ -39,10 +39,10 @@ public class TaskPanel extends JPanel {
     private FileChooserPanel createFileChooser(final GuiInformation information) {
         final FileChooserPanel fileChooserPanel = new FileChooserPanel("Select the " + World.LEVEL_DAT_NAME + ":", "");
 
-        fileChooserPanel.subscribeToFileChanges(new Consumer<File>() {
+        fileChooserPanel.subscribeToFileChanges(new Consumer<Path>() {
 
             @Override
-            public void accept(File file) {
+            public void accept(Path file) {
                 if (file == null) {
                     // No file selected
                     information.setWorld(null);
@@ -50,7 +50,7 @@ public class TaskPanel extends JPanel {
                 }
 
                 try {
-                    if (!file.getName().equals(World.LEVEL_DAT_NAME)) {
+                    if (!file.getFileName().toString().equals(World.LEVEL_DAT_NAME)) {
                         throw new IOException("Please select a " + World.LEVEL_DAT_NAME + "-file.");
                     }
 

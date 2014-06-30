@@ -9,7 +9,7 @@ package nl.rutgerkok.climatechanger;
 
 /*
  * 2011 February 16
- * 
+ *
  * This source code is based on the work of Scaevolus (see notice above). It has
  * been slightly modified by Mojang AB (constants instead of magic numbers, a
  * chunk timestamp header, and auto-formatted according to our formatter
@@ -19,18 +19,18 @@ package nl.rutgerkok.climatechanger;
 // Interfaces with region files on the disk
 
 /*
- * 
+ *
  * Region File Format
- * 
+ *
  * Concept: The minimum unit of storage on hard drives is 4KB. 90% of Minecraft
  * chunks are smaller than 4KB. 99% are smaller than 8KB. Write a simple
  * container to store chunks in single files in runs of 4KB sectors.
- * 
+ *
  * Each region file represents a 32x32 group of chunks. The conversion from
  * chunk number to region number is floor(coord / 32): a chunk at (30, -3) would
  * be in region (0, -1), and one at (70, -30) would be at (3, -1). Region files
  * are named "r.x.z.data", where x and z are the region coordinates.
- * 
+ *
  * A region file begins with a 4KB header that describes where chunks are stored
  * in the file. A 4-byte big-endian integer represents sector offsets and sector
  * counts. The chunk offset for a chunk (x, z) begins at byte 4*(x+z*32) in the
@@ -39,20 +39,22 @@ package nl.rutgerkok.climatechanger;
  * Given a chunk offset o, the chunk data begins at byte 4096*(o/256) and takes
  * up at most 4096*(o%256) bytes. A chunk cannot exceed 1MB in size. If a chunk
  * offset is 0, the corresponding chunk is not stored in the region file.
- * 
+ *
  * Chunk data begins with a 4-byte big-endian integer representing the chunk
  * data length in bytes, not counting the length field. The length must be
  * smaller than 4096 times the number of sectors. The next byte is a version
  * field, to allow backwards-compatible updates to how chunks are encoded.
- * 
+ *
  * A version of 1 represents a gzipped NBT file. The gzipped data is the chunk
  * length - 1.
- * 
+ *
  * A version of 2 represents a deflated (zlib compressed) NBT file. The deflated
  * data is the chunk length - 1.
  */
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
@@ -90,14 +92,14 @@ public class RegionFile {
     private static final int VERSION_GZIP = 1;
     private final int chunkTimestamps[];
     private RandomAccessFile file;
-    private final File fileName;
+    private final Path fileName;
     private long lastModified = 0;
     private final int offsets[];
     private ArrayList<Boolean> sectorFree;
 
     private int sizeDelta;
 
-    public RegionFile(File path) {
+    public RegionFile(Path path) {
         offsets = new int[SECTOR_INTS];
         chunkTimestamps = new int[SECTOR_INTS];
 
@@ -107,11 +109,11 @@ public class RegionFile {
         sizeDelta = 0;
 
         try {
-            if (path.exists()) {
-                lastModified = path.lastModified();
+            if (Files.exists(path)) {
+                lastModified = Files.getLastModifiedTime(path).toMillis();
             }
 
-            file = new RandomAccessFile(path, "rw");
+            file = new RandomAccessFile(path.toFile(), "rw");
 
             if (file.length() < SECTOR_BYTES) {
                 /* we need to write the chunk offset table */
@@ -173,11 +175,11 @@ public class RegionFile {
     }
 
     private void debug(String mode, int x, int z, int count, String in) {
-        debug("REGION " + mode + " " + fileName.getName() + "[" + x + "," + z + "] " + count + "B = " + in);
+        debug("REGION " + mode + " " + fileName.getName(fileName.getNameCount() - 1) + "[" + x + "," + z + "] " + count + "B = " + in);
     }
 
     private void debug(String mode, int x, int z, String in) {
-        debug("REGION " + mode + " " + fileName.getName() + "[" + x + "," + z + "] = " + in);
+        debug("REGION " + mode + " " + fileName.getName(fileName.getNameCount() - 1) + "[" + x + "," + z + "] = " + in);
     }
 
     private void debugln(String in) {

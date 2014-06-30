@@ -12,7 +12,7 @@ public interface MaterialMap {
 
     /**
      * Gets a material with the given id.
-     * 
+     *
      * @param id
      *            Id of the material.
      * @return The material.
@@ -23,7 +23,7 @@ public interface MaterialMap {
 
     /**
      * Gets a material with the given name.
-     * 
+     *
      * @param name
      *            Name of the material.
      * @return The material.
@@ -34,7 +34,7 @@ public interface MaterialMap {
 
     /**
      * Gets the material with the given name or id.
-     * 
+     *
      * @param nameOrId
      *            The name, or a numeric string with the id of the material.
      * @return The material.

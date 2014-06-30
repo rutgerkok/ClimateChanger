@@ -28,7 +28,13 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
     public void actionPerformed(ActionEvent event) {
         final World world = information.getWorld();
         if (world == null) {
-            showMessage("Please select the region directory.");
+            showMessage("Please select the level.dat first.");
+            return;
+        }
+        
+        final List<ChunkTask> tasks = information.getTasks();
+        if (tasks.isEmpty()) {
+            showMessage("There are no tasks selected. Please add at least one task.");
             return;
         }
 
@@ -36,7 +42,6 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
         setEnabled(false);
 
         // Start converter
-        final List<ChunkTask> tasks = information.getTasks();
         new Thread(new Runnable() {
             @Override
             public void run() {
