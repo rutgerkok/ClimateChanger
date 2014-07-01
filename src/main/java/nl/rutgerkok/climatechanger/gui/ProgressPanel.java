@@ -13,6 +13,7 @@ import javax.swing.SwingUtilities;
 public class ProgressPanel extends JPanel implements ProgressUpdater {
     private final JProgressBar progressBar;
     private final JLabel progressField;
+    private final Color originalBarForeground;
 
     public ProgressPanel() {
         progressBar = new JProgressBar();
@@ -22,6 +23,8 @@ public class ProgressPanel extends JPanel implements ProgressUpdater {
         progressField = new JLabel();
         progressField.setPreferredSize(new Dimension(45, 25));
         add(progressField);
+        
+        originalBarForeground = progressBar.getForeground();
     }
 
     @Override
@@ -46,6 +49,10 @@ public class ProgressPanel extends JPanel implements ProgressUpdater {
     public void init(int maxProgress) {
         progressBar.setMaximum(maxProgress);
         progressBar.setIndeterminate(false);
+        
+        // Reset foreground, in case previous attempt failed
+        progressBar.setForeground(originalBarForeground);
+        progressBar.setStringPainted(false);
     }
 
     @Override
