@@ -60,7 +60,7 @@ public class World {
      * @return The directory, or null if not found.
      */
     private Path getDirectory(String name) {
-        Path file = levelDat.getParent().resolveSibling(name);
+        Path file = levelDat.resolveSibling(name);
         if (Files.isDirectory(file)) {
             return file;
         }
@@ -105,7 +105,7 @@ public class World {
 
         // Search for region folder next to level.dat
         Path normalRegionFolder = getDirectory(REGION_FOLDER_NAME);
-        if (Files.isDirectory(normalRegionFolder)) {
+        if (normalRegionFolder != null) {
             regionFolders.add(normalRegionFolder);
         }
 
