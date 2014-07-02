@@ -119,7 +119,7 @@ public class CompoundTag extends Tag {
             return new ListTag<>(type);
         }
         ListTag<?> listTag = (ListTag<?>) tags.get(name);
-        if (listTag.getType() != type) {
+        if (listTag.getElementsType() != type) {
             // Tag exists, but child tags are of wrong type
             return new ListTag<>(type);
         }
