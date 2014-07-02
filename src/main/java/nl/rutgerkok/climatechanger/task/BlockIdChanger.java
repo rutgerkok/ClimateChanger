@@ -54,16 +54,41 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
             }
         }
 
+        // Replace the blocks in tile entities
+        if (convertTileEntities(chunk.getTileEntities())) {
+            changed = true;
+        }
+
         return changed;
     }
 
+    /**
+     * Converts a single item.
+     *
+     * @param stack
+     *            The item to convert.
+     * @return True if the item was changed, false otherwise.
+     */
+    private boolean convertItem(ItemStack stack) {
+        if (stack.hasMaterial(oldBlock, oldBlockData)) {
+            stack.setMaterial(newBlock, newBlockData);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Converts a list of items.
+     *
+     * @param inventory
+     *            The list of items to convert.
+     * @return True if at least a single item was changed.
+     */
     private boolean convertItemList(List<CompoundTag> inventory) {
         boolean changed = false;
 
         for (CompoundTag inventoryTag : inventory) {
-            ItemStack stack = new ItemStack(inventoryTag);
-            if (stack.hasMaterial(oldBlock, oldBlockData)) {
-                stack.setMaterial(newBlock, newBlockData);
+            if (convertItem(new ItemStack(inventoryTag))) {
                 changed = true;
             }
         }
@@ -83,6 +108,55 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
         }
 
         return changed;
+    }
+
+    private boolean convertTileEntities(List<CompoundTag> tileEntities) {
+        boolean changed = false;
+        for (CompoundTag tileEntity : tileEntities) {
+            if (convertTileEntity(tileEntity)) {
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    private boolean convertTileEntity(CompoundTag tileEntity) {
+        if (tileEntity.contains("Items")) {
+            // Most tile entities with an inventory in Minecraft currently have
+            // an "Items" tag with the items
+            return convertItemList(tileEntity.getList("Items", TagType.COMPOUND));
+        }
+
+        // Special case for RecordPlayer (uses RecordItem instead of Items)
+        if (tileEntity.contains("RecordItem")) {
+            return convertItem(new ItemStack(tileEntity.getCompound("RecordItem")));
+        }
+
+        // Even more special case for FlowerPot (doesn't even use ItemStack
+        // structure)
+        if (tileEntity.getString("id").equalsIgnoreCase("FlowerPot")) {
+            String blockId = tileEntity.getString("Item");
+            short blockData = tileEntity.getShort("Data");
+            if (oldBlock.getName().equals(blockId) && (oldBlockData == -1 || blockData == oldBlockData)) {
+                tileEntity.putString("Item", newBlock.getName());
+                tileEntity.putInt("Data", newBlockData);
+                return true;
+            }
+        }
+
+        // Piston is just as special as FlowerPot, but uses item ids instead
+        // of names and different keys
+        if (tileEntity.getString("id").equalsIgnoreCase("Piston")) {
+            short blockId = tileEntity.getShort("blockId");
+            short blockData = tileEntity.getShort("blockData");
+            if (oldBlock.getId() == blockId && (oldBlockData == -1 || blockData == oldBlockData)) {
+                tileEntity.putInt("blockId", newBlock.getId());
+                tileEntity.putInt("blockData", newBlockData);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -107,7 +181,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
 
             byte blockData = blockDatas.get(i);
 
-            if ((oldBlockId == -1 || blockId == oldBlockId) && (oldBlockData == -1 || blockData == oldBlockData)) {
+            if (blockId == oldBlockId && (oldBlockData == -1 || blockData == oldBlockData)) {
                 // Found match, replace block
                 changed = true;
                 blockIdsBase[i] = newBlockIdLowestBytes;

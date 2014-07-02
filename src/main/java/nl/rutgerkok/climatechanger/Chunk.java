@@ -4,11 +4,15 @@ import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.ListTag;
 import nl.rutgerkok.climatechanger.nbt.TagType;
 
+import java.util.List;
+
 /**
  * Represents a single chunk, as used by Minecraft.
  *
  */
 public class Chunk {
+    private static final String BIOMES_TAG = "Biomes";
+
     public static final int CHUNK_X_SIZE = 16;
     public static final int CHUNK_Y_SIZE = 256;
     public static final int CHUNK_Z_SIZE = 16;
@@ -21,10 +25,15 @@ public class Chunk {
      * The highest possible block data in a Minecraft map.
      */
     public static final int MAX_BLOCK_DATA = 15;
+
     /**
      * The highest possible block id in a Minecraft map.
      */
     public static final int MAX_BLOCK_ID = 4095;
+    private static final String SECTIONS_TAG = "Sections";
+    private static final String TILE_ENTITIES_TAG = "TileEntities";
+    private static final String X_POS_TAG = "xPos";
+    private static final String Z_POS_TAG = "zPos";
 
     private final CompoundTag chunkTag;
 
@@ -45,7 +54,7 @@ public class Chunk {
      * @return The biome array.
      */
     public byte[] getBiomeArray() {
-        return chunkTag.getByteArray("Biomes");
+        return chunkTag.getByteArray(BIOMES_TAG);
     }
 
     /**
@@ -54,7 +63,7 @@ public class Chunk {
      * @return The tags.
      */
     public ListTag<CompoundTag> getChunkSections() {
-        return chunkTag.getList("Sections", TagType.COMPOUND);
+        return chunkTag.getList(SECTIONS_TAG, TagType.COMPOUND);
     }
 
     /**
@@ -63,7 +72,7 @@ public class Chunk {
      * @return The chunk x.
      */
     public int getChunkX() {
-        return chunkTag.getInt("xPos");
+        return chunkTag.getInt(X_POS_TAG);
     }
 
     /**
@@ -72,7 +81,7 @@ public class Chunk {
      * @return The chunk z.
      */
     public int getChunkZ() {
-        return chunkTag.getInt("zPos");
+        return chunkTag.getInt(Z_POS_TAG);
     }
 
     /**
@@ -83,5 +92,14 @@ public class Chunk {
      */
     public CompoundTag getTag() {
         return chunkTag;
+    }
+
+    /**
+     * Gets access to the tile entities in this chunk.
+     *
+     * @return The tile entities.
+     */
+    public List<CompoundTag> getTileEntities() {
+        return chunkTag.getList(TILE_ENTITIES_TAG, TagType.COMPOUND);
     }
 }
