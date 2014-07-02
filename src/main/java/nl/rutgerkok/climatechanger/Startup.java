@@ -2,7 +2,7 @@ package nl.rutgerkok.climatechanger;
 
 /*
  * Little program to change the ids in a Minecraft map.
- *
+ * 
  * RegionFile and the NBT classes are written by Mojang. See the headers of
  * those files for their respective licenses. All other code is public domain.
  * Do whatever you want with it.

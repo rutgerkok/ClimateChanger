@@ -7,6 +7,7 @@ import nl.rutgerkok.climatechanger.World;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.NbtIo;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.util.DirectoryUtil;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -122,12 +123,7 @@ class ChunkConverter implements Converter {
     public int getUnitsToConvert() throws IOException {
         int size = 0;
         for (Path directory : world.getRegionFolders()) {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
-                for (@SuppressWarnings("unused")
-                Path file : stream) {
-                    size++;
-                }
-            }
+            size += DirectoryUtil.countFiles(directory);
         }
         return size;
     }

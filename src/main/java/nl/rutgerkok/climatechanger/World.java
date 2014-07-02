@@ -22,6 +22,7 @@ public class World {
     private static final String FML_ITEM_DATA_TAG = "ItemData";
     private static final String FML_TAG = "FML";
     public static final String LEVEL_DAT_NAME = "level.dat";
+    private static final String MINECRAFT_TAG = "Data";
     private static final String PLAYER_DIRECTORY = "playerdata";
     private static final String PLAYER_DIRECTORY_OLD = "players";
     private static final String REGION_FOLDER_NAME = "region";
@@ -42,6 +43,7 @@ public class World {
     private final MaterialMap materialMap;
 
     private final CompoundTag tag;
+    private boolean tagNeedsSaving;
 
     public World(Path levelDat) throws IOException {
         if (!levelDat.getFileName().toString().equals(LEVEL_DAT_NAME)) {
@@ -74,6 +76,16 @@ public class World {
      */
     public MaterialMap getMaterialMap() {
         return materialMap;
+    }
+
+    /**
+     * Gets access to the main tag of the level.dat file, with subtags like
+     * SpawnX and GameRules.
+     *
+     * @return The NBT root tag.
+     */
+    public CompoundTag getMinecraftTag() {
+        return tag.getCompound(MINECRAFT_TAG);
     }
 
     /**
@@ -134,15 +146,6 @@ public class World {
     }
 
     /**
-     * Gets the NBT root tag of the level.dat file.
-     *
-     * @return The NBT root tag.
-     */
-    public CompoundTag getTag() {
-        return tag;
-    }
-
-    /**
      * Scans the level.dat for a Forge name->id map, if found it used that,
      * otherwise it uses the vanilla ids.
      *
@@ -156,5 +159,24 @@ public class World {
             }
         }
         return new VanillaMaterialMap();
+    }
+
+    /**
+     * Saves the tag if needed.
+     * 
+     * @throws IOException
+     *             If saving fails.
+     */
+    public void saveLevelDatIfNeeded() throws IOException {
+        if (tagNeedsSaving) {
+            NbtIo.safeWriteCompressed(tag, levelDat);
+        }
+    }
+
+    /**
+     * Sets that the tag obtained using {@link #getTag()}
+     */
+    public void setTagNeedsSaving() {
+        this.tagNeedsSaving = true;
     }
 }

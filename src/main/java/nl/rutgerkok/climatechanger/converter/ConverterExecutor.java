@@ -3,6 +3,7 @@ package nl.rutgerkok.climatechanger.converter;
 import nl.rutgerkok.climatechanger.ProgressUpdater;
 import nl.rutgerkok.climatechanger.World;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.PlayerDataTask;
 import nl.rutgerkok.climatechanger.task.Task;
 
 import java.io.IOException;
@@ -20,13 +21,19 @@ public class ConverterExecutor {
 
     private final Collection<Converter> converters = new ArrayList<>();
     private final ProgressUpdater updater;
+    private final World world;
 
     public ConverterExecutor(ProgressUpdater updater, World world, Iterable<? extends Task> tasks) {
+        this.world = Objects.requireNonNull(world);
         this.updater = Objects.requireNonNull(updater);
 
         List<ChunkTask> chunkTasks = filterList(tasks, ChunkTask.class);
         if (!chunkTasks.isEmpty()) {
             converters.add(new ChunkConverter(world, chunkTasks));
+        }
+        List<PlayerDataTask> playerTasks = filterList(tasks, PlayerDataTask.class);
+        if (!playerTasks.isEmpty()) {
+            converters.add(new PlayerDataConverter(world, playerTasks));
         }
     }
 
@@ -39,6 +46,7 @@ public class ConverterExecutor {
             for (Converter converter : converters) {
                 converter.convert(updater);
             }
+            world.saveLevelDatIfNeeded();
             updater.complete();
         } catch (IOException e) {
             updater.failed(e);

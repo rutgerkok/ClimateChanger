@@ -1,11 +1,15 @@
 package nl.rutgerkok.climatechanger.task;
 
 import nl.rutgerkok.climatechanger.Chunk;
+import nl.rutgerkok.climatechanger.ItemStack;
 import nl.rutgerkok.climatechanger.material.Material;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
+import nl.rutgerkok.climatechanger.nbt.TagType;
 import nl.rutgerkok.climatechanger.util.NibbleArray;
 
-public class BlockIdChanger implements ChunkTask {
+import java.util.List;
+
+public class BlockIdChanger implements ChunkTask, PlayerDataTask {
 
     private final Material newBlock;
     private final byte newBlockData;
@@ -48,6 +52,34 @@ public class BlockIdChanger implements ChunkTask {
             if (replaceSection(section)) {
                 changed = true;
             }
+        }
+
+        return changed;
+    }
+
+    private boolean convertItemList(List<CompoundTag> inventory) {
+        boolean changed = false;
+
+        for (CompoundTag inventoryTag : inventory) {
+            ItemStack stack = new ItemStack(inventoryTag);
+            if (stack.hasMaterial(oldBlock, oldBlockData)) {
+                stack.setMaterial(newBlock, newBlockData);
+                changed = true;
+            }
+        }
+
+        return changed;
+    }
+
+    @Override
+    public boolean convertPlayerFile(CompoundTag tag) {
+        boolean changed = false;
+
+        if (convertItemList(tag.getList("Inventory", TagType.COMPOUND))) {
+            changed = true;
+        }
+        if (convertItemList(tag.getList("EnderItems", TagType.COMPOUND))) {
+            changed = true;
         }
 
         return changed;
