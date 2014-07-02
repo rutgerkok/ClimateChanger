@@ -127,13 +127,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
             return convertItemList(tileEntity.getList("Items", TagType.COMPOUND));
         }
 
-        // Special case for RecordPlayer (uses RecordItem instead of Items)
-        if (tileEntity.contains("RecordItem")) {
-            return convertItem(new ItemStack(tileEntity.getCompound("RecordItem")));
-        }
-
-        // Even more special case for FlowerPot (doesn't even use ItemStack
-        // structure)
+        // Special case for FlowerPot (uses Item and Data tag)
         if (tileEntity.getString("id").equalsIgnoreCase("FlowerPot")) {
             String blockId = tileEntity.getString("Item");
             short blockData = tileEntity.getShort("Data");
@@ -144,8 +138,8 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
             }
         }
 
-        // Piston is just as special as FlowerPot, but uses item ids instead
-        // of names and different keys
+        // Special case for Piston (like FlowerPot, but uses item ids instead
+        // of names and different keys)
         if (tileEntity.getString("id").equalsIgnoreCase("Piston")) {
             short blockId = tileEntity.getShort("blockId");
             short blockData = tileEntity.getShort("blockData");
