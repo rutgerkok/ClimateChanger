@@ -37,7 +37,7 @@ public final class ParseUtil {
 
     /**
      * Parses a material.
-     * 
+     *
      * @param string
      *            The string to parse.
      * @param materials

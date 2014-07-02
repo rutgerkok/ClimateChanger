@@ -45,7 +45,7 @@ public class World {
 
     public World(Path levelDat) throws IOException {
         if (!levelDat.getFileName().toString().equals(LEVEL_DAT_NAME)) {
-            throw new IOException("Expected a " + LEVEL_DAT_NAME + " file, got \"" + levelDat.getName(levelDat.getNameCount() - 1)  +"\"");
+            throw new IOException("Expected a " + LEVEL_DAT_NAME + " file, got \"" + levelDat.getName(levelDat.getNameCount() - 1) + "\"");
         }
         this.levelDat = levelDat.toAbsolutePath();
         tag = NbtIo.readCompressedFile(levelDat);
