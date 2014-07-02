@@ -90,7 +90,7 @@ class ChunkConverter implements Converter {
                         NbtIo.write(parentTag, outputStream);
                         changedChunks++;
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     // Rethrow with location information and same stacktrace
                     IOException newE = new IOException("[Chunk " + chunkX + ","
                             + chunkZ + " in region file " + file.getFileName() + "] " + e.getMessage());
@@ -140,17 +140,13 @@ class ChunkConverter implements Converter {
      * @return True if one of the tasks changed the chunk data, false otherwise.
      */
     private boolean runTasks(Chunk chunk) {
-        try {
-            boolean changed = false;
-            for (ChunkTask task : tasks) {
-                if (task.convertChunk(chunk)) {
-                    changed = true;
-                }
+        boolean changed = false;
+        for (ChunkTask task : tasks) {
+            if (task.convertChunk(chunk)) {
+                changed = true;
             }
-            return changed;
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Exception in chunk " + chunk.getChunkX() + "," + chunk.getChunkZ(), e);
         }
+        return changed;
     }
 
 }
