@@ -65,49 +65,49 @@ public class CompoundTag extends Tag {
     }
 
     public byte getByte(String name) {
-        if (!tags.containsKey(name)) {
+        if (!(tags.get(name) instanceof NumberTag)) {
             return (byte) 0;
         }
         return ((NumberTag) tags.get(name)).getByte();
     }
 
     public byte[] getByteArray(String name) {
-        if (!tags.containsKey(name)) {
+        if (!(tags.get(name) instanceof ByteArrayTag)) {
             return new byte[0];
         }
         return ((ByteArrayTag) tags.get(name)).data;
     }
 
     public CompoundTag getCompound(String name) {
-        if (!tags.containsKey(name)) {
+        if (!(tags.get(name) instanceof CompoundTag)) {
             return new CompoundTag();
         }
         return (CompoundTag) tags.get(name);
     }
 
     public double getDouble(String name) {
-        if (!tags.containsKey(name)) {
+        if (!(tags.get(name) instanceof NumberTag)) {
             return 0;
         }
         return ((NumberTag) tags.get(name)).getDouble();
     }
 
     public float getFloat(String name) {
-        if (!tags.containsKey(name)) {
+        if (!(tags.get(name) instanceof NumberTag)) {
             return 0;
         }
         return ((NumberTag) tags.get(name)).getFloat();
     }
 
     public int getInt(String name) {
-        if (!tags.containsKey(name)) {
+        if (!(tags.get(name) instanceof NumberTag)) {
             return 0;
         }
         return ((NumberTag) tags.get(name)).getInt();
     }
 
     public int[] getIntArray(String name) {
-        if (!tags.containsKey(name)) {
+        if (!(tags.get(name) instanceof IntArrayTag)) {
             return new int[0];
         }
         return ((IntArrayTag) tags.get(name)).data;
@@ -115,28 +115,33 @@ public class CompoundTag extends Tag {
 
     @SuppressWarnings("unchecked")
     public <T extends Tag> ListTag<T> getList(String name, TagType<T> type) {
-        if (!tags.containsKey(name)) {
+        if (!(tags.get(name) instanceof ListTag)) {
             return new ListTag<>(type);
         }
-        return (ListTag<T>) tags.get(name);
+        ListTag<?> listTag = (ListTag<?>) tags.get(name);
+        if (listTag.getType() != type) {
+            // Tag exists, but child tags are of wrong type
+            return new ListTag<>(type);
+        }
+        return (ListTag<T>) listTag;
     }
 
     public long getLong(String name) {
-        if (!tags.containsKey(name)) {
+        if (!(tags.get(name) instanceof NumberTag)) {
             return 0;
         }
         return ((NumberTag) tags.get(name)).getLong();
     }
 
     public short getShort(String name) {
-        if (!tags.containsKey(name)) {
+        if (!(tags.get(name) instanceof NumberTag)) {
             return (short) 0;
         }
         return ((NumberTag) tags.get(name)).getShort();
     }
 
     public String getString(String name) {
-        if (!tags.containsKey(name)) {
+        if (!(tags.get(name) instanceof StringTag)) {
             return "";
         }
         return ((StringTag) tags.get(name)).data;
