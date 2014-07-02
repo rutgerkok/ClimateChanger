@@ -1,6 +1,6 @@
 package nl.rutgerkok.climatechanger.gui.task.window;
 
-import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 
 import java.awt.Component;
@@ -44,7 +44,7 @@ public class TaskSavePanel extends JPanel {
         }
         TaskPanel taskPanel = (TaskPanel) selected;
         try {
-            ChunkTask task = taskPanel.getTask();
+            Task task = taskPanel.getTask();
             window.closeOnSuccess(task);
         } catch (InvalidTaskException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Cannot add task", JOptionPane.ERROR_MESSAGE);

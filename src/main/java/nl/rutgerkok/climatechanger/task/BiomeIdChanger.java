@@ -25,7 +25,7 @@ public class BiomeIdChanger implements ChunkTask {
     }
 
     @Override
-    public boolean execute(Chunk chunk) {
+    public boolean convertChunk(Chunk chunk) {
         return handleByteArray(chunk.getBiomeArray());
     }
 

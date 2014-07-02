@@ -3,7 +3,7 @@ package nl.rutgerkok.climatechanger.gui.task;
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
 import nl.rutgerkok.climatechanger.gui.GuiInformation.UpdateType;
 import nl.rutgerkok.climatechanger.gui.task.window.TaskChooserWindow;
-import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.Consumer;
 
 import java.awt.FlowLayout;
@@ -68,9 +68,9 @@ public class TaskListButtonsPanel extends JPanel {
 
     private void openTaskWindow() {
         addTaskButton.setEnabled(false);
-        new TaskChooserWindow(this, information.getWorld().getMaterialMap(), new Consumer<ChunkTask>() {
+        new TaskChooserWindow(this, information.getWorld().getMaterialMap(), new Consumer<Task>() {
             @Override
-            public void accept(ChunkTask task) {
+            public void accept(Task task) {
                 information.addTask(task);
                 popupWindowOpen = false;
                 updateAddTaskButton();
@@ -85,7 +85,7 @@ public class TaskListButtonsPanel extends JPanel {
     }
 
     private void removeSelectedActions() {
-        for (ChunkTask task : information.getSelectedTasks()) {
+        for (Task task : information.getSelectedTasks()) {
             information.removeTask(task);
         }
     }

@@ -1,7 +1,7 @@
 package nl.rutgerkok.climatechanger.gui.task.window;
 
 import nl.rutgerkok.climatechanger.material.MaterialMap;
-import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 
 import java.awt.Color;
@@ -27,5 +27,5 @@ public abstract class TaskPanel extends JPanel {
      * @throws InvalidTaskException
      *             If no valid task was added yet.
      */
-    public abstract ChunkTask getTask() throws InvalidTaskException;
+    public abstract Task getTask() throws InvalidTaskException;
 }

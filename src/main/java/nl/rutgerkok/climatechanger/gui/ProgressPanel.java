@@ -11,9 +11,9 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
 public class ProgressPanel extends JPanel implements ProgressUpdater {
+    private final Color originalBarForeground;
     private final JProgressBar progressBar;
     private final JLabel progressField;
-    private final Color originalBarForeground;
 
     public ProgressPanel() {
         progressBar = new JProgressBar();
@@ -23,12 +23,12 @@ public class ProgressPanel extends JPanel implements ProgressUpdater {
         progressField = new JLabel();
         progressField.setPreferredSize(new Dimension(45, 25));
         add(progressField);
-        
+
         originalBarForeground = progressBar.getForeground();
     }
 
     @Override
-    public void complete(int chunksConverted) {
+    public void complete() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -46,27 +46,28 @@ public class ProgressPanel extends JPanel implements ProgressUpdater {
     }
 
     @Override
-    public void init(int maxProgress) {
-        progressBar.setMaximum(maxProgress);
-        progressBar.setIndeterminate(false);
-        
-        // Reset foreground, in case previous attempt failed
-        progressBar.setForeground(originalBarForeground);
-        progressBar.setStringPainted(false);
-    }
-
-    @Override
-    public void setProgress(final int progress) {
+    public void incrementProgress() {
         // It's one tenth second since the last progress update, update bar
         // Make sure bar is updated on correct thread
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-                progressBar.setValue(progress);
-                progressField.setText(progress + "/" + progressBar.getMaximum());
+                progressBar.setValue(progressBar.getValue() + 1);
+                progressField.setText(progressBar.getValue() + "/" + progressBar.getMaximum());
             }
         });
+    }
+
+    @Override
+    public void init(int maxProgress) {
+        progressBar.setValue(0);
+        progressBar.setMaximum(maxProgress);
+        progressBar.setIndeterminate(false);
+
+        // Reset foreground, in case previous attempt failed
+        progressBar.setForeground(originalBarForeground);
+        progressBar.setStringPainted(false);
     }
 
 }

@@ -8,9 +8,10 @@ package nl.rutgerkok.climatechanger;
  * Do whatever you want with it.
  */
 
+import nl.rutgerkok.climatechanger.converter.ConverterExecutor;
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
 import nl.rutgerkok.climatechanger.gui.Window;
-import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.Task;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
@@ -49,8 +50,8 @@ public class Startup {
             World world = new World(levelDat);
             List<String> strings = Arrays.asList(args).subList(1, args.length);
             // Convert!
-            List<ChunkTask> tasks = parser.parse(world.getMaterialMap(), strings);
-            new Converter(new ConsoleProgressUpdater(), world, tasks).convert();
+            List<Task> tasks = parser.parse(world.getMaterialMap(), strings);
+            new ConverterExecutor(new ConsoleProgressUpdater(), world, tasks).convertAll();
         } catch (ParseException e) {
             System.err.println("Invalid syntax: " + e.getMessage());
             showHelp(parser);

@@ -3,7 +3,7 @@ package nl.rutgerkok.climatechanger.gui.task.window;
 import nl.rutgerkok.climatechanger.gui.LabelWithField;
 import nl.rutgerkok.climatechanger.material.MaterialMap;
 import nl.rutgerkok.climatechanger.task.BiomeIdChanger;
-import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 
 import java.awt.FlowLayout;
@@ -26,7 +26,7 @@ public class BiomeIdChangerPanel extends TaskPanel {
     }
 
     @Override
-    public ChunkTask getTask() throws InvalidTaskException {
+    public Task getTask() throws InvalidTaskException {
         try {
             return new BiomeIdChanger((byte) Short.parseShort(idFrom.getText()),
                     (byte) Short.parseShort(idTo.getText()));

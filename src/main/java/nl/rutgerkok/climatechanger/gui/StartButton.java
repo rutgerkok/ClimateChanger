@@ -1,9 +1,9 @@
 package nl.rutgerkok.climatechanger.gui;
 
-import nl.rutgerkok.climatechanger.Converter;
 import nl.rutgerkok.climatechanger.ProgressUpdater;
 import nl.rutgerkok.climatechanger.World;
-import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.converter.ConverterExecutor;
+import nl.rutgerkok.climatechanger.task.Task;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,8 +31,8 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
             showMessage("Please select the level.dat first.");
             return;
         }
-        
-        final List<ChunkTask> tasks = information.getTasks();
+
+        final List<Task> tasks = information.getTasks();
         if (tasks.isEmpty()) {
             showMessage("There are no tasks selected. Please add at least one task.");
             return;
@@ -45,19 +45,19 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
         new Thread(new Runnable() {
             @Override
             public void run() {
-                new Converter(StartButton.this, world, tasks).convert();
+                new ConverterExecutor(StartButton.this, world, tasks).convertAll();
             }
         }).start();
     }
 
     @Override
-    public void complete(final int chunksConverted) {
-        progressBar.complete(chunksConverted);
+    public void complete() {
+        progressBar.complete();
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-                showMessage("Done! Converted " + chunksConverted + " chunks.");
+                showMessage("Done! Converted everything.");
                 setEnabled(true);
             }
         });
@@ -68,7 +68,7 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                showMessage("Failed to convert chunks: " + reason.getMessage());
+                showMessage("Failed to convert everything: " + reason.getMessage());
                 setEnabled(true);
             }
         });
@@ -76,15 +76,15 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
     }
 
     @Override
-    public void init(int maxProgress) {
+    public void incrementProgress() {
         // Forward
-        progressBar.init(maxProgress);
+        progressBar.incrementProgress();
     }
 
     @Override
-    public void setProgress(int progress) {
+    public void init(int maxProgress) {
         // Forward
-        progressBar.setProgress(progress);
+        progressBar.init(maxProgress);
     }
 
     private void showMessage(String error) {

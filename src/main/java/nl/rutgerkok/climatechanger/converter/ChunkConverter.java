@@ -1,5 +1,9 @@
-package nl.rutgerkok.climatechanger;
+package nl.rutgerkok.climatechanger.converter;
 
+import nl.rutgerkok.climatechanger.Chunk;
+import nl.rutgerkok.climatechanger.ProgressUpdater;
+import nl.rutgerkok.climatechanger.RegionFile;
+import nl.rutgerkok.climatechanger.World;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.NbtIo;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
@@ -13,8 +17,11 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 
-public class Converter {
-    private final ProgressUpdater progressUpdater;
+/**
+ * Converter for running all tasks that implement {@link ChunkTask}.
+ *
+ */
+class ChunkConverter implements Converter {
     private final List<? extends ChunkTask> tasks;
     private final World world;
 
@@ -28,20 +35,23 @@ public class Converter {
      * @param tasks
      *            The tasks to execute for each chunk.
      */
-    public Converter(ProgressUpdater progressUpdater, World world, List<? extends ChunkTask> tasks) {
-        this.progressUpdater = progressUpdater;
+    ChunkConverter(World world, List<? extends ChunkTask> tasks) {
         this.world = world;
         this.tasks = tasks;
     }
 
-    /**
-     * Converts the files.
-     */
-    public void convert() {
-        try {
-            convertThrows();
-        } catch (IOException e) {
-            progressUpdater.failed(e);
+    @Override
+    public void convert(ProgressUpdater updater) throws IOException {
+        Collection<Path> regionDirectories = world.getRegionFolders();
+        for (Path regionDirectory : regionDirectories) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(regionDirectory)) {
+                for (Path regionFile : stream) {
+                    if (regionFile.getFileName().toString().endsWith(".mca")) {
+                        convertFile(regionFile);
+                    }
+                    updater.incrementProgress();
+                }
+            }
         }
     }
 
@@ -101,43 +111,17 @@ public class Converter {
     }
 
     /**
-     * Same as {@link #convert()}, but throws IOException.
-     *
-     * @throws IOException
-     *             When something goes wrong.
-     */
-    private void convertThrows() throws IOException {
-        int processedFiles = 0;
-        int changedChunks = 0;
-        Collection<Path> regionDirectories = world.getRegionFolders();
-        progressUpdater.init(getTotalFileCount(regionDirectories));
-        for (Path regionDirectory : regionDirectories) {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(regionDirectory)) {
-                for (Path regionFile : stream) {
-                    if (regionFile.getFileName().toString().endsWith(".mca")) {
-                        changedChunks += convertFile(regionFile);
-                    }
-                    processedFiles++;
-                    progressUpdater.setProgress(processedFiles);
-                }
-            }
-        }
-        progressUpdater.complete(changedChunks);
-    }
-
-    /**
      * Gets the sum of the file count in each directory. Only counts files
      * directly in each directory, not in subdirectories.
      *
-     * @param regionDirectories
-     *            The directories to scan.
      * @return The total amount of files.
      * @throws IOException
      *             If counting fails.
      */
-    private int getTotalFileCount(Collection<Path> regionDirectories) throws IOException {
+    @Override
+    public int getUnitsToConvert() throws IOException {
         int size = 0;
-        for (Path directory : regionDirectories) {
+        for (Path directory : world.getRegionFolders()) {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
                 for (@SuppressWarnings("unused")
                 Path file : stream) {
@@ -159,7 +143,7 @@ public class Converter {
         try {
             boolean changed = false;
             for (ChunkTask task : tasks) {
-                if (task.execute(chunk)) {
+                if (task.convertChunk(chunk)) {
                     changed = true;
                 }
             }

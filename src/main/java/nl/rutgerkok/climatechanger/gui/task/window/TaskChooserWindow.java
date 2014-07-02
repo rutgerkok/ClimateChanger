@@ -1,7 +1,7 @@
 package nl.rutgerkok.climatechanger.gui.task.window;
 
 import nl.rutgerkok.climatechanger.material.MaterialMap;
-import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.Consumer;
 
 import java.awt.BorderLayout;
@@ -20,10 +20,10 @@ import javax.swing.JTabbedPane;
  *
  */
 public class TaskChooserWindow extends JDialog {
-    private final Consumer<ChunkTask> onSuccess;
+    private final Consumer<Task> onSuccess;
     private final JTabbedPane tabs;
 
-    public TaskChooserWindow(JPanel alignTo, MaterialMap materialMap, Consumer<ChunkTask> onSuccess, final Runnable onAbort) {
+    public TaskChooserWindow(JPanel alignTo, MaterialMap materialMap, Consumer<Task> onSuccess, final Runnable onAbort) {
         this.onSuccess = onSuccess;
 
         setSize(300, 400);
@@ -64,7 +64,7 @@ public class TaskChooserWindow extends JDialog {
      * @param task
      *            The created task.
      */
-    void closeOnSuccess(ChunkTask task) {
+    void closeOnSuccess(Task task) {
         setVisible(false);
         dispose();
 

@@ -3,7 +3,7 @@ package nl.rutgerkok.climatechanger.gui.task.window;
 import nl.rutgerkok.climatechanger.gui.LabelWithField;
 import nl.rutgerkok.climatechanger.material.MaterialMap;
 import nl.rutgerkok.climatechanger.task.BlockIdChanger;
-import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.MaterialNotFoundException;
 
@@ -32,7 +32,7 @@ public class BlockIdChangerPanel extends TaskPanel {
     }
 
     @Override
-    public ChunkTask getTask() throws InvalidTaskException {
+    public Task getTask() throws InvalidTaskException {
         try {
             return new BlockIdChanger(materialMap.getByNameOrId(idFrom.getText()),
                     (byte) Short.parseShort(dataFrom.getText()),

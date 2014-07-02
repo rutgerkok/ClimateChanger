@@ -4,7 +4,7 @@ import nl.rutgerkok.climatechanger.material.Material;
 import nl.rutgerkok.climatechanger.material.MaterialMap;
 import nl.rutgerkok.climatechanger.task.BiomeIdChanger;
 import nl.rutgerkok.climatechanger.task.BlockIdChanger;
-import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
 
 import java.text.ParseException;
@@ -26,8 +26,8 @@ public class LineParser {
                 );
     }
 
-    public List<ChunkTask> parse(MaterialMap materialMap, List<String> args) throws ParseException {
-        List<ChunkTask> parsed = new ArrayList<>();
+    public List<Task> parse(MaterialMap materialMap, List<String> args) throws ParseException {
+        List<Task> parsed = new ArrayList<>();
         List<String> currentParts = new ArrayList<>();
 
         for (String arg : args) {
@@ -61,7 +61,7 @@ public class LineParser {
         return parsed;
     }
 
-    private ChunkTask parseChunkTask(MaterialMap materialMap, List<String> parts) throws ParseException {
+    private Task parseChunkTask(MaterialMap materialMap, List<String> parts) throws ParseException {
         if (parts.isEmpty()) {
             throw new ParseException("No parameters given", 0);
         }

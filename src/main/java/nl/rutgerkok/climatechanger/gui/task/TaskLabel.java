@@ -1,7 +1,7 @@
 package nl.rutgerkok.climatechanger.gui.task;
 
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
-import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.Task;
 
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
@@ -13,9 +13,9 @@ public class TaskLabel extends JLabel {
 
     private Color color = Color.BLACK;
     private final GuiInformation information;
-    private final ChunkTask task;
+    private final Task task;
 
-    public TaskLabel(final ChunkTask task, GuiInformation information) {
+    public TaskLabel(final Task task, GuiInformation information) {
         super("• " + task.getDescription());
 
         this.task = task;
@@ -45,7 +45,7 @@ public class TaskLabel extends JLabel {
      *
      * @return The task.
      */
-    public ChunkTask getTask() {
+    public Task getTask() {
         return task;
     }
 

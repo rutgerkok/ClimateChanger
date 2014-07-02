@@ -40,7 +40,7 @@ public class BlockIdChanger implements ChunkTask {
     }
 
     @Override
-    public boolean execute(Chunk chunk) {
+    public boolean convertChunk(Chunk chunk) {
         boolean changed = false;
 
         // Replace the blocks in all sections

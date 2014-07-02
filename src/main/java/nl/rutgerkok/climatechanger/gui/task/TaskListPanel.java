@@ -2,7 +2,7 @@ package nl.rutgerkok.climatechanger.gui.task;
 
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
 import nl.rutgerkok.climatechanger.gui.GuiInformation.UpdateType;
-import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.Consumer;
 
 import java.awt.Color;
@@ -42,8 +42,8 @@ public class TaskListPanel extends JPanel {
     }
 
     private void addTasks() {
-        List<ChunkTask> tasks = information.getTasks();
-        for (ChunkTask task : tasks) {
+        List<Task> tasks = information.getTasks();
+        for (Task task : tasks) {
             add(new TaskLabel(task, information));
         }
         if (tasks.isEmpty()) {

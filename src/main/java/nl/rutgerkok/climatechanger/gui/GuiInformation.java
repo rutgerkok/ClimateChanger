@@ -1,7 +1,7 @@
 package nl.rutgerkok.climatechanger.gui;
 
 import nl.rutgerkok.climatechanger.World;
-import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.Consumer;
 
 import java.util.*;
@@ -14,10 +14,10 @@ public class GuiInformation {
         REMOVE_SELECTED;
     }
 
-    private final Collection<ChunkTask> selectedTasks = new ArrayList<ChunkTask>();
+    private final Collection<Task> selectedTasks = new ArrayList<Task>();
 
     private final List<Consumer<UpdateType>> taskChangeListeners = new ArrayList<>();
-    private final List<ChunkTask> tasks = new ArrayList<>();
+    private final List<Task> tasks = new ArrayList<>();
     private World world = null;
     private final List<Runnable> worldChangeListeners = new ArrayList<>();
 
@@ -29,7 +29,7 @@ public class GuiInformation {
      * @throws NullPointerException
      *             If the task is null.
      */
-    public void addTask(ChunkTask task) {
+    public void addTask(Task task) {
         tasks.add(Objects.requireNonNull(task));
 
         callTaskListChangeListeners(UpdateType.ADD_ELEMENT);
@@ -46,7 +46,7 @@ public class GuiInformation {
      *
      * @return All currently selected tasks.
      */
-    public Collection<ChunkTask> getSelectedTasks() {
+    public Collection<Task> getSelectedTasks() {
         return Collections.unmodifiableCollection(new HashSet<>(selectedTasks));
     }
 
@@ -55,7 +55,7 @@ public class GuiInformation {
      *
      * @return All tasks.
      */
-    public List<ChunkTask> getTasks() {
+    public List<Task> getTasks() {
         return Collections.unmodifiableList(new ArrayList<>(tasks));
     }
 
@@ -77,7 +77,7 @@ public class GuiInformation {
      * @throws IllegalArgumentException
      *             If the task is not registered.
      */
-    public boolean isSelected(ChunkTask task) throws IllegalArgumentException {
+    public boolean isSelected(Task task) throws IllegalArgumentException {
         if (!tasks.contains(task)) {
             throw new IllegalArgumentException("Task is not registered");
         }
@@ -96,7 +96,7 @@ public class GuiInformation {
      * @throws NullPointerException
      *             If task is null.
      */
-    public void markSelected(ChunkTask task) throws IllegalArgumentException {
+    public void markSelected(Task task) throws IllegalArgumentException {
         if (!tasks.contains(task)) {
             throw new IllegalArgumentException(task + " is not in task list");
         }
@@ -117,7 +117,7 @@ public class GuiInformation {
      * @throws IllegalArgumentException
      *             If the task is not selected.
      */
-    public void markUnselected(ChunkTask task) throws IllegalArgumentException {
+    public void markUnselected(Task task) throws IllegalArgumentException {
         if (!tasks.contains(task)) {
             throw new IllegalArgumentException(task + " is not in task list");
         }
@@ -136,7 +136,7 @@ public class GuiInformation {
      * @throws IllegalArgumentException
      *             If this task was not in the task list.
      */
-    public void removeTask(ChunkTask task) throws IllegalArgumentException {
+    public void removeTask(Task task) throws IllegalArgumentException {
         if (selectedTasks.contains(task)) {
             markUnselected(task);
         }
@@ -159,7 +159,7 @@ public class GuiInformation {
         }
 
         // New world, remove all tasks
-        for (ChunkTask task : getTasks()) {
+        for (Task task : getTasks()) {
             removeTask(task);
         }
     }
