@@ -1,7 +1,9 @@
 package nl.rutgerkok.climatechanger.gui.task;
 
+import nl.rutgerkok.climatechanger.gui.filechooser.FileChoosers;
+
+import nl.rutgerkok.climatechanger.gui.filechooser.FileChooserPanel;
 import nl.rutgerkok.climatechanger.World;
-import nl.rutgerkok.climatechanger.gui.FileChooserPanel;
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
 import nl.rutgerkok.climatechanger.util.Consumer;
 
@@ -37,7 +39,7 @@ public class TaskPanel extends JPanel {
     }
 
     private FileChooserPanel createFileChooser(final GuiInformation information) {
-        final FileChooserPanel fileChooserPanel = new FileChooserPanel("Select the " + World.LEVEL_DAT_NAME + ":", "");
+        final FileChooserPanel fileChooserPanel = FileChoosers.createPanel("Select the " + World.LEVEL_DAT_NAME + ":");
 
         fileChooserPanel.subscribeToFileChanges(new Consumer<Path>() {
 
