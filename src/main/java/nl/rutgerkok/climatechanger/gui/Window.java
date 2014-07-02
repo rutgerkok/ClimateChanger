@@ -1,8 +1,11 @@
 package nl.rutgerkok.climatechanger.gui;
 
+import nl.rutgerkok.climatechanger.Startup;
+
 import nl.rutgerkok.climatechanger.gui.task.TaskPanel;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.*;
 
@@ -19,7 +22,8 @@ public class Window {
         // Create window
         JFrame jFrame = new JFrame();
         jFrame.setSize(500, 350);
-        // jFrame.setResizable(false);
+        jFrame.setMinimumSize(new Dimension(490, 220));
+        jFrame.setTitle(Startup.NAME);
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Main panel

@@ -23,6 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Startup {
+    
+    public static final String NAME = "ClimateChanger";
+
     public static void main(String[] args) {
         if (args.length == 0 && !GraphicsEnvironment.isHeadless()) {
 
