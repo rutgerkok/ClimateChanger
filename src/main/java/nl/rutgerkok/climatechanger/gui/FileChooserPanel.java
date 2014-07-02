@@ -18,8 +18,8 @@ import javax.swing.*;
 
 public class FileChooserPanel extends JPanel {
     private final List<Consumer<Path>> changeListeners = new ArrayList<>();
-    private final JTextField textField;
     private String previousText = "";
+    private final JTextField textField;
 
     public FileChooserPanel(String label, String defaultPath) {
         // Align right
@@ -76,14 +76,7 @@ public class FileChooserPanel extends JPanel {
                     return;
                 }
 
-                String fileString = opened.toString();
-                if (textField.getText().equals(fileString)) {
-                    // Noting changed
-                    return;
-                }
-
-                textField.setText(opened.toString());
-                callChangeListeners(opened);
+                textUpdated(opened.toString());
             }
         });
         return button;
@@ -96,23 +89,7 @@ public class FileChooserPanel extends JPanel {
 
             @Override
             public void focusLost(FocusEvent e) {
-                String text = textField.getText().trim();
-                if (text.equals(previousText)) {
-                    // Nothing changed, do nothing
-                    return;
-                }
-                previousText = text;
-                if (text.isEmpty()) {
-                    // Notify of disappeared file
-                    callChangeListeners(null);
-                    return;
-                }
-                Path file = Paths.get(textField.getText().trim());
-                if (Files.exists(file)) {
-                    callChangeListeners(file);
-                } else {
-                    callChangeListeners(null);
-                }
+                textUpdated(textField.getText());
             }
         });
         return textField;
@@ -127,5 +104,33 @@ public class FileChooserPanel extends JPanel {
      */
     public void subscribeToFileChanges(Consumer<Path> consumer) {
         changeListeners.add(consumer);
+    }
+
+    private void textUpdated(String newText) {
+        newText = newText.trim();
+
+        // Check if changed
+        if (newText.equals(previousText)) {
+            // Nothing changed, do nothing
+            return;
+        }
+
+        // Update text field and previous text
+        previousText = newText;
+        textField.setText(newText);
+
+        // Notify of disappeared file
+        if (newText.isEmpty()) {
+            callChangeListeners(null);
+            return;
+        }
+
+        // Check for valid file, notify
+        Path file = Paths.get(newText);
+        if (Files.exists(file)) {
+            callChangeListeners(file);
+        } else {
+            callChangeListeners(null);
+        }
     }
 }
