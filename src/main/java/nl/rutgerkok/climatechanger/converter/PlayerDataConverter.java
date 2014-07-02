@@ -47,7 +47,7 @@ class PlayerDataConverter implements Converter {
 
     /**
      * Converts a single player file.
-     * 
+     *
      * @param playerFile
      *            The file to convert.
      * @throws IOException
@@ -70,7 +70,7 @@ class PlayerDataConverter implements Converter {
      * Converts the "Player" tag in the level.dat file. If there is no "Player"
      * tag in the level.dat file (happens on servers), this method does nothing
      * and returns false.
-     * 
+     *
      * @param levelDatTag
      *            The Data tag in the level.dat file, with subtags like
      *            "GameRules".
@@ -85,7 +85,7 @@ class PlayerDataConverter implements Converter {
 
     /**
      * Converts the player tag.
-     * 
+     *
      * @param playerTag
      *            The player tag, with tags like "Inventory".
      * @return True if the tag was changed, false otherwise.

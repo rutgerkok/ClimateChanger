@@ -163,7 +163,7 @@ public class World {
 
     /**
      * Saves the tag if needed.
-     * 
+     *
      * @throws IOException
      *             If saving fails.
      */

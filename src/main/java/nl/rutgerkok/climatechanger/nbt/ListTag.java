@@ -94,17 +94,18 @@ public class ListTag<T extends Tag> extends Tag implements List<T> {
         return list.get(index);
     }
 
-    @Override
-    public TagType<?> getType() {
-        return TagType.LIST;
-    }
-    
     /**
      * Gets the type of the elements in the list.
+     *
      * @return The type of the elements.
      */
     public TagType<T> getElementsType() {
         return type;
+    }
+
+    @Override
+    public TagType<?> getType() {
+        return TagType.LIST;
     }
 
     @Override
