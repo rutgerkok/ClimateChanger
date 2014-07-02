@@ -67,7 +67,7 @@ public class Startup {
     }
 
     private static void showHelp(LineParser parser) {
-        System.out.println("Usage: <regionFolder> <action> [and <action> [and ...]]");
+        System.out.println("Usage: <path/to/level.dat> <action> [and <action> [and ...]]");
         System.out.println("<action> can be:");
         for (String helpLine : parser.getActionsHelp()) {
             System.out.print("*  ");
