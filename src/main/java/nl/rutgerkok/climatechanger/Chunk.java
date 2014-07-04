@@ -17,10 +17,12 @@ public class Chunk {
     public static final int CHUNK_Y_SIZE = 256;
     public static final int CHUNK_Z_SIZE = 16;
 
+    private static final String ENTITIES_TAG = "Entities";
     /**
      * The highest possible biome id in a Minecraft map.
      */
     public static final int MAX_BIOME_ID = 254;
+
     /**
      * The highest possible block data in a Minecraft map.
      */
@@ -82,6 +84,14 @@ public class Chunk {
      */
     public int getChunkZ() {
         return chunkTag.getInt(Z_POS_TAG);
+    }
+
+    /**
+     * Gets all entities in this chunk.
+     * @return The entities.
+     */
+    public List<CompoundTag> getEntities() {
+        return chunkTag.getList(ENTITIES_TAG, TagType.COMPOUND);
     }
 
     /**

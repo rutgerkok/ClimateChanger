@@ -59,7 +59,50 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
             changed = true;
         }
 
+        // Replace the block in item frames
+        if (convertEntities(chunk.getEntities())) {
+            changed = true;
+        }
+
         return changed;
+    }
+
+    /**
+     * Converts a list of entities.
+     *
+     * @param entities
+     *            The entities.
+     * @return True if changes were made, false otherwise.
+     */
+    private boolean convertEntities(List<CompoundTag> entities) {
+        boolean changed = false;
+        for (CompoundTag entity : entities) {
+            if (convertEntity(entity)) {
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    /**
+     * Converts a single entity
+     *
+     * @param entity
+     *            The entity.
+     * @return True if changes were made, false otherwise.
+     */
+    private boolean convertEntity(CompoundTag entity) {
+        // Items on the ground, item frames
+        if (entity.contains("Item")) {
+            return convertItem(new ItemStack(entity.getCompound("Item")));
+        }
+
+        // Items in mine carts with chests/hoppers and in horses
+        if (entity.contains("Items")) {
+            return convertItemList(entity.getList("Items", TagType.COMPOUND));
+        }
+
+        return false;
     }
 
     /**
