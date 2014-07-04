@@ -27,14 +27,14 @@ public class World {
     private static final String PLAYER_DIRECTORY_OLD = "players";
     private static final String REGION_FOLDER_NAME = "region";
 
-    private static DirectoryStream.Filter<Path> worldDirectories(final String prefix) {
+    private static DirectoryStream.Filter<Path> worldDirectoriesStartingWith(final String prefix) {
         return new DirectoryStream.Filter<Path>() {
 
             @Override
             public boolean accept(Path path) throws IOException {
                 return Files.isDirectory(path)
                         && path.getFileName().toString().startsWith(prefix)
-                        && Files.exists(path.resolve(REGION_FOLDER_NAME));
+                        && Files.isDirectory(path.resolve(REGION_FOLDER_NAME));
             }
         };
     }
@@ -122,26 +122,12 @@ public class World {
         }
 
         // Search for other dimensions next to level.dat
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(levelDirectory, worldDirectories("DIM"))) {
-            for (Path file : stream) {
-                regionFolders.add(file);
-            }
-        }
-
-        // Search step above (CraftBukkit and Spigot store dimensions there)
-        String worldDirectoryName = levelDirectory.getFileName().toString();
-        Path aboveLevelDirectory = levelDirectory.getParent();
-
-        if (aboveLevelDirectory == null) {
-            // World is stored in server root, abort
-            return regionFolders;
-        }
-
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(levelDirectory, worldDirectories(worldDirectoryName + "_"))) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(levelDirectory, worldDirectoriesStartingWith("DIM"))) {
             for (Path file : stream) {
                 regionFolders.add(file.resolve(REGION_FOLDER_NAME));
             }
         }
+
         return regionFolders;
     }
 
