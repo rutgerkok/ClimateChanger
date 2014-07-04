@@ -9,17 +9,17 @@ import javax.swing.SwingUtilities;
 /**
  * Uses JavaFx so that the modern, native file chooser is opened. Early Java 7
  * builds did not ship with JavaFx, so JavaFx cannot be treated as a compile
- * time or runtime dependency. To get around that, everything touching JavaFx
- * in this class uses reflection.
+ * time or runtime dependency. To get around that, everything touching JavaFx in
+ * this class uses reflection.
  *
  */
 class JavaFxFileChooser extends FileChooserPanel {
 
+    private final Class<?> fileChooserClass;
     private final Class<?> platformClass;
     private final Method runLaterMethod;
-    private final Class<?> fileChooserClass;
-    private final Class<?> windowClass;
     private final Method showOpenDialogMethod;
+    private final Class<?> windowClass;
 
     JavaFxFileChooser(String label) throws ReflectiveOperationException {
         super(label);
@@ -33,19 +33,6 @@ class JavaFxFileChooser extends FileChooserPanel {
         fileChooserClass = Class.forName("javafx.stage.FileChooser");
         windowClass = Class.forName("javafx.stage.Window");
         showOpenDialogMethod = fileChooserClass.getMethod("showOpenDialog", windowClass);
-    }
-
-    /**
-     * Opens the file chooser. Must be called on the JavaFx thread.
-     */
-    private Path openFileChooser() {
-        try {
-            Object fileChooser = fileChooserClass.newInstance();
-            File file = (File) showOpenDialogMethod.invoke(fileChooser, (Object) null);
-            return file == null ? null : file.toPath();
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private void handleFileChooser() {
@@ -64,6 +51,7 @@ class JavaFxFileChooser extends FileChooserPanel {
      * Called when the browse button is clicked. Opens the file chooser. Can be
      * called from any thread.
      */
+    @Override
     protected void onBrowseClick() {
         try {
             runLaterMethod.invoke(null, new Runnable() {
@@ -72,6 +60,19 @@ class JavaFxFileChooser extends FileChooserPanel {
                     handleFileChooser();
                 }
             });
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Opens the file chooser. Must be called on the JavaFx thread.
+     */
+    private Path openFileChooser() {
+        try {
+            Object fileChooser = fileChooserClass.newInstance();
+            File file = (File) showOpenDialogMethod.invoke(fileChooser, (Object) null);
+            return file == null ? null : file.toPath();
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

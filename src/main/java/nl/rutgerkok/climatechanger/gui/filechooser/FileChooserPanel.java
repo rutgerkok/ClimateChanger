@@ -20,12 +20,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public abstract class FileChooserPanel extends JPanel {
-    
+
     private final List<Consumer<Path>> changeListeners = new ArrayList<>();
     private String previousText = "";
     private final JTextField textField;
-    
-    public FileChooserPanel(String label) {       
+
+    public FileChooserPanel(String label) {
         // Align right
         setLayout(new FlowLayout(FlowLayout.RIGHT));
 
@@ -34,7 +34,7 @@ public abstract class FileChooserPanel extends JPanel {
 
         // Text field
         add(textField = createTextField());
-        
+
         // Add button
         JButton button = new JButton("Browse...");
         button.addActionListener(new ActionListener() {
@@ -45,9 +45,45 @@ public abstract class FileChooserPanel extends JPanel {
         });
         add(button);
     }
-    
+
+    /**
+     * Calls the change listeners.
+     *
+     * @param file
+     *            The file, may be null.
+     */
+    private void callChangeListeners(Path file) {
+        for (Consumer<Path> changeListener : changeListeners) {
+            changeListener.accept(file);
+        }
+    }
+
+    private JTextField createTextField() {
+        final JTextField textField = new JTextField("");
+        textField.setPreferredSize(new Dimension(250, 22));
+        textField.addFocusListener(new FocusAdapter() {
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                textUpdated(textField.getText());
+            }
+        });
+        return textField;
+    }
+
     protected abstract void onBrowseClick();
-    
+
+    /**
+     * Adds a listener that will be called when the selected file has changed.
+     *
+     * @param consumer
+     *            The code to run. File parameter may be null if no file was
+     *            selected.
+     */
+    public void subscribeToFileChanges(Consumer<Path> consumer) {
+        changeListeners.add(consumer);
+    }
+
     protected void textUpdated(String newText) {
         newText = newText.trim();
 
@@ -73,43 +109,6 @@ public abstract class FileChooserPanel extends JPanel {
             callChangeListeners(file);
         } else {
             callChangeListeners(null);
-        }
-    }
-    
-
-    /**
-     * Adds a listener that will be called when the selected file has changed.
-     *
-     * @param consumer
-     *            The code to run. File parameter may be null if no file was
-     *            selected.
-     */
-    public void subscribeToFileChanges(Consumer<Path> consumer) {
-        changeListeners.add(consumer);
-    }
-    
-    private JTextField createTextField() {
-        final JTextField textField = new JTextField("");
-        textField.setPreferredSize(new Dimension(250, 22));
-        textField.addFocusListener(new FocusAdapter() {
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                textUpdated(textField.getText());
-            }
-        });
-        return textField;
-    }
-    
-    /**
-     * Calls the change listeners.
-     *
-     * @param file
-     *            The file, may be null.
-     */
-    private void callChangeListeners(Path file) {
-        for (Consumer<Path> changeListener : changeListeners) {
-            changeListener.accept(file);
         }
     }
 }

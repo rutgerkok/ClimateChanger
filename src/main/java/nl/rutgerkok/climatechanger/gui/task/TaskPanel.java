@@ -1,10 +1,9 @@
 package nl.rutgerkok.climatechanger.gui.task;
 
-import nl.rutgerkok.climatechanger.gui.filechooser.FileChoosers;
-
-import nl.rutgerkok.climatechanger.gui.filechooser.FileChooserPanel;
 import nl.rutgerkok.climatechanger.World;
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
+import nl.rutgerkok.climatechanger.gui.filechooser.FileChooserPanel;
+import nl.rutgerkok.climatechanger.gui.filechooser.FileChoosers;
 import nl.rutgerkok.climatechanger.util.Consumer;
 
 import java.awt.BorderLayout;

@@ -1,7 +1,6 @@
 package nl.rutgerkok.climatechanger.gui;
 
 import nl.rutgerkok.climatechanger.Startup;
-
 import nl.rutgerkok.climatechanger.gui.task.TaskPanel;
 
 import java.awt.BorderLayout;

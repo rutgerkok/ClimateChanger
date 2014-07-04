@@ -10,7 +10,6 @@ import javax.swing.JFileChooser;
  */
 class SwingFileChooser extends FileChooserPanel {
 
-
     SwingFileChooser(String label) {
         super(label);
     }
