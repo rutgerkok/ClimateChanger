@@ -1,17 +1,10 @@
 package nl.rutgerkok.climatechanger;
 
-/*
- * Little program to change the ids in a Minecraft map.
- *
- * RegionFile and the NBT classes are written by Mojang. See the headers of
- * those files for their respective licenses. All other code is public domain.
- * Do whatever you want with it.
- */
-
 import nl.rutgerkok.climatechanger.converter.ConverterExecutor;
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
 import nl.rutgerkok.climatechanger.gui.Window;
 import nl.rutgerkok.climatechanger.task.Task;
+import nl.rutgerkok.climatechanger.world.World;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
@@ -22,6 +15,13 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Little program to change the ids in a Minecraft map.
+ *
+ * RegionFile and the NBT classes are written by Mojang. See the headers of
+ * those files for their respective licenses. All other code is public domain.
+ * Do whatever you want with it.
+ */
 public class Startup {
 
     public static final String NAME = "ClimateChanger";

@@ -5,7 +5,6 @@ import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.SECTION_BLO
 import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.SECTION_BLOCK_IDS_TAG;
 import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.SECTION_EXT_BLOCK_IDS_TAG;
 
-import nl.rutgerkok.climatechanger.Chunk;
 import nl.rutgerkok.climatechanger.material.Material;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.TagType;
@@ -15,7 +14,7 @@ import nl.rutgerkok.climatechanger.util.NibbleArray;
  * Static utility methods to work with chunk sections of a chunk.
  *
  */
-public final class ChunkSection {
+final class ChunkSection {
     private static final int SECTION_X_BITS = 4;
     private static final int SECTION_X_SIZE = Chunk.CHUNK_X_SIZE;
     private static final int SECTION_Y_BITS = 4;
@@ -38,7 +37,7 @@ public final class ChunkSection {
      * @throws ArrayIndexOutOfBoundsException
      *             If the x, y or z are out of bounds.
      */
-    public static final short getMaterialId(CompoundTag chunkTag, int x, int y, int z) {
+    static final short getMaterialId(CompoundTag chunkTag, int x, int y, int z) {
         int sectionIndex = y >>> SECTION_Y_BITS;
         CompoundTag section = chunkTag.getList(CHUNK_SECTIONS_TAG, TagType.COMPOUND).get(sectionIndex);
         if (section == null) {
@@ -78,7 +77,7 @@ public final class ChunkSection {
      * @param data
      *            The material data.
      */
-    public static void setMaterialData(CompoundTag chunkTag, int x, int y, int z, byte data) {
+    static void setMaterialData(CompoundTag chunkTag, int x, int y, int z, byte data) {
         int sectionIndex = y >>> SECTION_Y_BITS;
         CompoundTag section = chunkTag.getList(CHUNK_SECTIONS_TAG, TagType.COMPOUND).get(sectionIndex);
         if (section == null) {
@@ -108,7 +107,7 @@ public final class ChunkSection {
      * @param id
      *            The block id.
      */
-    public static void setMaterialId(CompoundTag chunkTag, int x, int y, int z, short id) {
+    static void setMaterialId(CompoundTag chunkTag, int x, int y, int z, short id) {
         int sectionIndex = y >>> SECTION_Y_BITS;
         CompoundTag section = chunkTag.getList(CHUNK_SECTIONS_TAG, TagType.COMPOUND).get(sectionIndex);
         if (section == null) {

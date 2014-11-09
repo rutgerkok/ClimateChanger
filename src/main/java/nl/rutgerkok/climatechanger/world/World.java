@@ -1,4 +1,4 @@
-package nl.rutgerkok.climatechanger;
+package nl.rutgerkok.climatechanger.world;
 
 import nl.rutgerkok.climatechanger.material.ForgeMaterialMap;
 import nl.rutgerkok.climatechanger.material.MaterialMap;

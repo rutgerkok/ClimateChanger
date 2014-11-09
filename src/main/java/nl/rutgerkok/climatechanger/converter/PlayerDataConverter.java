@@ -1,11 +1,11 @@
 package nl.rutgerkok.climatechanger.converter;
 
 import nl.rutgerkok.climatechanger.ProgressUpdater;
-import nl.rutgerkok.climatechanger.World;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.NbtIo;
 import nl.rutgerkok.climatechanger.task.PlayerDataTask;
 import nl.rutgerkok.climatechanger.util.DirectoryUtil;
+import nl.rutgerkok.climatechanger.world.World;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;

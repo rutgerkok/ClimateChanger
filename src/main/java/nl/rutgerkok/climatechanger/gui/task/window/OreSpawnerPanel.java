@@ -1,6 +1,5 @@
 package nl.rutgerkok.climatechanger.gui.task.window;
 
-import nl.rutgerkok.climatechanger.Chunk;
 import nl.rutgerkok.climatechanger.gui.LabelWithField;
 import nl.rutgerkok.climatechanger.material.MaterialData;
 import nl.rutgerkok.climatechanger.material.MaterialMap;
@@ -9,6 +8,7 @@ import nl.rutgerkok.climatechanger.task.OreSpawner;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
+import nl.rutgerkok.climatechanger.world.Chunk;
 
 import java.awt.FlowLayout;
 import java.text.ParseException;

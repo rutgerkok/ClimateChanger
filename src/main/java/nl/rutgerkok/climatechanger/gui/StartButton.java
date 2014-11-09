@@ -1,9 +1,9 @@
 package nl.rutgerkok.climatechanger.gui;
 
 import nl.rutgerkok.climatechanger.ProgressUpdater;
-import nl.rutgerkok.climatechanger.World;
 import nl.rutgerkok.climatechanger.converter.ConverterExecutor;
 import nl.rutgerkok.climatechanger.task.Task;
+import nl.rutgerkok.climatechanger.world.World;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

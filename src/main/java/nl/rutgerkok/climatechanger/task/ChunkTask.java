@@ -1,6 +1,6 @@
 package nl.rutgerkok.climatechanger.task;
 
-import nl.rutgerkok.climatechanger.Chunk;
+import nl.rutgerkok.climatechanger.world.Chunk;
 
 public interface ChunkTask extends Task {
 

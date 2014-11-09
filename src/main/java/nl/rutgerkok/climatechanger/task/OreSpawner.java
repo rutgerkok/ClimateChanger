@@ -1,10 +1,10 @@
 package nl.rutgerkok.climatechanger.task;
 
-import nl.rutgerkok.climatechanger.Chunk;
 import nl.rutgerkok.climatechanger.material.MaterialData;
 import nl.rutgerkok.climatechanger.material.MaterialSet;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.MathUtil;
+import nl.rutgerkok.climatechanger.world.Chunk;
 
 import java.util.Random;
 

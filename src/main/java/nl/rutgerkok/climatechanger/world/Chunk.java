@@ -1,4 +1,4 @@
-package nl.rutgerkok.climatechanger;
+package nl.rutgerkok.climatechanger.world;
 
 import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.*;
 
@@ -7,7 +7,6 @@ import nl.rutgerkok.climatechanger.material.MaterialData;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.ListTag;
 import nl.rutgerkok.climatechanger.nbt.TagType;
-import nl.rutgerkok.climatechanger.world.ChunkSection;
 
 import java.util.List;
 

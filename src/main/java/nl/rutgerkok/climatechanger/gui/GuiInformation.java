@@ -1,8 +1,8 @@
 package nl.rutgerkok.climatechanger.gui;
 
-import nl.rutgerkok.climatechanger.World;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.Consumer;
+import nl.rutgerkok.climatechanger.world.World;
 
 import java.util.*;
 

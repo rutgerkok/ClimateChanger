@@ -1,11 +1,11 @@
 package nl.rutgerkok.climatechanger.task;
 
-import nl.rutgerkok.climatechanger.Chunk;
 import nl.rutgerkok.climatechanger.ItemStack;
 import nl.rutgerkok.climatechanger.material.Material;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.TagType;
 import nl.rutgerkok.climatechanger.util.NibbleArray;
+import nl.rutgerkok.climatechanger.world.Chunk;
 
 import java.util.List;
 

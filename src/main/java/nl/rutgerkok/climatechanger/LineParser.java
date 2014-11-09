@@ -6,6 +6,7 @@ import nl.rutgerkok.climatechanger.task.BiomeIdChanger;
 import nl.rutgerkok.climatechanger.task.BlockIdChanger;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
+import nl.rutgerkok.climatechanger.world.Chunk;
 
 import java.text.ParseException;
 import java.util.ArrayList;
