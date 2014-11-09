@@ -1,6 +1,7 @@
 # ClimateChanger
 
-Tool to change biome and block ids in an existing Minecraft map.
+Tool modify the climate of a map. You can change the biome ids, block ids and
+you can spawn ores.
 
 ![Screenshot of the tool](http://i.imgur.com/kkvn9ZA.png)
 
@@ -32,6 +33,9 @@ the world.
 * `changeBlock <fromId> <fromData> <toId> <toData>` changes all blocks
   with the id and data `<fromId> <fromData>` to `<toId> <toData>`.
   `<fromId>` and `<toId>` must be valid block ids or names.
+* `spawnOre <block:blockData> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <spawnInBlock,anotherBlock,...>`
+  spawns ores of the given type in each chunk. 
+  
 
 You can combine multiple actions with the syntax
 `<action> and <action> and <action>`.
@@ -50,6 +54,27 @@ Block ids and data are replaced in:
   chests, dispensers, droppers, hoppers, furnaces, brewing stands)
 * Blocks placed in flower pots.
 * Blocks being pushed by pistons.
+
+## Vanilla ores
+Ores always spawn in stone. Chance per attempt is always 100. Please note that
+in vanilla emeralds only spawn in the Extreme Hills biome.
+
+In vanilla Minecraft attempts per chunk is called spawn tries. In the mod Terrain Control attempts per chunk is called frequency and chance per attempt is called rarity.
+
+| Ore      | Max radius | Attempts per chunk | Altitude |
+| -------- | ---------- | ------------------ | -------- |
+| Dirt     | 33         | 20                 | 0 - 256  |
+| Gravel   | 33         | 10                 | 0 - 256  |
+| Granite  | 33         | 10                 | 0 - 80   |
+| Diorite  | 33         | 10                 | 0 - 80   |
+| Andesite | 33         | 10                 | 0 - 80   |
+| Coal     | 17         | 20                 | 0 - 128  |
+| Iron     | 9          | 20                 | 0 - 64   |
+| Gold     | 9          | 2                  | 0 - 32   |
+| Redstone | 8          | 8                  | 0 - 16   |
+| Diamond  | 8          | 1                  | 0 - 16   |
+| Lapis    | 8          | 1                  | 0 - 32   |
+| Emerald  | 6          | 1                  | 4 - 32   |
 
 ## License
 The NBT files and the `RegionFile.java` were open sourced by Mojang in 2011
