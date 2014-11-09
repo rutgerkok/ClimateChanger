@@ -4,6 +4,7 @@ import nl.rutgerkok.climatechanger.converter.ConverterExecutor;
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
 import nl.rutgerkok.climatechanger.gui.Window;
 import nl.rutgerkok.climatechanger.task.Task;
+import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.world.World;
 
 import java.awt.GraphicsEnvironment;
@@ -55,7 +56,7 @@ public class Startup {
             // Convert!
             List<Task> tasks = parser.parse(world.getMaterialMap(), strings);
             new ConverterExecutor(new ConsoleProgressUpdater(), world, tasks).convertAll();
-        } catch (ParseException e) {
+        } catch (ParseException | InvalidTaskException e) {
             System.err.println("Invalid syntax: " + e.getMessage());
             showHelp(parser);
             System.exit(1);

@@ -6,7 +6,13 @@ package nl.rutgerkok.climatechanger.nbt;
  * Don't do evil.
  */
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;

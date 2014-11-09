@@ -1,6 +1,11 @@
 package nl.rutgerkok.climatechanger.world;
 
-import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.*;
+import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.CHUNK_BIOMES_TAG;
+import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.CHUNK_ENTITIES_TAG;
+import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.CHUNK_SECTIONS_TAG;
+import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.CHUNK_TILE_ENTITIES_TAG;
+import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.CHUNK_X_POS_TAG;
+import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.CHUNK_Z_POS_TAG;
 
 import nl.rutgerkok.climatechanger.material.Material;
 import nl.rutgerkok.climatechanger.material.MaterialData;

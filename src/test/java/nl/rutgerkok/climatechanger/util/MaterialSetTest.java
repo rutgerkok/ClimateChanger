@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import nl.rutgerkok.climatechanger.material.Material;
 import nl.rutgerkok.climatechanger.material.MaterialSet;
+
 import org.junit.Test;
 
 public class MaterialSetTest {

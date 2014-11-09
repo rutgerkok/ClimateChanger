@@ -43,8 +43,8 @@ final class OreSpawnerPanel extends TaskPanel {
     public Task getTask() throws InvalidTaskException {
         try {
             MaterialData material = ParseUtil.parseMaterialData(materialField.getText(), materialMap);
-            int maxSize = ParseUtil.parseInt(maxSizeField.getText(), 1, 64);
-            int frequency = ParseUtil.parseInt(frequencyField.getText(), 1, 100);
+            int maxSize = ParseUtil.parseInt(maxSizeField.getText(), 1, OreSpawner.MAX_ORE_SIZE);
+            int frequency = ParseUtil.parseInt(frequencyField.getText(), 1, OreSpawner.MAX_ORE_FREQUENCY);
             double rarity = ParseUtil.parseDouble(rarityField.getText(), 0.0001, 100.0);
             int minHeight = ParseUtil.parseInt(minHeightField.getText(), 0, Chunk.CHUNK_Y_SIZE);
             int maxHeight = ParseUtil.parseInt(maxHeightField.getText(), 0, Chunk.CHUNK_Y_SIZE);

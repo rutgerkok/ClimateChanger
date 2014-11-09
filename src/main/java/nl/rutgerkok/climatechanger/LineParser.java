@@ -1,10 +1,14 @@
 package nl.rutgerkok.climatechanger;
 
 import nl.rutgerkok.climatechanger.material.Material;
+import nl.rutgerkok.climatechanger.material.MaterialData;
 import nl.rutgerkok.climatechanger.material.MaterialMap;
+import nl.rutgerkok.climatechanger.material.MaterialSet;
 import nl.rutgerkok.climatechanger.task.BiomeIdChanger;
 import nl.rutgerkok.climatechanger.task.BlockIdChanger;
+import nl.rutgerkok.climatechanger.task.OreSpawner;
 import nl.rutgerkok.climatechanger.task.Task;
+import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
 import nl.rutgerkok.climatechanger.world.Chunk;
 
@@ -23,11 +27,12 @@ public class LineParser {
     public List<String> getActionsHelp() {
         return Arrays.asList(
                 "changeBiome <fromId> <toId>",
-                "changeBlock <fromId> <fromData> <toId> <toData>"
+                "changeBlock <fromId> <fromData> <toId> <toData>",
+                "spawnOre <block:blockData> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <spawnInBlock,anotherBlock,...>"
                 );
     }
 
-    public List<Task> parse(MaterialMap materialMap, List<String> args) throws ParseException {
+    public List<Task> parse(MaterialMap materialMap, List<String> args) throws ParseException, InvalidTaskException {
         List<Task> parsed = new ArrayList<>();
         List<String> currentParts = new ArrayList<>();
 
@@ -62,7 +67,7 @@ public class LineParser {
         return parsed;
     }
 
-    private Task parseChunkTask(MaterialMap materialMap, List<String> parts) throws ParseException {
+    private Task parseChunkTask(MaterialMap materialMap, List<String> parts) throws ParseException, InvalidTaskException {
         if (parts.isEmpty()) {
             throw new ParseException("No parameters given", 0);
         }
@@ -81,6 +86,16 @@ public class LineParser {
                 Material toBlock = ParseUtil.parseMaterial(parts.get(3), materialMap);
                 int toBlockData = ParseUtil.parseInt(parts.get(4), 0, Chunk.MAX_BLOCK_DATA);
                 return new BlockIdChanger(fromBlock, (byte) fromBlockData, toBlock, (byte) toBlockData);
+            case "spawnore":
+                assureSize(parts, 8);
+                MaterialData oreMaterial = ParseUtil.parseMaterialData(parts.get(1), materialMap);
+                int maxSize = ParseUtil.parseInt(parts.get(2), 1, OreSpawner.MAX_ORE_SIZE);
+                int frequency = ParseUtil.parseInt(parts.get(3), 1, OreSpawner.MAX_ORE_FREQUENCY);
+                double rarity = ParseUtil.parseDouble(parts.get(4), 0.0001, 100);
+                int minAltitude = ParseUtil.parseInt(parts.get(5), 0, Chunk.CHUNK_Y_SIZE);
+                int maxAltitude = ParseUtil.parseInt(parts.get(6), 0, Chunk.CHUNK_Y_SIZE);
+                MaterialSet sourceBlocks = ParseUtil.parseMaterialSet(parts.get(7), materialMap);
+                return new OreSpawner(oreMaterial, maxSize, frequency, rarity, minAltitude, maxAltitude, sourceBlocks);
         }
         throw new ParseException("Unknown task: " + taskName, 0);
     }

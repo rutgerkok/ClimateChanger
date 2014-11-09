@@ -14,6 +14,9 @@ import java.util.Random;
  */
 public final class OreSpawner implements ChunkTask {
 
+    public static final int MAX_ORE_FREQUENCY = 100;
+    public static final int MAX_ORE_SIZE = 64;
+
     private int frequency;
     private MaterialData material;
     private int maxAltitude;
