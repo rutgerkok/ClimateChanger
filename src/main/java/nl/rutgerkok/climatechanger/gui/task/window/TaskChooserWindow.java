@@ -26,7 +26,7 @@ public class TaskChooserWindow extends JDialog {
     public TaskChooserWindow(JPanel alignTo, MaterialMap materialMap, Consumer<Task> onSuccess, final Runnable onAbort) {
         this.onSuccess = onSuccess;
 
-        setSize(300, 400);
+        setSize(300, 465);
         setTitle("Add a task");
 
         // Set above original component
@@ -49,6 +49,7 @@ public class TaskChooserWindow extends JDialog {
 
         tabs.addTab("Change biome id", new BiomeIdChangerPanel(materialMap));
         tabs.addTab("Change block id", new BlockIdChangerPanel(materialMap));
+        tabs.addTab("Spawn ores", new OreSpawnerPanel(materialMap));
 
         add(tabs, BorderLayout.CENTER);
 

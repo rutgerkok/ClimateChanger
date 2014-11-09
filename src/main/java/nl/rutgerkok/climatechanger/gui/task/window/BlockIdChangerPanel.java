@@ -11,13 +11,15 @@ import java.awt.FlowLayout;
 
 public class BlockIdChangerPanel extends TaskPanel {
     private final LabelWithField dataFrom;
+
     private final LabelWithField dataTo;
     private final LabelWithField idFrom;
-
     private final LabelWithField idTo;
 
+    private final MaterialMap materialMap;
+
     public BlockIdChangerPanel(MaterialMap map) {
-        super(map);
+        this.materialMap = map;
 
         // Everyting below other elements
         setLayout(new FlowLayout(FlowLayout.LEFT));

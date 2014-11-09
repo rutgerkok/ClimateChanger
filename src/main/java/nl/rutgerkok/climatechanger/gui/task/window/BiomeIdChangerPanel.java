@@ -8,13 +8,11 @@ import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 
 import java.awt.FlowLayout;
 
-public class BiomeIdChangerPanel extends TaskPanel {
+final class BiomeIdChangerPanel extends TaskPanel {
     private final LabelWithField idFrom;
     private final LabelWithField idTo;
 
-    public BiomeIdChangerPanel(MaterialMap map) {
-        super(map);
-
+    BiomeIdChangerPanel(MaterialMap map) {
         // Align right
         setLayout(new FlowLayout(FlowLayout.LEFT));
 

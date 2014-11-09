@@ -11,6 +11,13 @@ public interface MaterialMap {
     static final String MINECRAFT_PREFIX = "minecraft:";
 
     /**
+     * Gets the material representing air.
+     *
+     * @return The material representing air.
+     */
+    Material getAir();
+
+    /**
      * Gets a material with the given id.
      *
      * @param id

@@ -9,6 +9,7 @@ public class VanillaMaterialMap implements MaterialMap {
 
     private static final Material[] byId = new Material[256];
     private static final Map<String, Material> byName = new HashMap<>();
+
     static {
         register("air", 0);
         register("stone", 1);
@@ -192,6 +193,11 @@ public class VanillaMaterialMap implements MaterialMap {
         Material material = new Material(MINECRAFT_PREFIX + shortName, id);
         byName.put(shortName, material);
         byId[id] = material;
+    }
+
+    @Override
+    public Material getAir() {
+        return byId[0];
     }
 
     @Override

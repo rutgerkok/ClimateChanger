@@ -24,7 +24,61 @@ import java.util.Objects;
  * This has been done to remain compatible with Minecraft
  */
 public class NibbleArray {
+    /**
+     * Analogous to {@link #get(int)}, but works for byte arrays not wrapped in
+     * a {@link NibbleArray} object. Benefit is that you don't have to waste
+     * time creating NibbleArray instances. However, you lose proper bounds
+     * checking (can get nibble at position that is one too far), proper null
+     * checking (you'll want to check the byte[] array when you retrieve it, not
+     * when you try to read from it) and have code that is a little uglier.
+     *
+     * @param bytes
+     *            Bytes to read from.
+     * @param position
+     *            Position of the nibble to read from.
+     * @return The nibble.
+     * @throws ArrayIndexOutOfBoundsException
+     *             If {@code position < 0 || position >= bytes.length * 2}.
+     */
+    public static byte getInArray(byte[] bytes, int position) throws ArrayIndexOutOfBoundsException {
+        int arrayPos = position / 2;
+        boolean getOnLeftFourBits = (position % 2) != 0;
+        if (getOnLeftFourBits) {
+            return (byte) ((bytes[arrayPos] >> 4) & 0b0000__1111);
+        } else {
+            return (byte) (bytes[arrayPos] & 0b0000__1111);
+        }
+    }
+
+    /**
+     * Analogous to {@link #set(int, byte)}, but works for byte arrays not
+     * wrapped in a {@link NibbleArray} object. See the
+     * {@link #getInArray(byte[], int)} method for a note about use cases for
+     * this method.
+     *
+     * @param bytes
+     *            The bytes to change.
+     * @param position
+     *            The nibble position.
+     * @param value
+     *            The nibble to set.
+     * @throws IndexOutOfBoundsException
+     *             If {@code position < 0 || position >= bytes.length * 2}.
+     */
+    public static void setInArray(byte[] bytes, int position, byte value) throws IndexOutOfBoundsException {
+        int arrayPos = position / 2;
+        boolean setOnLeftFourBits = (position % 2) != 0;
+
+        byte previous = bytes[arrayPos];
+        if (setOnLeftFourBits) {
+            bytes[arrayPos] = (byte) ((previous & 0b0000__1111) | ((value << 4) & 0b1111__0000));
+        } else {
+            bytes[arrayPos] = (byte) ((previous & 0b1111__0000) | (value & 0b0000__1111));
+        }
+    }
+
     private final byte[] bytes;
+
     private final int length;
 
     /**
@@ -60,13 +114,7 @@ public class NibbleArray {
             throw new ArrayIndexOutOfBoundsException("Position is " + position + ", array size is " + length);
         }
 
-        int arrayPos = position / 2;
-        boolean getOnLeftFourBits = (position % 2) != 0;
-        if (getOnLeftFourBits) {
-            return (byte) ((bytes[arrayPos] >> 4) & 0b0000__1111);
-        } else {
-            return (byte) (bytes[arrayPos] & 0b0000__1111);
-        }
+        return getInArray(bytes, position);
     }
 
     /**
@@ -92,7 +140,7 @@ public class NibbleArray {
      * highest four bits of the byte will silently be discarded.
      *
      * @param position
-     *            The position.
+     *            The nibble position.
      * @param value
      *            The new value.
      * @throws ArrayIndexOutOfBoundsException
@@ -105,14 +153,6 @@ public class NibbleArray {
             throw new ArrayIndexOutOfBoundsException("Position is " + position + ", array size is " + length);
         }
 
-        int arrayPos = position / 2;
-        boolean setOnLeftFourBits = (position % 2) != 0;
-
-        byte previous = bytes[arrayPos];
-        if (setOnLeftFourBits) {
-            bytes[arrayPos] = (byte) ((previous & 0b0000__1111) | ((value << 4) & 0b1111__0000));
-        } else {
-            bytes[arrayPos] = (byte) ((previous & 0b1111__0000) | (value & 0b0000__1111));
-        }
+        setInArray(bytes, position, value);
     }
 }

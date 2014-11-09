@@ -1,6 +1,5 @@
 package nl.rutgerkok.climatechanger.gui.task.window;
 
-import nl.rutgerkok.climatechanger.material.MaterialMap;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 
@@ -13,10 +12,8 @@ import javax.swing.JPanel;
  *
  */
 public abstract class TaskPanel extends JPanel {
-    protected final MaterialMap materialMap;
 
-    public TaskPanel(MaterialMap materialMap) {
-        this.materialMap = materialMap;
+    public TaskPanel() {
         setBackground(Color.WHITE);
     }
 

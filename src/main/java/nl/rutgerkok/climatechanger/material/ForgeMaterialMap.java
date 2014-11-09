@@ -13,6 +13,9 @@ import java.util.Map;
  */
 public class ForgeMaterialMap implements MaterialMap {
 
+    private static final String AIR_NAME = "air";
+
+    private Material air = null;
     private Map<Integer, Material> byId = new HashMap<>();
     private Map<String, Material> byName = new HashMap<>();
 
@@ -21,6 +24,18 @@ public class ForgeMaterialMap implements MaterialMap {
             // Forge seems to a strange character before the key
             register(mapping.getString("K").replaceAll("[^\\w\\-:]", ""), mapping.getInt("V"));
         }
+    }
+
+    @Override
+    public Material getAir() {
+        if (this.air == null) {
+            try {
+                this.air = getByName(AIR_NAME);
+            } catch (MaterialNotFoundException e) {
+                throw new RuntimeException("No material for " + AIR_NAME);
+            }
+        }
+        return this.air;
     }
 
     @Override

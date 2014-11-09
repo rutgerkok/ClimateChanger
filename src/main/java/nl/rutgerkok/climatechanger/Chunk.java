@@ -1,8 +1,13 @@
 package nl.rutgerkok.climatechanger;
 
+import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.*;
+
+import nl.rutgerkok.climatechanger.material.Material;
+import nl.rutgerkok.climatechanger.material.MaterialData;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.ListTag;
 import nl.rutgerkok.climatechanger.nbt.TagType;
+import nl.rutgerkok.climatechanger.world.ChunkSection;
 
 import java.util.List;
 
@@ -10,14 +15,12 @@ import java.util.List;
  * Represents a single chunk, as used by Minecraft.
  *
  */
-public class Chunk {
-    private static final String BIOMES_TAG = "Biomes";
+public final class Chunk {
 
     public static final int CHUNK_X_SIZE = 16;
     public static final int CHUNK_Y_SIZE = 256;
     public static final int CHUNK_Z_SIZE = 16;
 
-    private static final String ENTITIES_TAG = "Entities";
     /**
      * The highest possible biome id in a Minecraft map.
      */
@@ -32,10 +35,6 @@ public class Chunk {
      * The highest possible block id in a Minecraft map.
      */
     public static final int MAX_BLOCK_ID = 4095;
-    private static final String SECTIONS_TAG = "Sections";
-    private static final String TILE_ENTITIES_TAG = "TileEntities";
-    private static final String X_POS_TAG = "xPos";
-    private static final String Z_POS_TAG = "zPos";
 
     private final CompoundTag chunkTag;
 
@@ -56,7 +55,7 @@ public class Chunk {
      * @return The biome array.
      */
     public byte[] getBiomeArray() {
-        return chunkTag.getByteArray(BIOMES_TAG);
+        return chunkTag.getByteArray(CHUNK_BIOMES_TAG);
     }
 
     /**
@@ -65,7 +64,7 @@ public class Chunk {
      * @return The tags.
      */
     public ListTag<CompoundTag> getChunkSections() {
-        return chunkTag.getList(SECTIONS_TAG, TagType.COMPOUND);
+        return chunkTag.getList(CHUNK_SECTIONS_TAG, TagType.COMPOUND);
     }
 
     /**
@@ -74,7 +73,7 @@ public class Chunk {
      * @return The chunk x.
      */
     public int getChunkX() {
-        return chunkTag.getInt(X_POS_TAG);
+        return chunkTag.getInt(CHUNK_X_POS_TAG);
     }
 
     /**
@@ -83,15 +82,38 @@ public class Chunk {
      * @return The chunk z.
      */
     public int getChunkZ() {
-        return chunkTag.getInt(Z_POS_TAG);
+        return chunkTag.getInt(CHUNK_Z_POS_TAG);
     }
 
     /**
      * Gets all entities in this chunk.
+     *
      * @return The entities.
      */
     public List<CompoundTag> getEntities() {
-        return chunkTag.getList(ENTITIES_TAG, TagType.COMPOUND);
+        return chunkTag.getList(CHUNK_ENTITIES_TAG, TagType.COMPOUND);
+    }
+
+    /**
+     * Gets the material id at the given position.
+     *
+     * @param x
+     *            X position of the block,
+     *            <code>0 <= x < {@value #CHUNK_X_SIZE}</code>.
+     * @param y
+     *            Y position of the block,
+     *            <code>0 <= y < {@value #CHUNK_Y_SIZE}</code>.
+     * @param z
+     *            Z position of the block,
+     *            <code>0 <= z < {@value #CHUNK_Z_SIZE}</code>.
+     * @return The id, or {@value Material#AIR_ID} if the coordinates are out of
+     *         bounds.
+     */
+    public short getMaterialId(int x, int y, int z) {
+        if (isOutOfBounds(x, y, z)) {
+            return Material.AIR_ID;
+        }
+        return ChunkSection.getMaterialId(chunkTag, x, y, z);
     }
 
     /**
@@ -110,6 +132,35 @@ public class Chunk {
      * @return The tile entities.
      */
     public List<CompoundTag> getTileEntities() {
-        return chunkTag.getList(TILE_ENTITIES_TAG, TagType.COMPOUND);
+        return chunkTag.getList(CHUNK_TILE_ENTITIES_TAG, TagType.COMPOUND);
+    }
+
+    private boolean isOutOfBounds(int x, int y, int z) {
+        return x < 0 || x >= CHUNK_X_SIZE || y < 0 || y >= CHUNK_Y_SIZE || z < 0 || z >= CHUNK_Z_SIZE;
+    }
+
+    /**
+     * Sets the block at the given position. Silently fails if the position is
+     * out of bounds.
+     *
+     * @param x
+     *            X position of the block,
+     *            <code>0 <= x < {@value #CHUNK_X_SIZE}</code>.
+     * @param y
+     *            Y position of the block,
+     *            <code>0 <= y < {@value #CHUNK_Y_SIZE}</code>.
+     * @param z
+     *            Z position of the block,
+     *            <code>0 <= z < {@value #CHUNK_Z_SIZE}</code>.
+     * @param materialData
+     *            Material to set.
+     */
+    public void setBlock(int x, int y, int z, MaterialData materialData) {
+        if (isOutOfBounds(x, y, z)) {
+            return;
+        }
+
+        ChunkSection.setMaterialId(chunkTag, x, y, z, materialData.getMaterial().getId());
+        ChunkSection.setMaterialData(chunkTag, x, y, z, materialData.getData());
     }
 }

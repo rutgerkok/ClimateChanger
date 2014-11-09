@@ -5,6 +5,9 @@ package nl.rutgerkok.climatechanger.material;
  *
  */
 public final class Material {
+
+    public static final int AIR_ID = 0;
+
     private final short id;
     private final String name;
 
