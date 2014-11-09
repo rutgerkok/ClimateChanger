@@ -65,6 +65,10 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
 
     @Override
     public void failed(final Exception reason) {
+        // Print to console
+        reason.printStackTrace();
+
+        // Show popup box
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -72,6 +76,8 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
                 setEnabled(true);
             }
         });
+
+        // Stop progress bar
         progressBar.failed(reason);
     }
 
