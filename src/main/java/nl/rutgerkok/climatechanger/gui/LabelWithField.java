@@ -21,6 +21,10 @@ public class LabelWithField extends JPanel {
     private final JTextField textField;
 
     public LabelWithField(String label) {
+        this(label, "");
+    }
+
+    public LabelWithField(String label, String defaultValue) {
         // Two rows, one column
         setLayout(new GridLayout(2, 1));
 
@@ -38,7 +42,7 @@ public class LabelWithField extends JPanel {
         add(jLabel);
 
         // Field
-        textField = new JTextField();
+        textField = new JTextField(defaultValue);
         textField.setPreferredSize(new Dimension(TEXT_FIELD_WIDTH, TEXT_FIELD_HEIGHT));
         add(textField);
     }

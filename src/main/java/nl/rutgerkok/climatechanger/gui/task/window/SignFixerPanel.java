@@ -31,7 +31,7 @@ public class SignFixerPanel extends TaskPanel {
                 + " of type (C) reads 'Private' (case insensitive) it will be replaced with"
                 + " '[Private]'."), BorderLayout.NORTH);
 
-        textArea = new JTextArea("Private");
+        textArea = new JTextArea("Private\nMore Users\nEveryone");
         textArea.setBorder(Window.SIMPLE_BORDER);
         add(textArea, BorderLayout.CENTER);
     }
