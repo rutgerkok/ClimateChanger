@@ -1,6 +1,5 @@
 package nl.rutgerkok.climatechanger;
 
-import nl.rutgerkok.climatechanger.material.Material;
 import nl.rutgerkok.climatechanger.material.MaterialData;
 import nl.rutgerkok.climatechanger.material.MaterialMap;
 import nl.rutgerkok.climatechanger.material.MaterialSet;
@@ -27,8 +26,8 @@ public class LineParser {
     public List<String> getActionsHelp() {
         return Arrays.asList(
                 "changeBiome <fromId> <toId>",
-                "changeBlock <fromId> <fromData> <toId> <toData>",
-                "spawnOre <block:blockData> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <spawnInBlock,anotherBlock,...>"
+                "changeBlock <fromId[:fromData]> <toId[:toData]>",
+                "spawnOre <block[:blockData]> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <spawnInBlock,anotherBlock,...>"
                 );
     }
 
@@ -81,11 +80,9 @@ public class LineParser {
                 return new BiomeIdChanger((byte) fromId, (byte) toId);
             case "changeblock":
                 assureSize(parts, 5);
-                Material fromBlock = ParseUtil.parseMaterial(parts.get(1), materialMap);
-                int fromBlockData = ParseUtil.parseInt(parts.get(2), -1, Chunk.MAX_BLOCK_DATA);
-                Material toBlock = ParseUtil.parseMaterial(parts.get(3), materialMap);
-                int toBlockData = ParseUtil.parseInt(parts.get(4), 0, Chunk.MAX_BLOCK_DATA);
-                return new BlockIdChanger(fromBlock, (byte) fromBlockData, toBlock, (byte) toBlockData);
+                MaterialData fromBlockData = ParseUtil.parseMaterialData(parts.get(1), materialMap);
+                MaterialData toBlockData = ParseUtil.parseMaterialData(parts.get(2), materialMap);
+                return new BlockIdChanger(fromBlockData, toBlockData);
             case "spawnore":
                 assureSize(parts, 8);
                 MaterialData oreMaterial = ParseUtil.parseMaterialData(parts.get(1), materialMap);

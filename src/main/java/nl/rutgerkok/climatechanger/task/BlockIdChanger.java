@@ -1,7 +1,7 @@
 package nl.rutgerkok.climatechanger.task;
 
 import nl.rutgerkok.climatechanger.ItemStack;
-import nl.rutgerkok.climatechanger.material.Material;
+import nl.rutgerkok.climatechanger.material.MaterialData;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.TagType;
 import nl.rutgerkok.climatechanger.util.NibbleArray;
@@ -11,36 +11,38 @@ import java.util.List;
 
 public class BlockIdChanger implements ChunkTask, PlayerDataTask {
 
-    private final Material newBlock;
-    private final byte newBlockData;
+    private final MaterialData newBlock;
+    private final short newBlockId;
     private final byte newBlockIdHighestBytes;
     private final byte newBlockIdLowestBytes;
+    private final byte newBlockDataByte;
 
-    private final Material oldBlock;
-    private final byte oldBlockData;
+    private final MaterialData oldBlock;
     private final short oldBlockId;
+    private final byte oldBlockDataByte;
 
     /**
      * Creates a new block id change task.
      *
      * @param oldBlockId
      *            Old block id, use -1 as a wildcard.
-     * @param oldBlockData
+     * @param oldBlockDataByte
      *            Old block data, use -1 as a wildcard.
      * @param newBlockId
      *            New block id.
-     * @param newBlockData
+     * @param newBlockDataByte
      *            New block data.
      */
-    public BlockIdChanger(Material oldBlock, byte oldBlockData, Material newBlock, byte newBlockData) {
+    public BlockIdChanger(MaterialData oldBlock, MaterialData newBlock) {
         this.oldBlock = oldBlock;
-        this.oldBlockId = oldBlock.getId();
-        this.oldBlockData = oldBlockData;
+        this.oldBlockId = oldBlock.getMaterial().getId();
+        this.oldBlockDataByte = oldBlock.getData();
 
         this.newBlock = newBlock;
-        this.newBlockIdLowestBytes = (byte) newBlock.getId();
-        this.newBlockIdHighestBytes = (byte) (newBlock.getId() >> 8);
-        this.newBlockData = newBlockData;
+        this.newBlockId = newBlock.getMaterial().getId();
+        this.newBlockIdLowestBytes = (byte) this.newBlockId;
+        this.newBlockIdHighestBytes = (byte) (this.newBlockId >> 8);
+        this.newBlockDataByte = newBlock.getData();
     }
 
     @Override
@@ -113,8 +115,8 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
      * @return True if the item was changed, false otherwise.
      */
     private boolean convertItem(ItemStack stack) {
-        if (stack.hasMaterial(oldBlock, oldBlockData)) {
-            stack.setMaterial(newBlock, newBlockData);
+        if (stack.hasMaterialData(oldBlock)) {
+            stack.setMaterialData(newBlock);
             return true;
         }
         return false;
@@ -174,9 +176,9 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
         if (tileEntity.getString("id").equalsIgnoreCase("FlowerPot")) {
             String blockId = tileEntity.getString("Item");
             short blockData = tileEntity.getShort("Data");
-            if (oldBlock.getName().equals(blockId) && (oldBlockData == -1 || blockData == oldBlockData)) {
-                tileEntity.putString("Item", newBlock.getName());
-                tileEntity.putInt("Data", newBlockData);
+            if (oldBlock.materialNameEquals(blockId) && (oldBlock.blockDataMatches(blockData))) {
+                tileEntity.putString("Item", newBlock.getMaterial().getName());
+                tileEntity.putInt("Data", newBlockDataByte);
                 return true;
             }
         }
@@ -186,9 +188,9 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
         if (tileEntity.getString("id").equalsIgnoreCase("Piston")) {
             short blockId = tileEntity.getShort("blockId");
             short blockData = tileEntity.getShort("blockData");
-            if (oldBlock.getId() == blockId && (oldBlockData == -1 || blockData == oldBlockData)) {
-                tileEntity.putInt("blockId", newBlock.getId());
-                tileEntity.putInt("blockData", newBlockData);
+            if (oldBlockId == blockId && (oldBlockDataByte == -1 || blockData == oldBlockDataByte)) {
+                tileEntity.putInt("blockId", newBlockId);
+                tileEntity.putInt("blockData", newBlockDataByte);
                 return true;
             }
         }
@@ -198,7 +200,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
 
     @Override
     public String getDescription() {
-        return "Change blocks with id " + oldBlock + ":" + oldBlockData + " into " + newBlock + ":" + newBlockData;
+        return "Change blocks with id " + oldBlock + " into " + newBlock;
     }
 
     private boolean replaceSection(CompoundTag section) {
@@ -218,11 +220,11 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
 
             byte blockData = blockDatas.get(i);
 
-            if (blockId == oldBlockId && (oldBlockData == -1 || blockData == oldBlockData)) {
+            if (blockId == oldBlockId && (oldBlock.blockDataMatches(blockData))) {
                 // Found match, replace block
                 changed = true;
                 blockIdsBase[i] = newBlockIdLowestBytes;
-                blockDatas.set(i, newBlockData);
+                blockDatas.set(i, newBlockDataByte);
 
                 // Set extended id
                 if (blockIdsExtended != null) {

@@ -52,15 +52,19 @@ public final class ParseUtil {
      *             outside the bounds.
      */
     public static final int parseInt(String string, int min, int max) throws ParseException {
+        int value = parseIntUnbounded(string);
+        if (value < min) {
+            throw new ParseException(value + " is lower than the min allowed value, " + min, 0);
+        }
+        if (value > max) {
+            throw new ParseException(value + " is higher than the max allowed value, " + max, 0);
+        }
+        return value;
+    }
+
+    private static final int parseIntUnbounded(String string) throws ParseException {
         try {
-            int value = Integer.parseInt(string);
-            if (value < min) {
-                throw new ParseException(value + " is lower than the min allowed value, " + min, 0);
-            }
-            if (value > max) {
-                throw new ParseException(value + " is higher than the max allowed value, " + max, 0);
-            }
-            return value;
+            return Integer.parseInt(string);
         } catch (NumberFormatException e) {
             throw new ParseException("Invalid number: " + string, 0);
         }
@@ -97,24 +101,27 @@ public final class ParseUtil {
      * @throws ParseException
      *             If the material could not be parsed.
      */
-    public static MaterialData parseMaterialData(String string, MaterialMap materials) throws ParseException {
-        String materialName = string;
-        byte materialData = MaterialData.MIN_BLOCK_DATA;
-
+    public static MaterialData parseMaterialData(String string, MaterialMap materialMap) throws ParseException {
         int colonPosition = string.lastIndexOf(':');
         if (colonPosition != -1) {
             try {
+                // Found delimiter, try to parse second part as block data
                 String firstPart = string.substring(0, colonPosition);
                 String secondPart = string.substring(colonPosition + 1);
-                materialData = (byte) parseInt(secondPart, MaterialData.MIN_BLOCK_DATA, MaterialData.MAX_BLOCK_DATA);
-                materialName = firstPart;
+
+                Material material = parseMaterial(firstPart, materialMap);
+                int materialData = parseInt(secondPart, MaterialData.MIN_BLOCK_DATA, MaterialData.MAX_BLOCK_DATA);
+
+                return MaterialData.of(material, (byte) materialData);
             } catch (ParseException e) {
-                // Ignore, second part is not block data
+                // Ignore, block below tries again without assuming second
+                // part is block data
             }
         }
 
-        Material material = parseMaterial(materialName, materials);
-        return MaterialData.of(material, materialData);
+        // No material data
+        Material material = parseMaterial(string, materialMap);
+        return MaterialData.ofAnyState(material);
     }
 
     /**

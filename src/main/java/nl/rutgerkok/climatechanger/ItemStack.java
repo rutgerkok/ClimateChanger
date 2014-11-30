@@ -1,6 +1,7 @@
 package nl.rutgerkok.climatechanger;
 
 import nl.rutgerkok.climatechanger.material.Material;
+import nl.rutgerkok.climatechanger.material.MaterialData;
 import nl.rutgerkok.climatechanger.material.MaterialMap;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.StringTag;
@@ -19,11 +20,11 @@ public final class ItemStack {
     }
 
     /**
-     * Gets the block data of this item.
+     * Gets the raw block data of this item.
      *
      * @return The block data.
      */
-    public final short getBlockData() {
+    public short getRawBlockDataValue() {
         return tag.getShort(BLOCK_DATA_TAG);
     }
 
@@ -39,7 +40,7 @@ public final class ItemStack {
      * @throws NullPointerException
      *             If the material map is null.
      */
-    public final Material getMaterial(MaterialMap map) throws MaterialNotFoundException {
+    public Material getMaterial(MaterialMap map) throws MaterialNotFoundException {
         if (isBlockIdInStringFormat()) {
             // Try as string
             return map.getByName(tag.getString(BLOCK_ID_TAG));
@@ -50,31 +51,51 @@ public final class ItemStack {
     }
 
     /**
+     * Gets the material and data represented as one object.
+     * 
+     * @param map
+     *            The material map used to lookup the name or id.
+     * @return The material and data.
+     * @throws MaterialNotFoundException
+     *             If no block material is present. Usually happens in the case
+     *             of item materials.
+     * @throws NullPointerException
+     *             If the material map is null.
+     */
+    public MaterialData getMaterialData(MaterialMap map) throws MaterialNotFoundException {
+        Material material = getMaterial(map);
+        short blockData = getRawBlockDataValue();
+        if (blockData < MaterialData.MIN_BLOCK_DATA || blockData > MaterialData.MAX_BLOCK_DATA) {
+            throw new MaterialNotFoundException("Block data: " + blockData);
+        }
+        return MaterialData.of(material, (byte) blockData);
+    }
+
+    /**
      * Checks if this block has the given material.
      *
-     * @param material
+     * @param materialData
      *            The material to check.
-     * @param data
-     *            The data value to check. Use -1 as a wildcard.
      * @return True if the material and data match, false otherwise.
      * @throws NullPointerException
      *             If the given material is null.
      */
-    public final boolean hasMaterial(Material material, short data) {
+    public boolean hasMaterialData(MaterialData materialData) {
         // Check for block id
         if (isBlockIdInStringFormat()) {
-            if (!tag.getString(BLOCK_ID_TAG).equals(material.getName())) {
+            if (!tag.getString(BLOCK_ID_TAG).equals(materialData.getMaterial().getName())) {
                 // Mismatched block name
                 return false;
             }
         } else {
-            if (tag.getShort(BLOCK_ID_TAG) != material.getId()) {
+            if (tag.getShort(BLOCK_ID_TAG) != materialData.getMaterial().getId()) {
                 // Mismatched block id
                 return false;
             }
         }
 
-        return data == -1 || data == getBlockData();
+        // Check for block data
+        return materialData.blockDataMatches(getRawBlockDataValue());
     }
 
     private boolean isBlockIdInStringFormat() {
@@ -84,19 +105,17 @@ public final class ItemStack {
     /**
      * Sets the material of this stack.
      *
-     * @param material
+     * @param materialData
      *            The material.
-     * @param newBlockData
-     *            The block data.
      * @throws NullPointerException
      *             If the material is null.
      */
-    public void setMaterial(Material material, short newBlockData) {
+    public void setMaterialData(MaterialData materialData) {
         if (isBlockIdInStringFormat()) {
-            tag.putString(BLOCK_ID_TAG, material.getName());
+            tag.putString(BLOCK_ID_TAG, materialData.getMaterial().getName());
         } else {
-            tag.putShort(BLOCK_ID_TAG, material.getId());
+            tag.putShort(BLOCK_ID_TAG, materialData.getMaterial().getId());
         }
-        tag.putShort(BLOCK_DATA_TAG, newBlockData);
+        tag.putShort(BLOCK_DATA_TAG, materialData.getData());
     }
 }

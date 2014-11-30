@@ -30,16 +30,6 @@ public final class Chunk {
      */
     public static final int MAX_BIOME_ID = 254;
 
-    /**
-     * The highest possible block data in a Minecraft map.
-     */
-    public static final int MAX_BLOCK_DATA = 15;
-
-    /**
-     * The highest possible block id in a Minecraft map.
-     */
-    public static final int MAX_BLOCK_ID = 4095;
-
     private final CompoundTag chunkTag;
 
     /**
