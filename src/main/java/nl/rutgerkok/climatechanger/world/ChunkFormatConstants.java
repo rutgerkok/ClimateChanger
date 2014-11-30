@@ -14,5 +14,6 @@ public class ChunkFormatConstants {
     public static final String SECTION_BLOCK_DATA_TAG = "Data";
     public static final String SECTION_BLOCK_IDS_TAG = "Blocks";
     public static final String SECTION_EXT_BLOCK_IDS_TAG = "Add";
+    public static final String SECTION_Y_TAG = "Y";
     public static final String TILE_ENTITY_ID_TAG = "id";
 }

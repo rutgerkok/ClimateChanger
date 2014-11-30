@@ -4,11 +4,14 @@ import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.CHUNK_SECTI
 import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.SECTION_BLOCK_DATA_TAG;
 import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.SECTION_BLOCK_IDS_TAG;
 import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.SECTION_EXT_BLOCK_IDS_TAG;
+import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.SECTION_Y_TAG;
 
 import nl.rutgerkok.climatechanger.material.Material;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.TagType;
 import nl.rutgerkok.climatechanger.util.NibbleArray;
+
+import java.util.List;
 
 /**
  * Static utility methods to work with chunk sections of a chunk.
@@ -38,8 +41,7 @@ final class ChunkSection {
      *             If the x, y or z are out of bounds.
      */
     static final short getMaterialId(CompoundTag chunkTag, int x, int y, int z) {
-        int sectionIndex = y >>> SECTION_Y_BITS;
-        CompoundTag section = chunkTag.getList(CHUNK_SECTIONS_TAG, TagType.COMPOUND).get(sectionIndex);
+        CompoundTag section = getChunkSection(chunkTag, y);
         if (section == null) {
             return Material.AIR_ID;
         }
@@ -56,6 +58,32 @@ final class ChunkSection {
         }
 
         return (short) blockId;
+    }
+
+    private static CompoundTag getChunkSection(CompoundTag chunkTag, int y) {
+        if (y < 0 || y >= Chunk.CHUNK_Y_SIZE) {
+            return null;
+        }
+        List<CompoundTag> sections = chunkTag.getList(CHUNK_SECTIONS_TAG, TagType.COMPOUND);
+
+        int sectionIndex = y >>> SECTION_Y_BITS;
+
+        if (sectionIndex < sections.size()) {
+            // Do a guess (correct only if no chunk sections are omitted at
+            // and below this section index)
+            CompoundTag section = sections.get(sectionIndex);
+            if (section != null && section.getByte(SECTION_Y_TAG) == sectionIndex) {
+                return section;
+            }
+        }
+
+        // Search for section
+        for (CompoundTag section : sections) {
+            if (section != null && section.getByte(SECTION_Y_TAG) == sectionIndex) {
+                return section;
+            }
+        }
+        return null;
     }
 
     private static int getPositionInSectionArray(int xInSection, int yInSection, int zInSection) {
@@ -78,8 +106,7 @@ final class ChunkSection {
      *            The material data.
      */
     static void setMaterialData(CompoundTag chunkTag, int x, int y, int z, byte data) {
-        int sectionIndex = y >>> SECTION_Y_BITS;
-        CompoundTag section = chunkTag.getList(CHUNK_SECTIONS_TAG, TagType.COMPOUND).get(sectionIndex);
+        CompoundTag section = getChunkSection(chunkTag, y);
         if (section == null) {
             // Silently fail
             return;
@@ -108,8 +135,7 @@ final class ChunkSection {
      *            The block id.
      */
     static void setMaterialId(CompoundTag chunkTag, int x, int y, int z, short id) {
-        int sectionIndex = y >>> SECTION_Y_BITS;
-        CompoundTag section = chunkTag.getList(CHUNK_SECTIONS_TAG, TagType.COMPOUND).get(sectionIndex);
+        CompoundTag section = getChunkSection(chunkTag, y);
         if (section == null) {
             // Silently fail
             return;
