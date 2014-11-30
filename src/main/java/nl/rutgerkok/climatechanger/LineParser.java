@@ -6,9 +6,11 @@ import nl.rutgerkok.climatechanger.material.MaterialSet;
 import nl.rutgerkok.climatechanger.task.BiomeIdChanger;
 import nl.rutgerkok.climatechanger.task.BlockIdChanger;
 import nl.rutgerkok.climatechanger.task.OreSpawner;
+import nl.rutgerkok.climatechanger.task.SignFixer;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
+import nl.rutgerkok.climatechanger.util.StringJoiner;
 import nl.rutgerkok.climatechanger.world.Chunk;
 
 import java.text.ParseException;
@@ -23,11 +25,18 @@ public class LineParser {
         }
     }
 
+    private void assureMinSize(List<?> args, int minSize) throws ParseException {
+        if (args.size() < minSize) {
+            throw new ParseException("Expected at least " + minSize + " args, found " + args.size() + " args.", 0);
+        }
+    }
+
     public List<String> getActionsHelp() {
         return Arrays.asList(
                 "changeBiome <fromId> <toId>",
                 "changeBlock <fromId[:fromData]> <toId[:toData]>",
-                "spawnOre <block[:blockData]> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <spawnInBlock,anotherBlock,...>"
+                "spawnOre <block[:blockData]> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <spawnInBlock,anotherBlock,...>",
+                "fixSigns <encloseThisInSquareBrackets,another,...>"
                 );
     }
 
@@ -79,7 +88,7 @@ public class LineParser {
                 int toId = ParseUtil.parseInt(parts.get(2), 0, Chunk.MAX_BIOME_ID);
                 return new BiomeIdChanger((byte) fromId, (byte) toId);
             case "changeblock":
-                assureSize(parts, 5);
+                assureSize(parts, 3);
                 MaterialData fromBlockData = ParseUtil.parseMaterialData(parts.get(1), materialMap);
                 MaterialData toBlockData = ParseUtil.parseMaterialData(parts.get(2), materialMap);
                 return new BlockIdChanger(fromBlockData, toBlockData);
@@ -93,6 +102,10 @@ public class LineParser {
                 int maxAltitude = ParseUtil.parseInt(parts.get(6), 0, Chunk.CHUNK_Y_SIZE);
                 MaterialSet sourceBlocks = ParseUtil.parseMaterialSet(parts.get(7), materialMap);
                 return new OreSpawner(oreMaterial, maxSize, frequency, rarity, minAltitude, maxAltitude, sourceBlocks);
+            case "fixSigns":
+                assureMinSize(parts, 2);
+                String remainingArgs = StringJoiner.join(" ", 1, parts);
+                return new SignFixer(remainingArgs.split(","));
         }
         throw new ParseException("Unknown task: " + taskName, 0);
     }

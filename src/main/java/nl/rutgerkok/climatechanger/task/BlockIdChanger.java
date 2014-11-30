@@ -1,5 +1,7 @@
 package nl.rutgerkok.climatechanger.task;
 
+import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.TILE_ENTITY_ID_TAG;
+
 import nl.rutgerkok.climatechanger.ItemStack;
 import nl.rutgerkok.climatechanger.material.MaterialData;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
@@ -173,7 +175,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
         }
 
         // Special case for FlowerPot (uses Item and Data tag)
-        if (tileEntity.getString("id").equalsIgnoreCase("FlowerPot")) {
+        if (tileEntity.getString(TILE_ENTITY_ID_TAG).equalsIgnoreCase("FlowerPot")) {
             String blockId = tileEntity.getString("Item");
             short blockData = tileEntity.getShort("Data");
             if (oldBlock.materialNameEquals(blockId) && (oldBlock.blockDataMatches(blockData))) {
@@ -185,7 +187,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
 
         // Special case for Piston (like FlowerPot, but uses item ids instead
         // of names and different keys)
-        if (tileEntity.getString("id").equalsIgnoreCase("Piston")) {
+        if (tileEntity.getString(TILE_ENTITY_ID_TAG).equalsIgnoreCase("Piston")) {
             short blockId = tileEntity.getShort("blockId");
             short blockData = tileEntity.getShort("blockData");
             if (oldBlockId == blockId && (oldBlockDataByte == -1 || blockData == oldBlockDataByte)) {

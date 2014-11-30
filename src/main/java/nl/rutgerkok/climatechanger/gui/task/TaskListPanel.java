@@ -2,6 +2,7 @@ package nl.rutgerkok.climatechanger.gui.task;
 
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
 import nl.rutgerkok.climatechanger.gui.GuiInformation.UpdateType;
+import nl.rutgerkok.climatechanger.gui.Window;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.Consumer;
 
@@ -9,7 +10,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -36,7 +36,7 @@ public class TaskListPanel extends JPanel {
             }
         });
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBorder(BorderFactory.createLineBorder(new Color(172, 172, 172)));
+        setBorder(Window.SIMPLE_BORDER);
         setBackground(Color.WHITE);
         addTasks();
     }

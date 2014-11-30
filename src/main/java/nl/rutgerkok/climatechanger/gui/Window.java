@@ -4,6 +4,7 @@ import nl.rutgerkok.climatechanger.Startup;
 import nl.rutgerkok.climatechanger.gui.task.TaskPanel;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
@@ -11,8 +12,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 
 public class Window {
+
+    public static final Border SIMPLE_BORDER = BorderFactory.createLineBorder(new Color(172, 172, 172));
 
     public Window(GuiInformation information) {
         // Set the look and feel
