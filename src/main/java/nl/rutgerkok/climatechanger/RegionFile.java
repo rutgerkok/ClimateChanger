@@ -103,16 +103,12 @@ public class RegionFile {
     private final int offsets[];
     private ArrayList<Boolean> sectorFree;
 
-    private int sizeDelta;
-
     public RegionFile(Path path) {
         offsets = new int[SECTOR_INTS];
         chunkTimestamps = new int[SECTOR_INTS];
 
         fileName = path;
         debugln("REGION LOAD " + fileName);
-
-        sizeDelta = 0;
 
         try {
             if (Files.exists(path)) {
@@ -130,8 +126,6 @@ public class RegionFile {
                 for (int i = 0; i < SECTOR_INTS; ++i) {
                     file.writeInt(0);
                 }
-
-                sizeDelta += SECTOR_BYTES * 2;
             }
 
             if ((file.length() & 0xfff) != 0) {
@@ -264,13 +258,6 @@ public class RegionFile {
         return offsets[x + z * 32];
     }
 
-    /* gets how much the region file has grown since it was last checked */
-    public synchronized int getSizeDelta() {
-        int ret = sizeDelta;
-        sizeDelta = 0;
-        return ret;
-    }
-
     public boolean hasChunk(int x, int z) {
         return getOffset(x, z) != 0;
     }
@@ -373,7 +360,6 @@ public class RegionFile {
                         file.write(emptySector);
                         sectorFree.add(false);
                     }
-                    sizeDelta += SECTOR_BYTES * sectorsNeeded;
 
                     write(sectorNumber, data, length);
                     setOffset(x, z, (sectorNumber << 8) | sectorsNeeded);
