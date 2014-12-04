@@ -48,27 +48,27 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
     }
 
     @Override
-    public boolean convertChunk(Chunk chunk) {
-        boolean changed = false;
+    public Result convertChunk(Chunk chunk) {
+        Result result = Result.NO_CHANGES;
 
         // Replace the blocks in all sections
         for (CompoundTag section : chunk.getChunkSections()) {
             if (replaceSection(section)) {
-                changed = true;
+                result = Result.CHANGED;
             }
         }
 
         // Replace the blocks in tile entities
         if (convertTileEntities(chunk.getTileEntities())) {
-            changed = true;
+            result = Result.CHANGED;
         }
 
         // Replace the block in item frames
         if (convertEntities(chunk.getEntities())) {
-            changed = true;
+            result = Result.CHANGED;
         }
 
-        return changed;
+        return result;
     }
 
     /**

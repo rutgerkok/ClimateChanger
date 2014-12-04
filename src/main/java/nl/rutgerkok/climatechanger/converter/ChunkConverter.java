@@ -5,6 +5,7 @@ import nl.rutgerkok.climatechanger.RegionFile;
 import nl.rutgerkok.climatechanger.nbt.CompoundTag;
 import nl.rutgerkok.climatechanger.nbt.NbtIo;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
+import nl.rutgerkok.climatechanger.task.ChunkTask.Result;
 import nl.rutgerkok.climatechanger.util.DirectoryUtil;
 import nl.rutgerkok.climatechanger.world.Chunk;
 import nl.rutgerkok.climatechanger.world.World;
@@ -85,7 +86,8 @@ class ChunkConverter implements Converter {
                         continue;
                     }
                     Chunk chunk = new Chunk(chunkTag);
-                    if (runTasks(chunk)) {
+                    Result result = runTasks(chunk);
+                    if (result == Result.CHANGED) {
                         // Save when changed
                         outputStream = regionFile.getChunkDataOutputStream(chunkX, chunkZ);
                         NbtIo.write(parentTag, outputStream);
@@ -135,14 +137,12 @@ class ChunkConverter implements Converter {
      *            The chunk to modify.
      * @return True if one of the tasks changed the chunk data, false otherwise.
      */
-    private boolean runTasks(Chunk chunk) {
-        boolean changed = false;
+    private Result runTasks(Chunk chunk) {
+        Result result = Result.NO_CHANGES;
         for (ChunkTask task : tasks) {
-            if (task.convertChunk(chunk)) {
-                changed = true;
-            }
+            result = result.getCombined(task.convertChunk(chunk));
         }
-        return changed;
+        return result;
     }
 
 }

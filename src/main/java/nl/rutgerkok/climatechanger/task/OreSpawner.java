@@ -44,8 +44,8 @@ public final class OreSpawner implements ChunkTask {
     }
 
     @Override
-    public boolean convertChunk(Chunk chunk) {
-        boolean changed = false;
+    public Result convertChunk(Chunk chunk) {
+        Result result = Result.NO_CHANGES;
         for (int t = 0; t < frequency; t++)
         {
             if (random.nextDouble() * 100.0 > rarity) {
@@ -54,10 +54,10 @@ public final class OreSpawner implements ChunkTask {
             int x = random.nextInt(Chunk.CHUNK_X_SIZE);
             int z = random.nextInt(Chunk.CHUNK_Z_SIZE);
             if (spawn(chunk, x, z)) {
-                changed = true;
+                result = Result.CHANGED;
             }
         }
-        return changed;
+        return result;
     }
 
     @Override

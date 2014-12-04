@@ -49,16 +49,16 @@ public class SignFixer implements ChunkTask {
     }
 
     @Override
-    public boolean convertChunk(Chunk chunk) {
-        boolean changed = false;
+    public Result convertChunk(Chunk chunk) {
+        Result result = Result.NO_CHANGES;
         for (CompoundTag tileEntity : chunk.getTileEntities()) {
             if (tileEntity.getString(TILE_ENTITY_ID_TAG).equalsIgnoreCase("Sign")) {
                 if (convertSign(tileEntity)) {
-                    changed = true;
+                    result = Result.CHANGED;
                 }
             }
         }
-        return changed;
+        return result;
     }
 
     private boolean convertSign(CompoundTag sign) {
