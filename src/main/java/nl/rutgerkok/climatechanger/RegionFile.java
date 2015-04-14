@@ -196,10 +196,7 @@ public class RegionFile {
      * the chunk is not found or an error occurs
      */
     public synchronized DataInputStream getChunkDataInputStream(int x, int z) {
-        if (outOfBounds(x, z)) {
-            debugln("READ", x, z, "out of bounds");
-            return null;
-        }
+        checkBounds(x, z);
 
         try {
             int offset = getOffset(x, z);
@@ -248,9 +245,7 @@ public class RegionFile {
     }
 
     public DataOutputStream getChunkDataOutputStream(int x, int z) {
-        if (outOfBounds(x, z)) {
-            return null;
-        }
+        checkBounds(x, z);
 
         return new DataOutputStream(new DeflaterOutputStream(new ChunkBuffer(x, z)));
     }
@@ -269,8 +264,10 @@ public class RegionFile {
     }
 
     /* is this an invalid chunk coordinate? */
-    private boolean outOfBounds(int x, int z) {
-        return x < 0 || x >= 32 || z < 0 || z >= 32;
+    private void checkBounds(int x, int z) {
+        if (x < 0 || x >= 32 || z < 0 || z >= 32) {
+            throw new IndexOutOfBoundsException("out of bounds; x,z: " + x + "," + z);
+        }
     }
 
     private void setOffset(int x, int z, int offset) throws IOException {
