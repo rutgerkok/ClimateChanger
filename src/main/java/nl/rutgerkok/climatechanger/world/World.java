@@ -160,7 +160,8 @@ public class World {
     }
 
     /**
-     * Sets that the tag obtained using {@link #getTag()}
+     * Sets that the tag obtained using {@link #getMinecraftTag()} needs to be
+     * saved.
      */
     public void setTagNeedsSaving() {
         this.tagNeedsSaving = true;

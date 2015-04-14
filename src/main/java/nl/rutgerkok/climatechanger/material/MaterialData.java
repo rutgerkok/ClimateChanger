@@ -30,7 +30,7 @@ public final class MaterialData {
      * @param data
      *            The data.
      * @return The material and data.
-     * @throws NullPointerExcepion
+     * @throws NullPointerException
      *             If the material is null.
      * @throws IllegalArgumentException
      *             If the block data is smaller than {@value #MIN_BLOCK_DATA} or
@@ -45,13 +45,13 @@ public final class MaterialData {
 
     /**
      * Creates a new material data of the default state of the given material.
-     * However, {@link #blockDataMatches(byte)} will return true for any
+     * However, {@link #blockDataMatches(short)} will return true for any
      * provided value.
      *
      * @param material
      *            The material.
      * @return The material data.
-     * @throws NullPointerExcepion
+     * @throws NullPointerException
      *             If the material is null.
      */
     public static MaterialData ofAnyState(Material material) {
@@ -135,7 +135,7 @@ public final class MaterialData {
 
     /**
      * Gets whether the block data of this object is a wildcard. If it is, it
-     * will {@link #blockDataMatches(byte) match} any other block data value.
+     * will {@link #blockDataMatches(short) match} any other block data value.
      * 
      * @return True if this block data is a wildcard, false otherwise.
      */

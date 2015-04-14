@@ -21,6 +21,8 @@ public interface Converter {
      * @param updater
      *            Call {@link ProgressUpdater#incrementProgress()} after a
      *            single unit is converted.
+     * @throws IOException
+     *             When an IO error occurs.
      */
     void convert(ProgressUpdater updater) throws IOException;
 

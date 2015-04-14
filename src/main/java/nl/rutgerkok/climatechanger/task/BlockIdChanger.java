@@ -26,14 +26,10 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
     /**
      * Creates a new block id change task.
      *
-     * @param oldBlockId
-     *            Old block id, use -1 as a wildcard.
-     * @param oldBlockDataByte
-     *            Old block data, use -1 as a wildcard.
-     * @param newBlockId
-     *            New block id.
-     * @param newBlockDataByte
-     *            New block data.
+     * @param oldBlock
+     *            Old block.
+     * @param newBlock
+     *            New block.
      */
     public BlockIdChanger(MaterialData oldBlock, MaterialData newBlock) {
         this.oldBlock = oldBlock;

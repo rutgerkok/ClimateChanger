@@ -95,7 +95,7 @@ public final class ParseUtil {
      * @param string
      *            Can be in the form "material", "namespace:material",
      *            "material:data", "namespace:material:data".
-     * @param materials
+     * @param materialMap
      *            The material map, for looking up materials.
      * @return The material data.
      * @throws ParseException

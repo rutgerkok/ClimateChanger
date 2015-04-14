@@ -67,6 +67,8 @@ class JavaFxFileChooser extends FileChooserPanel {
 
     /**
      * Opens the file chooser. Must be called on the JavaFx thread.
+     *
+     * @return The path that was selected.
      */
     private Path openFileChooser() {
         try {

@@ -9,10 +9,6 @@ public class BiomeIdChanger implements ChunkTask {
     /**
      * Changes the biome id in all files in the given directory.
      *
-     * @param progressUpdater
-     *            Used to monitor progress.
-     * @param regionFolder
-     *            The directory containing the region files.
      * @param from
      *            The original id, use -1 to convert all ids.
      * @param to
