@@ -52,6 +52,8 @@ package nl.rutgerkok.climatechanger;
  * data is the chunk length - 1.
  */
 
+import nl.rutgerkok.climatechanger.util.BooleanList;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -61,7 +63,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
@@ -101,7 +102,7 @@ public class RegionFile {
     private final Path fileName;
     private long lastModified = 0;
     private final int offsets[];
-    private ArrayList<Boolean> sectorFree;
+    private BooleanList sectorFree;
 
     public RegionFile(Path path) {
         offsets = new int[SECTOR_INTS];
@@ -137,7 +138,7 @@ public class RegionFile {
 
             /* set up the available sector map */
             int nSectors = (int) file.length() / SECTOR_BYTES;
-            sectorFree = new ArrayList<Boolean>(nSectors);
+            sectorFree = new BooleanList(nSectors);
 
             for (int i = 0; i < nSectors; ++i) {
                 sectorFree.add(true);
