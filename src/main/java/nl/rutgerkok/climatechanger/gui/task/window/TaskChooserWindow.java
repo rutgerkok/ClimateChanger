@@ -51,6 +51,7 @@ public class TaskChooserWindow extends JDialog {
         tabs.addTab("Change block id", new BlockIdChangerPanel(materialMap));
         tabs.addTab("Spawn ores", new OreSpawnerPanel(materialMap));
         tabs.addTab("Fix signs", new SignFixerPanel());
+        tabs.addTab("Delete unused chunks", new OldChunkDeleterPanel());
 
         add(tabs, BorderLayout.CENTER);
 

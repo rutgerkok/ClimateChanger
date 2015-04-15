@@ -92,6 +92,9 @@ class ChunkConverter implements Converter {
                         outputStream = regionFile.getChunkDataOutputStream(chunkX, chunkZ);
                         NbtIo.write(parentTag, outputStream);
                         changedChunks++;
+                    } else if (result == Result.DELETE) {
+                        regionFile.deleteChunk(chunkX, chunkZ);
+                        changedChunks++;
                     }
                 } catch (Exception e) {
                     // Rethrow with location information and same stacktrace

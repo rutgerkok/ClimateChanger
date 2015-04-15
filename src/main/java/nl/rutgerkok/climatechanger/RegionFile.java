@@ -250,6 +250,44 @@ public class RegionFile {
         return new DataOutputStream(new DeflaterOutputStream(new ChunkBuffer(x, z)));
     }
 
+    /**
+     * Deletes the chunk at the given x and z, marking the sectors as free and
+     * deleting the chunks from the index.
+     * 
+     * @param x
+     *            X of the chunk in the region file.
+     * @param z
+     *            Z of the chunk in the region file.
+     * @throws IOException
+     *             If an IO error occurs.
+     */
+    public void deleteChunk(int x, int z) throws IOException {
+        checkBounds(x, z);
+
+        if (!hasChunk(x, z)) {
+            return;
+        }
+
+        int offset = getOffset(x, z);
+        int sectorNumber = offset >> 8;
+        int numSectors = offset & 0xFF;
+
+        // Check for file corruption
+        if (sectorNumber + numSectors > sectorFree.size()) {
+            debugln("READ", x, z, "invalid sector");
+            return;
+        }
+
+        // Reset offset and timestamp
+        setOffset(x, z, 0);
+        setTimestamp(x, z, 0);
+
+        // Mark sectors as free
+        for (int i = 0; i < numSectors; i++) {
+            sectorFree.set(sectorNumber + i, true);
+        }
+    }
+
     private int getOffset(int x, int z) {
         return offsets[x + z * 32];
     }
