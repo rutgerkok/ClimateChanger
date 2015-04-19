@@ -1,10 +1,8 @@
 package nl.rutgerkok.climatechanger;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import nl.rutgerkok.hammer.util.Progress;
 
 public class ConsoleProgressUpdater implements ProgressUpdater {
-    private final AtomicInteger currentProgress = new AtomicInteger();
-    private int maxProgress;
 
     @Override
     public void complete() {
@@ -18,14 +16,12 @@ public class ConsoleProgressUpdater implements ProgressUpdater {
     }
 
     @Override
-    public void incrementProgress() {
-        System.out.println(currentProgress.incrementAndGet() + "/" + maxProgress + " files done.");
+    public void update(Progress progress) {
+        System.out.println(progress.getIntPercentage() + "%");
     }
 
     @Override
-    public void init(int maxProgress) {
-        currentProgress.set(0);
-        this.maxProgress = maxProgress;
+    public void init() {
     }
 
 }

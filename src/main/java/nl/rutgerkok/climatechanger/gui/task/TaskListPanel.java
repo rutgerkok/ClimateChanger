@@ -1,10 +1,10 @@
 package nl.rutgerkok.climatechanger.gui.task;
 
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
-import nl.rutgerkok.climatechanger.gui.GuiInformation.UpdateType;
 import nl.rutgerkok.climatechanger.gui.Window;
+import nl.rutgerkok.climatechanger.gui.GuiInformation.UpdateType;
 import nl.rutgerkok.climatechanger.task.Task;
-import nl.rutgerkok.climatechanger.util.Consumer;
+import nl.rutgerkok.hammer.util.Consumer;
 
 import java.awt.Color;
 import java.awt.Component;

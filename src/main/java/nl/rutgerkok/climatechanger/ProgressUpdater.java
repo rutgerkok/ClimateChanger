@@ -1,5 +1,7 @@
 package nl.rutgerkok.climatechanger;
 
+import nl.rutgerkok.hammer.util.Progress;
+
 /**
  * Used to monitor progress. Any method may be called from any thread.
  *
@@ -20,16 +22,15 @@ public interface ProgressUpdater {
 
     /**
      * Called whenever the progress is updated one unit.
+     * 
+     * @param progress
+     *            TODO
      *
      */
-    void incrementProgress();
+    void update(Progress progress);
 
     /**
      * Called when the task is started.
-     *
-     * @param maxProgress
-     *            Defines the scale of the task. When the progress is
-     *            maxProgress, the task is completed.
      */
-    void init(int maxProgress);
+    void init();
 }

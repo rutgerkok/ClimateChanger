@@ -1,9 +1,10 @@
 package nl.rutgerkok.climatechanger.task;
 
-import static nl.rutgerkok.climatechanger.world.ChunkFormatConstants.TILE_ENTITY_ID_TAG;
-
-import nl.rutgerkok.climatechanger.nbt.CompoundTag;
-import nl.rutgerkok.climatechanger.world.Chunk;
+import nl.rutgerkok.hammer.anvil.AnvilChunk;
+import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.TileEntityTag;
+import nl.rutgerkok.hammer.tag.CompoundKey;
+import nl.rutgerkok.hammer.tag.CompoundTag;
+import nl.rutgerkok.hammer.util.Result;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -20,7 +21,7 @@ import org.json.simple.JSONValue;
  */
 public class SignFixer implements ChunkTask {
 
-    private static final String[] LINE_NAMES = { "Text1", "Text2", "Text3", "Text4" };
+
 
     private final Set<String> fixBrackets;
 
@@ -49,10 +50,10 @@ public class SignFixer implements ChunkTask {
     }
 
     @Override
-    public Result convertChunk(Chunk chunk) {
+    public Result convertChunk(AnvilChunk chunk) {
         Result result = Result.NO_CHANGES;
         for (CompoundTag tileEntity : chunk.getTileEntities()) {
-            if (tileEntity.getString(TILE_ENTITY_ID_TAG).equalsIgnoreCase("Sign")) {
+            if (tileEntity.getString(TileEntityTag.ID).equalsIgnoreCase("Sign")) {
                 if (convertSign(tileEntity)) {
                     result = Result.CHANGED;
                 }
@@ -63,7 +64,7 @@ public class SignFixer implements ChunkTask {
 
     private boolean convertSign(CompoundTag sign) {
         boolean changed = false;
-        for (String lineName : LINE_NAMES) {
+        for (CompoundKey lineName : TileEntityTag.SIGN_LINE_NAMES) {
             String line = sign.getString(lineName);
 
             String changedLine = convertLine(line);
@@ -72,7 +73,7 @@ public class SignFixer implements ChunkTask {
             }
 
             changed = true;
-            sign.putString(lineName, changedLine);
+            sign.setString(lineName, changedLine);
         }
         return changed;
     }

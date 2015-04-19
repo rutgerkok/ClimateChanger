@@ -1,7 +1,8 @@
 package nl.rutgerkok.climatechanger.task;
 
-import nl.rutgerkok.climatechanger.world.Chunk;
-import nl.rutgerkok.climatechanger.world.ChunkFormatConstants;
+import nl.rutgerkok.hammer.anvil.AnvilChunk;
+import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.ChunkTag;
+import nl.rutgerkok.hammer.util.Result;
 
 public class OldChunkDeleter implements ChunkTask {
 
@@ -19,8 +20,8 @@ public class OldChunkDeleter implements ChunkTask {
     }
 
     @Override
-    public Result convertChunk(Chunk chunk) {
-        long time = chunk.getTag().getLong(ChunkFormatConstants.CHUNK_INHABITED_TIME_TAG);
+    public Result convertChunk(AnvilChunk chunk) {
+        long time = chunk.getTag().getLong(ChunkTag.INHABITED_TIME);
         if (time < minimumTicksPlayed) {
             return Result.DELETE;
         }

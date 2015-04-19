@@ -5,7 +5,7 @@ import nl.rutgerkok.climatechanger.gui.GuiInformation;
 import nl.rutgerkok.climatechanger.gui.Window;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
-import nl.rutgerkok.climatechanger.world.World;
+import nl.rutgerkok.hammer.anvil.AnvilWorld;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
@@ -43,7 +43,7 @@ public class Startup {
         }
 
         Path levelDat = new File(args[0]).toPath();
-        if (!Files.isRegularFile(levelDat) || !levelDat.getFileName().toString().equals(World.LEVEL_DAT_NAME)) {
+        if (!Files.isRegularFile(levelDat) || !levelDat.getFileName().toString().equals(AnvilWorld.LEVEL_DAT_NAME)) {
             System.err.println("Please specify the path to the level.dat, as the path");
             System.err.println(levelDat + " is invalid.");
             System.exit(1);
@@ -51,17 +51,17 @@ public class Startup {
         }
 
         try {
-            World world = new World(levelDat);
+            AnvilWorld world = new AnvilWorld(levelDat);
             List<String> strings = Arrays.asList(args).subList(1, args.length);
             // Convert!
-            List<Task> tasks = parser.parse(world.getMaterialMap(), strings);
+            List<Task> tasks = parser.parse(world.getGameFactory().getMaterialMap(), strings);
             new ConverterExecutor(new ConsoleProgressUpdater(), world, tasks).convertAll();
         } catch (ParseException | InvalidTaskException e) {
             System.err.println("Invalid syntax: " + e.getMessage());
             showHelp(parser);
             System.exit(1);
         } catch (IOException e) {
-            System.err.println("Cannot read " + World.LEVEL_DAT_NAME);
+            System.err.println("Cannot read " + AnvilWorld.LEVEL_DAT_NAME);
             e.printStackTrace();
             System.exit(1);
         }

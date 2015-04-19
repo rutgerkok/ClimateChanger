@@ -1,8 +1,8 @@
 package nl.rutgerkok.climatechanger.gui.task.window;
 
-import nl.rutgerkok.climatechanger.material.MaterialMap;
 import nl.rutgerkok.climatechanger.task.Task;
-import nl.rutgerkok.climatechanger.util.Consumer;
+import nl.rutgerkok.hammer.material.MaterialMap;
+import nl.rutgerkok.hammer.util.Consumer;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

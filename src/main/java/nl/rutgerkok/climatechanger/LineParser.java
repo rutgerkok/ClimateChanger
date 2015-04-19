@@ -1,8 +1,5 @@
 package nl.rutgerkok.climatechanger;
 
-import nl.rutgerkok.climatechanger.material.MaterialData;
-import nl.rutgerkok.climatechanger.material.MaterialMap;
-import nl.rutgerkok.climatechanger.material.MaterialSet;
 import nl.rutgerkok.climatechanger.task.BiomeIdChanger;
 import nl.rutgerkok.climatechanger.task.BlockIdChanger;
 import nl.rutgerkok.climatechanger.task.OreSpawner;
@@ -11,7 +8,10 @@ import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
 import nl.rutgerkok.climatechanger.util.StringJoiner;
-import nl.rutgerkok.climatechanger.world.Chunk;
+import nl.rutgerkok.hammer.anvil.AnvilChunk;
+import nl.rutgerkok.hammer.material.MaterialData;
+import nl.rutgerkok.hammer.material.MaterialMap;
+import nl.rutgerkok.hammer.material.MaterialSet;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -84,8 +84,8 @@ public class LineParser {
             case "changebiome":
                 assureSize(parts, 3);
                 // -1 is used as a wildcard
-                int fromId = ParseUtil.parseInt(parts.get(1), -1, Chunk.MAX_BIOME_ID);
-                int toId = ParseUtil.parseInt(parts.get(2), 0, Chunk.MAX_BIOME_ID);
+                int fromId = ParseUtil.parseInt(parts.get(1), -1, AnvilChunk.MAX_BIOME_ID);
+                int toId = ParseUtil.parseInt(parts.get(2), 0, AnvilChunk.MAX_BIOME_ID);
                 return new BiomeIdChanger((byte) fromId, (byte) toId);
             case "changeblock":
                 assureSize(parts, 3);
@@ -98,8 +98,8 @@ public class LineParser {
                 int maxSize = ParseUtil.parseInt(parts.get(2), 1, OreSpawner.MAX_ORE_SIZE);
                 int frequency = ParseUtil.parseInt(parts.get(3), 1, OreSpawner.MAX_ORE_FREQUENCY);
                 double rarity = ParseUtil.parseDouble(parts.get(4), 0.0001, 100);
-                int minAltitude = ParseUtil.parseInt(parts.get(5), 0, Chunk.CHUNK_Y_SIZE);
-                int maxAltitude = ParseUtil.parseInt(parts.get(6), 0, Chunk.CHUNK_Y_SIZE);
+                int minAltitude = ParseUtil.parseInt(parts.get(5), 0, AnvilChunk.CHUNK_Y_SIZE);
+                int maxAltitude = ParseUtil.parseInt(parts.get(6), 0, AnvilChunk.CHUNK_Y_SIZE);
                 MaterialSet sourceBlocks = ParseUtil.parseMaterialSet(parts.get(7), materialMap);
                 return new OreSpawner(oreMaterial, maxSize, frequency, rarity, minAltitude, maxAltitude, sourceBlocks);
             case "fixsigns":

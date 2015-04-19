@@ -1,6 +1,6 @@
 package nl.rutgerkok.climatechanger.gui.filechooser;
 
-import nl.rutgerkok.climatechanger.util.Consumer;
+import nl.rutgerkok.hammer.util.Consumer;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;

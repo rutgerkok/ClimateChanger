@@ -1,6 +1,7 @@
 package nl.rutgerkok.climatechanger.task;
 
-import nl.rutgerkok.climatechanger.world.Chunk;
+import nl.rutgerkok.hammer.anvil.AnvilChunk;
+import nl.rutgerkok.hammer.util.Result;
 
 public class BiomeIdChanger implements ChunkTask {
     private final byte from;
@@ -21,7 +22,7 @@ public class BiomeIdChanger implements ChunkTask {
     }
 
     @Override
-    public Result convertChunk(Chunk chunk) {
+    public Result convertChunk(AnvilChunk chunk) {
         return handleByteArray(chunk.getBiomeArray()) ? Result.CHANGED : Result.NO_CHANGES;
     }
 

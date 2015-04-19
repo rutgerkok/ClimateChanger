@@ -3,7 +3,8 @@ package nl.rutgerkok.climatechanger.gui;
 import nl.rutgerkok.climatechanger.ProgressUpdater;
 import nl.rutgerkok.climatechanger.converter.ConverterExecutor;
 import nl.rutgerkok.climatechanger.task.Task;
-import nl.rutgerkok.climatechanger.world.World;
+import nl.rutgerkok.hammer.anvil.AnvilWorld;
+import nl.rutgerkok.hammer.util.Progress;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,7 +27,7 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        final World world = information.getWorld();
+        final AnvilWorld world = information.getWorld();
         if (world == null) {
             showMessage("Please select the level.dat first.");
             return;
@@ -82,15 +83,15 @@ public class StartButton extends JButton implements ActionListener, ProgressUpda
     }
 
     @Override
-    public void incrementProgress() {
+    public void update(Progress progress) {
         // Forward
-        progressBar.incrementProgress();
+        progressBar.update(progress);
     }
 
     @Override
-    public void init(int maxProgress) {
+    public void init() {
         // Forward
-        progressBar.init(maxProgress);
+        progressBar.init();
     }
 
     private void showMessage(String error) {

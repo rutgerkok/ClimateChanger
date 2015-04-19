@@ -1,6 +1,7 @@
 package nl.rutgerkok.climatechanger.gui;
 
 import nl.rutgerkok.climatechanger.ProgressUpdater;
+import nl.rutgerkok.hammer.util.Progress;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -46,23 +47,23 @@ public class ProgressPanel extends JPanel implements ProgressUpdater {
     }
 
     @Override
-    public void incrementProgress() {
+    public void update(final Progress progress) {
         // It's one tenth second since the last progress update, update bar
         // Make sure bar is updated on correct thread
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-                progressBar.setValue(progressBar.getValue() + 1);
-                progressField.setText(progressBar.getValue() + "/" + progressBar.getMaximum());
+                progressBar.setValue(progress.getIntPercentage());
+                progressField.setText(progress.getPercentage() + "%");
             }
         });
     }
 
     @Override
-    public void init(int maxProgress) {
+    public void init() {
         progressBar.setValue(0);
-        progressBar.setMaximum(maxProgress);
+        progressBar.setMaximum(100);
         progressBar.setIndeterminate(false);
 
         // Reset foreground, in case previous attempt failed

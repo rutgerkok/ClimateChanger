@@ -4,11 +4,15 @@ import nl.rutgerkok.climatechanger.ProgressUpdater;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
 import nl.rutgerkok.climatechanger.task.PlayerDataTask;
 import nl.rutgerkok.climatechanger.task.Task;
-import nl.rutgerkok.climatechanger.world.World;
+import nl.rutgerkok.hammer.PlayerFile;
+import nl.rutgerkok.hammer.anvil.AnvilChunk;
+import nl.rutgerkok.hammer.anvil.AnvilWorld;
+import nl.rutgerkok.hammer.util.Progress;
+import nl.rutgerkok.hammer.util.Result;
+import nl.rutgerkok.hammer.util.Visitor;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,22 +23,17 @@ import java.util.Objects;
  */
 public class ConverterExecutor {
 
-    private final Collection<Converter> converters = new ArrayList<>();
+    private final List<ChunkTask> chunkTasks;
+    private final List<PlayerDataTask> playerTasks;
     private final ProgressUpdater updater;
-    private final World world;
+    private final AnvilWorld world;
 
-    public ConverterExecutor(ProgressUpdater updater, World world, Iterable<? extends Task> tasks) {
+    public ConverterExecutor(ProgressUpdater updater, AnvilWorld world, Iterable<? extends Task> tasks) {
         this.world = Objects.requireNonNull(world);
         this.updater = Objects.requireNonNull(updater);
 
-        List<ChunkTask> chunkTasks = filterList(tasks, ChunkTask.class);
-        if (!chunkTasks.isEmpty()) {
-            converters.add(new ChunkConverter(world, chunkTasks));
-        }
-        List<PlayerDataTask> playerTasks = filterList(tasks, PlayerDataTask.class);
-        if (!playerTasks.isEmpty()) {
-            converters.add(new PlayerDataConverter(world, playerTasks));
-        }
+        this.chunkTasks = filterList(tasks, ChunkTask.class);
+        this.playerTasks = filterList(tasks, PlayerDataTask.class);
     }
 
     /**
@@ -42,11 +41,29 @@ public class ConverterExecutor {
      */
     public void convertAll() {
         try {
-            updater.init(getUnitsToConvert());
-            for (Converter converter : converters) {
-                converter.convert(updater);
-            }
-            world.saveLevelDatIfNeeded();
+            updater.init();
+            world.walkAnvilChunks(new Visitor<AnvilChunk>() {
+                @Override
+                public Result accept(AnvilChunk chunk, Progress progress) {
+                    updater.update(progress);
+                    Result result = Result.NO_CHANGES;
+                    for (ChunkTask chunkTask : chunkTasks) {
+                        result = result.getCombined(chunkTask.convertChunk(chunk));
+                    }
+                    return result;
+                }
+            });
+            world.walkPlayerFiles(new Visitor<PlayerFile>() {
+                @Override
+                public Result accept(PlayerFile playerFile, Progress progress) {
+                    updater.update(progress);
+                    Result result = Result.NO_CHANGES;
+                    for (PlayerDataTask playerTask : playerTasks) {
+                        result = result.getCombined(playerTask.convertPlayerFile(playerFile));
+                    }
+                    return result;
+                }
+            });
             updater.complete();
         } catch (IOException e) {
             updater.failed(e);
@@ -74,21 +91,6 @@ public class ConverterExecutor {
             }
         }
         return result;
-    }
-
-    /**
-     * Gets the sum of the units that each converter needs to convert.
-     *
-     * @return Total amount of units.
-     * @throws IOException
-     *             When an IO error occurs.
-     */
-    private int getUnitsToConvert() throws IOException {
-        int sum = 0;
-        for (Converter converter : converters) {
-            sum += converter.getUnitsToConvert();
-        }
-        return sum;
     }
 
 }

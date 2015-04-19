@@ -1,10 +1,12 @@
 package nl.rutgerkok.climatechanger.task;
 
-import nl.rutgerkok.climatechanger.material.MaterialData;
-import nl.rutgerkok.climatechanger.material.MaterialSet;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.MathUtil;
-import nl.rutgerkok.climatechanger.world.Chunk;
+import nl.rutgerkok.hammer.Chunk;
+import nl.rutgerkok.hammer.anvil.AnvilChunk;
+import nl.rutgerkok.hammer.material.MaterialData;
+import nl.rutgerkok.hammer.material.MaterialSet;
+import nl.rutgerkok.hammer.util.Result;
 
 import java.util.Random;
 
@@ -44,15 +46,15 @@ public final class OreSpawner implements ChunkTask {
     }
 
     @Override
-    public Result convertChunk(Chunk chunk) {
+    public Result convertChunk(AnvilChunk chunk) {
         Result result = Result.NO_CHANGES;
         for (int t = 0; t < frequency; t++)
         {
             if (random.nextDouble() * 100.0 > rarity) {
                 continue;
             }
-            int x = random.nextInt(Chunk.CHUNK_X_SIZE);
-            int z = random.nextInt(Chunk.CHUNK_Z_SIZE);
+            int x = random.nextInt(chunk.getSizeX());
+            int z = random.nextInt(chunk.getSizeZ());
             if (spawn(chunk, x, z)) {
                 result = Result.CHANGED;
             }

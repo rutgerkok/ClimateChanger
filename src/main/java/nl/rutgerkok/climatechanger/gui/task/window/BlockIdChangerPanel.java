@@ -1,11 +1,11 @@
 package nl.rutgerkok.climatechanger.gui.task.window;
 
 import nl.rutgerkok.climatechanger.gui.LabelWithField;
-import nl.rutgerkok.climatechanger.material.MaterialMap;
 import nl.rutgerkok.climatechanger.task.BlockIdChanger;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
+import nl.rutgerkok.hammer.material.MaterialMap;
 
 import java.awt.FlowLayout;
 import java.text.ParseException;

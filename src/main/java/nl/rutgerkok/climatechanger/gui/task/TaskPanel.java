@@ -3,8 +3,8 @@ package nl.rutgerkok.climatechanger.gui.task;
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
 import nl.rutgerkok.climatechanger.gui.filechooser.FileChooserPanel;
 import nl.rutgerkok.climatechanger.gui.filechooser.FileChoosers;
-import nl.rutgerkok.climatechanger.util.Consumer;
-import nl.rutgerkok.climatechanger.world.World;
+import nl.rutgerkok.hammer.anvil.AnvilWorld;
+import nl.rutgerkok.hammer.util.Consumer;
 
 import java.awt.BorderLayout;
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class TaskPanel extends JPanel {
     }
 
     private FileChooserPanel createFileChooser(final GuiInformation information) {
-        final FileChooserPanel fileChooserPanel = FileChoosers.createPanel("Select the " + World.LEVEL_DAT_NAME + ":");
+        final FileChooserPanel fileChooserPanel = FileChoosers.createPanel("Select the " + AnvilWorld.LEVEL_DAT_NAME + ":");
 
         fileChooserPanel.subscribeToFileChanges(new Consumer<Path>() {
 
@@ -51,11 +51,11 @@ public class TaskPanel extends JPanel {
                 }
 
                 try {
-                    if (!file.getFileName().toString().equals(World.LEVEL_DAT_NAME)) {
-                        throw new IOException("Please select a " + World.LEVEL_DAT_NAME + "-file.");
+                    if (!file.getFileName().toString().equals(AnvilWorld.LEVEL_DAT_NAME)) {
+                        throw new IOException("Please select a " + AnvilWorld.LEVEL_DAT_NAME + "-file.");
                     }
 
-                    information.setWorld(new World(file));
+                    information.setWorld(new AnvilWorld(file));
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(TaskPanel.this, "Cannot read file:\n\n" + e.getMessage(), "Invalid file", JOptionPane.ERROR_MESSAGE);
                     information.setWorld(null);

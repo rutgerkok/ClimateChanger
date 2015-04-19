@@ -1,6 +1,7 @@
 package nl.rutgerkok.climatechanger.task;
 
-import nl.rutgerkok.climatechanger.nbt.CompoundTag;
+import nl.rutgerkok.hammer.PlayerFile;
+import nl.rutgerkok.hammer.util.Result;
 
 /**
  * Converter for the player data, both in the player files and for the
@@ -12,10 +13,10 @@ public interface PlayerDataTask extends Task {
     /**
      * Executes its action on the given player tag.
      *
-     * @param tag
-     *            The tag, with sub tags like Inventory, EnderItems, etc.
-     * @return True if the tag was changed, false otherwise.
+     * @param playerFile
+     *            The player file.
+     * @return The result of the task.
      */
-    boolean convertPlayerFile(CompoundTag tag);
+    Result convertPlayerFile(PlayerFile playerFile);
 
 }

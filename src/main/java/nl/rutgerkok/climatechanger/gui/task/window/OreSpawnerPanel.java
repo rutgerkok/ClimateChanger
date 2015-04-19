@@ -1,14 +1,14 @@
 package nl.rutgerkok.climatechanger.gui.task.window;
 
 import nl.rutgerkok.climatechanger.gui.LabelWithField;
-import nl.rutgerkok.climatechanger.material.MaterialData;
-import nl.rutgerkok.climatechanger.material.MaterialMap;
-import nl.rutgerkok.climatechanger.material.MaterialSet;
 import nl.rutgerkok.climatechanger.task.OreSpawner;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
-import nl.rutgerkok.climatechanger.world.Chunk;
+import nl.rutgerkok.hammer.anvil.AnvilChunk;
+import nl.rutgerkok.hammer.material.MaterialData;
+import nl.rutgerkok.hammer.material.MaterialMap;
+import nl.rutgerkok.hammer.material.MaterialSet;
 
 import java.awt.FlowLayout;
 import java.text.ParseException;
@@ -46,8 +46,8 @@ final class OreSpawnerPanel extends TaskPanel {
             int maxSize = ParseUtil.parseInt(maxSizeField.getText(), 1, OreSpawner.MAX_ORE_SIZE);
             int frequency = ParseUtil.parseInt(frequencyField.getText(), 1, OreSpawner.MAX_ORE_FREQUENCY);
             double rarity = ParseUtil.parseDouble(rarityField.getText(), 0.0001, 100.0);
-            int minHeight = ParseUtil.parseInt(minHeightField.getText(), 0, Chunk.CHUNK_Y_SIZE);
-            int maxHeight = ParseUtil.parseInt(maxHeightField.getText(), 0, Chunk.CHUNK_Y_SIZE);
+            int minHeight = ParseUtil.parseInt(minHeightField.getText(), 0, AnvilChunk.CHUNK_Y_SIZE);
+            int maxHeight = ParseUtil.parseInt(maxHeightField.getText(), 0, AnvilChunk.CHUNK_Y_SIZE);
             MaterialSet sourceBlocks = ParseUtil.parseMaterialSet(sourceBlocksField.getText(), materialMap);
             return new OreSpawner(material, maxSize, frequency, rarity, minHeight, maxHeight, sourceBlocks);
         } catch (ParseException e) {

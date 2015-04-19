@@ -21,6 +21,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>nl.rutgerkok</groupId>
+			<artifactId>hammer</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>

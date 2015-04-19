@@ -1,9 +1,11 @@
 package nl.rutgerkok.climatechanger.util;
 
-import nl.rutgerkok.climatechanger.material.Material;
-import nl.rutgerkok.climatechanger.material.MaterialData;
-import nl.rutgerkok.climatechanger.material.MaterialMap;
-import nl.rutgerkok.climatechanger.material.MaterialSet;
+import nl.rutgerkok.hammer.anvil.material.AnvilMaterialData;
+import nl.rutgerkok.hammer.material.Material;
+import nl.rutgerkok.hammer.material.MaterialData;
+import nl.rutgerkok.hammer.material.MaterialMap;
+import nl.rutgerkok.hammer.material.MaterialSet;
+import nl.rutgerkok.hammer.util.MaterialNotFoundException;
 
 import java.text.ParseException;
 
@@ -110,9 +112,9 @@ public final class ParseUtil {
                 String secondPart = string.substring(colonPosition + 1);
 
                 Material material = parseMaterial(firstPart, materialMap);
-                int materialData = parseInt(secondPart, MaterialData.MIN_BLOCK_DATA, MaterialData.MAX_BLOCK_DATA);
+                int materialData = parseInt(secondPart, AnvilMaterialData.MIN_BLOCK_DATA, AnvilMaterialData.MAX_BLOCK_DATA);
 
-                return MaterialData.of(material, (byte) materialData);
+                return AnvilMaterialData.of(material, (byte) materialData);
             } catch (ParseException e) {
                 // Ignore, block below tries again without assuming second
                 // part is block data
@@ -121,7 +123,7 @@ public final class ParseUtil {
 
         // No material data
         Material material = parseMaterial(string, materialMap);
-        return MaterialData.ofAnyState(material);
+        return material.withAnyData();
     }
 
     /**

@@ -1,8 +1,8 @@
 package nl.rutgerkok.climatechanger.gui;
 
 import nl.rutgerkok.climatechanger.task.Task;
-import nl.rutgerkok.climatechanger.util.Consumer;
-import nl.rutgerkok.climatechanger.world.World;
+import nl.rutgerkok.hammer.anvil.AnvilWorld;
+import nl.rutgerkok.hammer.util.Consumer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class GuiInformation {
 
     private final List<Consumer<UpdateType>> taskChangeListeners = new ArrayList<>();
     private final List<Task> tasks = new ArrayList<>();
-    private World world = null;
+    private AnvilWorld world = null;
     private final List<Runnable> worldChangeListeners = new ArrayList<>();
 
     /**
@@ -69,7 +69,7 @@ public class GuiInformation {
      *
      * @return The world, may be null.
      */
-    public World getWorld() {
+    public AnvilWorld getWorld() {
         return world;
     }
 
@@ -157,7 +157,7 @@ public class GuiInformation {
      * @param world
      *            The world, may be null.
      */
-    public void setWorld(World world) {
+    public void setWorld(AnvilWorld world) {
         this.world = world;
         for (Runnable runnable : worldChangeListeners) {
             runnable.run();
@@ -181,8 +181,8 @@ public class GuiInformation {
     }
 
     /**
-     * Adds a runnable that will be run after {@link #setWorld(World)} has been
-     * called.
+     * Adds a runnable that will be run after {@link #setWorld(AnvilWorld)} has
+     * been called.
      *
      * @param runnable
      *            The runnable to run.
