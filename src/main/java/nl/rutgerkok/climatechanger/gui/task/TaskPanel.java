@@ -1,17 +1,10 @@
 package nl.rutgerkok.climatechanger.gui.task;
 
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
-import nl.rutgerkok.climatechanger.gui.filechooser.FileChooserPanel;
-import nl.rutgerkok.climatechanger.gui.filechooser.FileChoosers;
-import nl.rutgerkok.hammer.anvil.AnvilWorld;
-import nl.rutgerkok.hammer.util.Consumer;
 
 import java.awt.BorderLayout;
-import java.io.IOException;
-import java.nio.file.Path;
 
 import javax.swing.BorderFactory;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -27,41 +20,10 @@ public class TaskPanel extends JPanel {
         // Add margin
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Field for directory name
-        add(createFileChooser(information), BorderLayout.NORTH);
-
         // Field for current task
         add(new TaskListPanel(information), BorderLayout.CENTER);
 
         // Button for new tasks
         add(new TaskListButtonsPanel(information), BorderLayout.SOUTH);
-    }
-
-    private FileChooserPanel createFileChooser(final GuiInformation information) {
-        final FileChooserPanel fileChooserPanel = FileChoosers.createPanel("Select the " + AnvilWorld.LEVEL_DAT_NAME + ":");
-
-        fileChooserPanel.subscribeToFileChanges(new Consumer<Path>() {
-
-            @Override
-            public void accept(Path file) {
-                if (file == null) {
-                    // No file selected
-                    information.setWorld(null);
-                    return;
-                }
-
-                try {
-                    if (!file.getFileName().toString().equals(AnvilWorld.LEVEL_DAT_NAME)) {
-                        throw new IOException("Please select a " + AnvilWorld.LEVEL_DAT_NAME + "-file.");
-                    }
-
-                    information.setWorld(new AnvilWorld(file));
-                } catch (IOException e) {
-                    JOptionPane.showMessageDialog(TaskPanel.this, "Cannot read file:\n\n" + e.getMessage(), "Invalid file", JOptionPane.ERROR_MESSAGE);
-                    information.setWorld(null);
-                }
-            }
-        });
-        return fileChooserPanel;
     }
 }

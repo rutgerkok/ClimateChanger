@@ -46,6 +46,7 @@ public class TaskListButtonsPanel extends JPanel {
                 openTaskWindow();
             }
         });
+        updateAddTaskButton();
         add(addTaskButton);
 
         // Update "Add task" button when needed
@@ -65,6 +66,8 @@ public class TaskListButtonsPanel extends JPanel {
                 }
             }
         });
+
+
     }
 
     private void openTaskWindow() {

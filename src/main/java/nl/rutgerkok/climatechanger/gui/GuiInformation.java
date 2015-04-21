@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GuiInformation {
     public enum UpdateType {
@@ -21,10 +22,10 @@ public class GuiInformation {
 
     private final Collection<Task> selectedTasks = new ArrayList<Task>();
 
-    private final List<Consumer<UpdateType>> taskChangeListeners = new ArrayList<>();
+    private final List<Consumer<UpdateType>> taskChangeListeners = new CopyOnWriteArrayList<>();
     private final List<Task> tasks = new ArrayList<>();
     private AnvilWorld world = null;
-    private final List<Runnable> worldChangeListeners = new ArrayList<>();
+    private final List<Runnable> worldChangeListeners = new CopyOnWriteArrayList<>();
 
     /**
      * Adds a task to the task list.

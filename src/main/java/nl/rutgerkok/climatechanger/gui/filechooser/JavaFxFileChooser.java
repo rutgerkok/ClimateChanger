@@ -1,5 +1,7 @@
 package nl.rutgerkok.climatechanger.gui.filechooser;
 
+import nl.rutgerkok.hammer.util.Consumer;
+
 import java.io.File;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
@@ -13,7 +15,7 @@ import javax.swing.SwingUtilities;
  * this class uses reflection.
  *
  */
-class JavaFxFileChooser extends FileChooserPanel {
+class JavaFxFileChooser extends FileChooser {
 
     private final Class<?> fileChooserClass;
     private final Class<?> platformClass;
@@ -21,8 +23,7 @@ class JavaFxFileChooser extends FileChooserPanel {
     private final Method showOpenDialogMethod;
     private final Class<?> windowClass;
 
-    JavaFxFileChooser(String label) throws ReflectiveOperationException {
-        super(label);
+    JavaFxFileChooser() throws ReflectiveOperationException {
 
         // Initialize JavaFx
         Class.forName("javafx.embed.swing.JFXPanel").newInstance();
@@ -35,34 +36,16 @@ class JavaFxFileChooser extends FileChooserPanel {
         showOpenDialogMethod = fileChooserClass.getMethod("showOpenDialog", windowClass);
     }
 
-    private void handleFileChooser() {
+    private void handleFileChooser(final Consumer<Path> callback) {
         final Path path = openFileChooser();
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-                textUpdated(path == null ? "" : path.toString());
+                callback.accept(path);
             }
 
         });
-    }
-
-    /**
-     * Called when the browse button is clicked. Opens the file chooser. Can be
-     * called from any thread.
-     */
-    @Override
-    protected void onBrowseClick() {
-        try {
-            runLaterMethod.invoke(null, new Runnable() {
-                @Override
-                public void run() {
-                    handleFileChooser();
-                }
-            });
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
@@ -75,6 +58,20 @@ class JavaFxFileChooser extends FileChooserPanel {
             Object fileChooser = fileChooserClass.newInstance();
             File file = (File) showOpenDialogMethod.invoke(fileChooser, (Object) null);
             return file == null ? null : file.toPath();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void chooseFile(final Consumer<Path> callback) {
+        try {
+            runLaterMethod.invoke(null, new Runnable() {
+                @Override
+                public void run() {
+                    handleFileChooser(callback);
+                }
+            });
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
