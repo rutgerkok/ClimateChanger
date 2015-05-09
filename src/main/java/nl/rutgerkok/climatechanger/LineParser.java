@@ -102,7 +102,7 @@ public class LineParser {
                 int maxAltitude = ParseUtil.parseInt(parts.get(6), 0, Chunk.CHUNK_Y_SIZE);
                 MaterialSet sourceBlocks = ParseUtil.parseMaterialSet(parts.get(7), materialMap);
                 return new OreSpawner(oreMaterial, maxSize, frequency, rarity, minAltitude, maxAltitude, sourceBlocks);
-            case "fixSigns":
+            case "fixsigns":
                 assureMinSize(parts, 2);
                 String remainingArgs = StringJoiner.join(" ", 1, parts);
                 return new SignFixer(remainingArgs.split(","));
