@@ -14,6 +14,15 @@ Current features include:
 ## Download
 [See here](https://github.com/rutgerkok/ClimateChanger/releases).
 
+## Compiling
+Make sure you have installed [Maven](https://maven.apache.org/).
+
+First, compile [Hammer](https://github.com/rutgerkok/Hammer). This library is required
+for ClimateChanger to compile.
+Then, download the source code of ClimateChanger (see the sidebar) and run the command
+`mvn install` in the directory you have just downloaded ClimateChanger to. You should
+end up with a runnable JAR file in the newly created `target` directory.
+
 ## Usage
 Before you use any of the features, please read the notes about the feature below.
 
