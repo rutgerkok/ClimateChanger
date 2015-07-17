@@ -76,7 +76,7 @@ public final class OreSpawner implements ChunkTask {
      *            X coord to spawn, should be between 0 and 16.
      * @param zOrigin
      *            Z coord to spawn, should be between 0 and 16.
-     * @return
+     * @return True if the chunk was changed, false otherwise.
      */
     private boolean spawn(Chunk chunk, int xOrigin, int zOrigin) {
         boolean changed = false;
@@ -118,8 +118,11 @@ public final class OreSpawner implements ChunkTask {
                         if (d13 * d13 + d14 * d14 < 1.0D) {
                             for (int z = m; z <= i2; z++) {
                                 double d15 = (z + 0.5D - d9) / (d11 / 2.0D);
+                                if (chunk.isOutOfBounds(x, y, z)) {
+                                    continue;
+                                }
                                 if ((d13 * d13 + d14 * d14 + d15 * d15 < 1.0D) && sourceBlocks.containsId(chunk.getMaterialId(x, y, z))) {
-                                    chunk.setBlock(x, y, z, material);
+                                    chunk.setMaterial(x, y, z, material);
                                     changed = true;
                                 }
                             }
