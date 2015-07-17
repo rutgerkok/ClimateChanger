@@ -4,26 +4,20 @@ import nl.rutgerkok.climatechanger.ProgressUpdater;
 import nl.rutgerkok.hammer.util.Progress;
 
 import java.awt.Color;
-import java.awt.Dimension;
+import java.util.Objects;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
-public class ProgressPanel extends JPanel implements ProgressUpdater {
+public class ProgressPanel implements ProgressUpdater {
     private final Color originalBarForeground;
     private final JProgressBar progressBar;
     private final JLabel progressField;
 
-    public ProgressPanel() {
-        progressBar = new JProgressBar();
-        progressBar.setPreferredSize(new Dimension(300, 20));
-        add(progressBar);
-
-        progressField = new JLabel();
-        progressField.setPreferredSize(new Dimension(45, 25));
-        add(progressField);
+    public ProgressPanel(JProgressBar progressBar, JLabel progressField) {
+        this.progressBar = Objects.requireNonNull(progressBar);
+        this.progressField = Objects.requireNonNull(progressField);
 
         originalBarForeground = progressBar.getForeground();
     }
@@ -55,7 +49,7 @@ public class ProgressPanel extends JPanel implements ProgressUpdater {
             @Override
             public void run() {
                 progressBar.setValue(progress.getIntPercentage());
-                progressField.setText(progress.getPercentage() + "%");
+                progressField.setText(progress.getIntPercentage() + "%");
             }
         });
     }

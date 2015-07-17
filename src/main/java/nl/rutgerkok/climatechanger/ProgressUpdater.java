@@ -24,7 +24,7 @@ public interface ProgressUpdater {
      * Called whenever the progress is updated one unit.
      * 
      * @param progress
-     *            TODO
+     *            The new progress.
      *
      */
     void update(Progress progress);
