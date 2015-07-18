@@ -13,6 +13,11 @@ import javax.swing.JTextArea;
 
 public class SignFixerPanel extends TaskPanel {
 
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     private final JTextArea textArea;
 
     public SignFixerPanel() {

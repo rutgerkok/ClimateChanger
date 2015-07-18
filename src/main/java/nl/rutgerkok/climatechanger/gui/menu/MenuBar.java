@@ -12,6 +12,11 @@ import javax.swing.JMenuBar;
  */
 public final class MenuBar extends JMenuBar {
 
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     public MenuBar(GuiInformation applicationState) {
         Objects.requireNonNull(applicationState);
 

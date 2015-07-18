@@ -15,6 +15,11 @@ import javax.swing.JTextField;
  * field.
  */
 public class LabelWithField extends JPanel {
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     private static final int TEXT_FIELD_HEIGHT = 22;
     private static final int TEXT_FIELD_WIDTH = 250;
 

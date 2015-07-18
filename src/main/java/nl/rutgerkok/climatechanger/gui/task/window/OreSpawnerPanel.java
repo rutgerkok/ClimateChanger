@@ -15,6 +15,11 @@ import java.text.ParseException;
 
 final class OreSpawnerPanel extends TaskPanel {
 
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     private final LabelWithField frequencyField;
 
     private final LabelWithField materialField;

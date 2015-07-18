@@ -11,6 +11,11 @@ import javax.swing.JMenuItem;
  */
 abstract class AbstractMenu extends JMenu {
 
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     AbstractMenu(String label) {
         super(label);
     }

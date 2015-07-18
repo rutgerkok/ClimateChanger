@@ -11,6 +11,11 @@ import nl.rutgerkok.climatechanger.gui.GuiInformation;
  */
 final class FileMenu extends AbstractMenu {
 
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     FileMenu(GuiInformation guiInformation) {
         super("File");
 

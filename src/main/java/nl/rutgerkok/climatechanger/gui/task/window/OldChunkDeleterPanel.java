@@ -15,6 +15,11 @@ import javax.swing.JLabel;
 
 public final class OldChunkDeleterPanel extends TaskPanel {
 
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     private final LabelWithField minimumMinutesLoaded;
 
     public OldChunkDeleterPanel() {

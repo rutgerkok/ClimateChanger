@@ -12,6 +12,12 @@ import javax.swing.JPanel;
  *
  */
 public class TaskPanel extends JPanel {
+
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     public TaskPanel(GuiInformation information) {
 
         // Divide into areas

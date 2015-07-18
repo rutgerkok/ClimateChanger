@@ -20,6 +20,12 @@ import javax.swing.JTabbedPane;
  *
  */
 public class TaskChooserWindow extends JDialog {
+
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     private final Consumer<Task> onSuccess;
     private final JTabbedPane tabs;
 

@@ -1,8 +1,8 @@
 package nl.rutgerkok.climatechanger.gui.task;
 
 import nl.rutgerkok.climatechanger.gui.GuiInformation;
-import nl.rutgerkok.climatechanger.gui.Window;
 import nl.rutgerkok.climatechanger.gui.GuiInformation.UpdateType;
+import nl.rutgerkok.climatechanger.gui.Window;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.hammer.util.Consumer;
 
@@ -19,6 +19,12 @@ import javax.swing.JPanel;
  *
  */
 public class TaskListPanel extends JPanel {
+
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     private final GuiInformation information;
 
     public TaskListPanel(GuiInformation information) {

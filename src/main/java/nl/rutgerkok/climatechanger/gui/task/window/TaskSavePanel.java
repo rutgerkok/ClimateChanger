@@ -18,6 +18,12 @@ import javax.swing.JPanel;
  *
  */
 public class TaskSavePanel extends JPanel {
+
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     private final TaskChooserWindow window;
 
     public TaskSavePanel(TaskChooserWindow window) {

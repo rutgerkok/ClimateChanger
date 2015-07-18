@@ -13,6 +13,11 @@ import javax.swing.JPanel;
  */
 public abstract class TaskPanel extends JPanel {
 
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     public TaskPanel() {
         setBackground(Color.WHITE);
     }

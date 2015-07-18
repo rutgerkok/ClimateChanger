@@ -17,6 +17,11 @@ import javax.swing.JPanel;
 
 public class TaskListButtonsPanel extends JPanel {
 
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     private final JButton addTaskButton;
     private final GuiInformation information;
     private boolean popupWindowOpen;

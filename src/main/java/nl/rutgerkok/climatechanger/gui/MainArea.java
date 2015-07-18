@@ -15,6 +15,11 @@ import javax.swing.JPanel;
  */
 final class MainArea extends JPanel {
 
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     MainArea(final GuiInformation information) {
         setLayout(new BorderLayout());
         information.subscribeToWorldChanges(new Runnable() {

@@ -76,6 +76,11 @@ public final class GridBagRules {
 
     private static class GridBagRuleImpl extends GridBagConstraints implements GridBagRule {
 
+        /**
+         * Default serial version ID.
+         */
+        private static final long serialVersionUID = 0L;
+
         private GridBagRuleImpl(int gridX, int gridY) {
             this.gridx = gridX;
             this.gridy = gridY;

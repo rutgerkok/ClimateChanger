@@ -5,6 +5,12 @@ package nl.rutgerkok.climatechanger.util;
  *
  */
 public class InvalidTaskException extends Exception {
+
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     public InvalidTaskException(String reason) {
         super(reason);
     }

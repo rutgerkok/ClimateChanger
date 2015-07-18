@@ -12,6 +12,11 @@ import java.text.ParseException;
 
 public class BlockIdChangerPanel extends TaskPanel {
 
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     private final LabelWithField from;
     private final LabelWithField to;
 

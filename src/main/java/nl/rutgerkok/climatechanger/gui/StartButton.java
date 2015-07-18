@@ -15,6 +15,12 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 public class StartButton extends JButton implements ActionListener, ProgressUpdater {
+
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     private final GuiInformation information;
     private final ProgressPanel progressBar;
 

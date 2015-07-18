@@ -11,6 +11,11 @@ import javax.swing.JLabel;
 
 public class TaskLabel extends JLabel {
 
+    /**
+     * Default serial version ID.
+     */
+    private static final long serialVersionUID = 0L;
+
     private Color color = Color.BLACK;
     private final GuiInformation information;
     private final Task task;
