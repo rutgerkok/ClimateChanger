@@ -64,7 +64,7 @@ public class SignFixer implements ChunkTask {
 
     private boolean convertSign(CompoundTag sign) {
         boolean changed = false;
-        for (CompoundKey lineName : TileEntityTag.SIGN_LINE_NAMES) {
+        for (CompoundKey<String> lineName : TileEntityTag.SIGN_LINE_NAMES) {
             String line = sign.getString(lineName);
 
             String changedLine = convertLine(line);

@@ -109,7 +109,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
 
         // Items in mine carts with chests/hoppers and in horses
         if (entity.containsKey(EntityTag.ITEMS)) {
-            return convertItemList(gameFactory, entity.getList(EntityTag.ITEM, TagType.COMPOUND));
+            return convertItemList(gameFactory, entity.getList(EntityTag.ITEMS, TagType.COMPOUND));
         }
 
         return false;
@@ -187,10 +187,10 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
         // Special case for FlowerPot (uses Item and Data tag)
         if (tileEntity.getString(TileEntityTag.ID).equalsIgnoreCase("FlowerPot")) {
             String blockId = tileEntity.getString(TileEntityTag.FLOWER_POT_BLOCK_NAME);
-            byte blockData = (byte) tileEntity.getShort(TileEntityTag.FLOWER_POT_BLOCK_DATA);
+            byte blockData = (byte) tileEntity.getInt(TileEntityTag.FLOWER_POT_BLOCK_DATA);
             if (oldBlock.materialNameEquals(blockId) && blockDataMatches(oldBlockDataByte, blockData)) {
                 tileEntity.setString(TileEntityTag.FLOWER_POT_BLOCK_NAME, newBlock.getMaterial().getName());
-                tileEntity.setShort(TileEntityTag.FLOWER_POT_BLOCK_DATA, newBlockDataByte);
+                tileEntity.setInt(TileEntityTag.FLOWER_POT_BLOCK_DATA, newBlockDataByte);
                 return true;
             }
         }
@@ -198,11 +198,11 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
         // Special case for Piston (like FlowerPot, but uses item ids instead
         // of names and different keys)
         if (tileEntity.getString(TileEntityTag.ID).equalsIgnoreCase("Piston")) {
-            short blockId = tileEntity.getShort(TileEntityTag.PISTON_BLOCK_ID);
-            short blockData = tileEntity.getShort(TileEntityTag.PISTON_BLOCK_DATA);
+            int blockId = tileEntity.getInt(TileEntityTag.PISTON_BLOCK_ID);
+            int blockData = tileEntity.getInt(TileEntityTag.PISTON_BLOCK_DATA);
             if (oldBlockId == blockId && (oldBlockDataByte == -1 || blockData == oldBlockDataByte)) {
-                tileEntity.setShort(TileEntityTag.PISTON_BLOCK_ID, newBlockId);
-                tileEntity.setShort(TileEntityTag.PISTON_BLOCK_DATA, newBlockDataByte);
+                tileEntity.setInt(TileEntityTag.PISTON_BLOCK_ID, newBlockId);
+                tileEntity.setInt(TileEntityTag.PISTON_BLOCK_DATA, newBlockDataByte);
                 return true;
             }
         }
