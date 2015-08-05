@@ -9,8 +9,8 @@ import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
 import nl.rutgerkok.climatechanger.util.StringJoiner;
 import nl.rutgerkok.hammer.anvil.AnvilChunk;
+import nl.rutgerkok.hammer.material.GlobalMaterialMap;
 import nl.rutgerkok.hammer.material.MaterialData;
-import nl.rutgerkok.hammer.material.MaterialMap;
 import nl.rutgerkok.hammer.material.MaterialSet;
 
 import java.text.ParseException;
@@ -19,15 +19,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class LineParser {
-    private void assureSize(List<?> args, int minSize) throws ParseException {
-        if (args.size() != minSize) {
-            throw new ParseException("Expected " + minSize + " args, found " + args.size() + " args.", 0);
-        }
-    }
-
     private void assureMinSize(List<?> args, int minSize) throws ParseException {
         if (args.size() < minSize) {
             throw new ParseException("Expected at least " + minSize + " args, found " + args.size() + " args.", 0);
+        }
+    }
+
+    private void assureSize(List<?> args, int minSize) throws ParseException {
+        if (args.size() != minSize) {
+            throw new ParseException("Expected " + minSize + " args, found " + args.size() + " args.", 0);
         }
     }
 
@@ -40,7 +40,8 @@ public class LineParser {
                 );
     }
 
-    public List<Task> parse(MaterialMap materialMap, List<String> args) throws ParseException, InvalidTaskException {
+    public List<Task> parse(GlobalMaterialMap materialMap, List<String> args)
+            throws ParseException, InvalidTaskException {
         List<Task> parsed = new ArrayList<>();
         List<String> currentParts = new ArrayList<>();
 
@@ -75,7 +76,8 @@ public class LineParser {
         return parsed;
     }
 
-    private Task parseChunkTask(MaterialMap materialMap, List<String> parts) throws ParseException, InvalidTaskException {
+    private Task parseChunkTask(GlobalMaterialMap materialMap, List<String> parts)
+            throws ParseException, InvalidTaskException {
         if (parts.isEmpty()) {
             throw new ParseException("No parameters given", 0);
         }

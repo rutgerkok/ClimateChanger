@@ -4,7 +4,7 @@ import nl.rutgerkok.climatechanger.gui.GuiInformation;
 import nl.rutgerkok.climatechanger.gui.GuiInformation.UpdateType;
 import nl.rutgerkok.climatechanger.gui.task.window.TaskChooserWindow;
 import nl.rutgerkok.climatechanger.task.Task;
-import nl.rutgerkok.hammer.material.MaterialMap;
+import nl.rutgerkok.hammer.material.GlobalMaterialMap;
 import nl.rutgerkok.hammer.util.Consumer;
 
 import java.awt.FlowLayout;
@@ -77,7 +77,7 @@ public class TaskListButtonsPanel extends JPanel {
 
     private void openTaskWindow() {
         addTaskButton.setEnabled(false);
-        MaterialMap materialMap = information.getWorld().getGameFactory().getMaterialMap();
+        GlobalMaterialMap materialMap = information.getWorld().getGameFactory().getMaterialMap().getGlobal();
         new TaskChooserWindow(this, materialMap, new Consumer<Task>() {
             @Override
             public void accept(Task task) {

@@ -4,10 +4,12 @@ import nl.rutgerkok.hammer.GameFactory;
 import nl.rutgerkok.hammer.ItemStack;
 import nl.rutgerkok.hammer.PlayerFile;
 import nl.rutgerkok.hammer.anvil.AnvilChunk;
+import nl.rutgerkok.hammer.anvil.AnvilGameFactory;
 import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.EntityTag;
 import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.PlayerTag;
 import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.SectionTag;
 import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.TileEntityTag;
+import nl.rutgerkok.hammer.material.BlockDataMaterialMap;
 import nl.rutgerkok.hammer.material.MaterialData;
 import nl.rutgerkok.hammer.tag.CompoundTag;
 import nl.rutgerkok.hammer.tag.TagType;
@@ -15,47 +17,42 @@ import nl.rutgerkok.hammer.util.NibbleArray;
 import nl.rutgerkok.hammer.util.Result;
 
 import java.util.List;
+import java.util.Objects;
 
 public class BlockIdChanger implements ChunkTask, PlayerDataTask {
 
     private final MaterialData newBlock;
-    private final short newBlockId;
-    private final byte newBlockIdHighestBytes;
-    private final byte newBlockIdLowestBytes;
-    private final byte newBlockDataByte;
-
     private final MaterialData oldBlock;
-    private final short oldBlockId;
-    private final byte oldBlockDataByte;
 
     /**
      * Creates a new block id change task.
-     *
+     * 
      * @param oldBlock
      *            Old block.
      * @param newBlock
      *            New block.
      */
     public BlockIdChanger(MaterialData oldBlock, MaterialData newBlock) {
-        this.oldBlock = oldBlock;
-        this.oldBlockId = oldBlock.getMaterial().getId();
-        this.oldBlockDataByte = oldBlock.isBlockDataUnspecified() ? -1 : oldBlock.getData();
+        this.oldBlock = Objects.requireNonNull(oldBlock, "oldBlock");
+        this.newBlock = Objects.requireNonNull(newBlock, "newBlock");
+    }
 
-        this.newBlock = newBlock;
-        this.newBlockId = newBlock.getMaterial().getId();
-        this.newBlockIdLowestBytes = (byte) this.newBlockId;
-        this.newBlockIdHighestBytes = (byte) (this.newBlockId >> 8);
-        this.newBlockDataByte = newBlock.getData();
+    private boolean blockDataMatches(byte oldBlockData, byte newBlockData) {
+        if (oldBlockData == -1) {
+            return true;
+        }
+        return oldBlockData == newBlockData;
     }
 
     @Override
     public Result convertChunk(AnvilChunk chunk) {
         Result result = Result.NO_CHANGES;
-        GameFactory gameFactory = chunk.getGameFactory();
+        AnvilGameFactory gameFactory = chunk.getGameFactory();
+        BlockDataMaterialMap materialMap = gameFactory.getMaterialMap();
 
         // Replace the blocks in all sections
         for (CompoundTag section : chunk.getChunkSections()) {
-            if (replaceSection(section)) {
+            if (replaceSection(materialMap, section)) {
                 result = Result.CHANGED;
             }
         }
@@ -167,7 +164,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
         return result;
     }
 
-    private boolean convertTileEntities(GameFactory gameFactory, List<CompoundTag> tileEntities) {
+    private boolean convertTileEntities(AnvilGameFactory gameFactory, List<CompoundTag> tileEntities) {
         boolean changed = false;
         for (CompoundTag tileEntity : tileEntities) {
             if (convertTileEntity(gameFactory, tileEntity)) {
@@ -177,7 +174,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
         return changed;
     }
 
-    private boolean convertTileEntity(GameFactory gameFactory, CompoundTag tileEntity) {
+    private boolean convertTileEntity(AnvilGameFactory gameFactory, CompoundTag tileEntity) {
         if (tileEntity.containsKey(TileEntityTag.ITEMS)) {
             // Most tile entities with an inventory in Minecraft currently have
             // an "Items" tag with the items
@@ -186,11 +183,16 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
 
         // Special case for FlowerPot (uses Item and Data tag)
         if (tileEntity.getString(TileEntityTag.ID).equalsIgnoreCase("FlowerPot")) {
-            String blockId = tileEntity.getString(TileEntityTag.FLOWER_POT_BLOCK_NAME);
+            BlockDataMaterialMap materialMap = gameFactory.getMaterialMap();
+            String blockName = tileEntity.getString(TileEntityTag.FLOWER_POT_BLOCK_NAME);
             byte blockData = (byte) tileEntity.getInt(TileEntityTag.FLOWER_POT_BLOCK_DATA);
-            if (oldBlock.materialNameEquals(blockId) && blockDataMatches(oldBlockDataByte, blockData)) {
-                tileEntity.setString(TileEntityTag.FLOWER_POT_BLOCK_NAME, newBlock.getMaterial().getName());
-                tileEntity.setInt(TileEntityTag.FLOWER_POT_BLOCK_DATA, newBlockDataByte);
+            MaterialData blockMaterial = materialMap.getMaterialData(blockName, blockData);
+
+            if (oldBlock.equals(blockMaterial)) {
+                String newBlockName = materialMap.getBaseName(newBlock);
+                byte newBlockData = (byte) (materialMap.getMinecraftId(newBlock) & 0xf);
+                tileEntity.setString(TileEntityTag.FLOWER_POT_BLOCK_NAME, newBlockName);
+                tileEntity.setInt(TileEntityTag.FLOWER_POT_BLOCK_DATA, newBlockData);
                 return true;
             }
         }
@@ -198,11 +200,14 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
         // Special case for Piston (like FlowerPot, but uses item ids instead
         // of names and different keys)
         if (tileEntity.getString(TileEntityTag.ID).equalsIgnoreCase("Piston")) {
-            int blockId = tileEntity.getInt(TileEntityTag.PISTON_BLOCK_ID);
-            int blockData = tileEntity.getInt(TileEntityTag.PISTON_BLOCK_DATA);
-            if (oldBlockId == blockId && (oldBlockDataByte == -1 || blockData == oldBlockDataByte)) {
-                tileEntity.setInt(TileEntityTag.PISTON_BLOCK_ID, newBlockId);
-                tileEntity.setInt(TileEntityTag.PISTON_BLOCK_DATA, newBlockDataByte);
+            BlockDataMaterialMap materialMap = gameFactory.getMaterialMap();
+            short blockId = (short) tileEntity.getInt(TileEntityTag.PISTON_BLOCK_ID);
+            byte blockData = (byte) tileEntity.getInt(TileEntityTag.PISTON_BLOCK_DATA);
+            MaterialData blockMaterial = materialMap.getMaterialData(blockId, blockData);
+            if (oldBlock.equals(blockMaterial)) {
+                char newBlockCombinedId = materialMap.getMinecraftId(newBlock);
+                tileEntity.setInt(TileEntityTag.PISTON_BLOCK_ID, newBlockCombinedId >> 4);
+                tileEntity.setInt(TileEntityTag.PISTON_BLOCK_DATA, newBlockCombinedId & 0xf);
                 return true;
             }
         }
@@ -215,11 +220,22 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
         return "Change blocks with id " + oldBlock + " into " + newBlock;
     }
 
-    private boolean replaceSection(CompoundTag section) {
+    private boolean replaceSection(BlockDataMaterialMap materialMap, CompoundTag section) {
         boolean changed = false;
 
+        char oldCombinedId = materialMap.getMinecraftId(oldBlock);
+        short oldBlockId = (short) (oldCombinedId >> 4);
+        byte oldBlockDataByte = (byte) (oldCombinedId & 0xf);
+
+        char newBlockCombinedId = materialMap.getMinecraftId(newBlock);
+        short newBlockId = (short) (newBlockCombinedId >> 4);
+        byte newBlockIdLowestBytes = (byte) newBlockId;
+        byte newBlockIdHighestBytes = (byte) (newBlockId >> 8);
+        byte newBlockDataByte = (byte) (newBlockCombinedId & 0xf);
+
         byte[] blockIdsBase = section.getByteArray(SectionTag.BLOCK_IDS, 4096);
-        NibbleArray blockIdsExtended = section.containsKey(SectionTag.EXT_BLOCK_IDS) ? new NibbleArray(section.getByteArray(SectionTag.EXT_BLOCK_IDS, 2048)) : null;
+        NibbleArray blockIdsExtended = section.containsKey(SectionTag.EXT_BLOCK_IDS)
+                ? new NibbleArray(section.getByteArray(SectionTag.EXT_BLOCK_IDS, 2048)) : null;
         NibbleArray blockDatas = new NibbleArray(section.getByteArray(SectionTag.BLOCK_DATA, 2048));
 
         // Convert ids
@@ -254,13 +270,6 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
         }
 
         return changed;
-    }
-
-    private boolean blockDataMatches(byte oldBlockData, byte newBlockData) {
-        if (oldBlockData == -1) {
-            return true;
-        }
-        return oldBlockData == newBlockData;
     }
 
 }

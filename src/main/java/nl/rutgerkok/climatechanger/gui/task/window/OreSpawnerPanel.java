@@ -6,8 +6,8 @@ import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
 import nl.rutgerkok.hammer.anvil.AnvilChunk;
+import nl.rutgerkok.hammer.material.GlobalMaterialMap;
 import nl.rutgerkok.hammer.material.MaterialData;
-import nl.rutgerkok.hammer.material.MaterialMap;
 import nl.rutgerkok.hammer.material.MaterialSet;
 
 import java.awt.FlowLayout;
@@ -23,14 +23,14 @@ final class OreSpawnerPanel extends TaskPanel {
     private final LabelWithField frequencyField;
 
     private final LabelWithField materialField;
-    private final MaterialMap materialMap;
+    private final GlobalMaterialMap materialMap;
     private final LabelWithField maxHeightField;
     private final LabelWithField maxSizeField;
     private final LabelWithField minHeightField;
     private final LabelWithField rarityField;
     private final LabelWithField sourceBlocksField;
 
-    OreSpawnerPanel(MaterialMap materialMap) {
+    OreSpawnerPanel(GlobalMaterialMap materialMap) {
         this.materialMap = materialMap;
 
         setLayout(new FlowLayout(FlowLayout.LEADING));

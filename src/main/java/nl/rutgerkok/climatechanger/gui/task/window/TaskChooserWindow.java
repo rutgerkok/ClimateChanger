@@ -1,7 +1,7 @@
 package nl.rutgerkok.climatechanger.gui.task.window;
 
 import nl.rutgerkok.climatechanger.task.Task;
-import nl.rutgerkok.hammer.material.MaterialMap;
+import nl.rutgerkok.hammer.material.GlobalMaterialMap;
 import nl.rutgerkok.hammer.util.Consumer;
 
 import java.awt.BorderLayout;
@@ -29,7 +29,8 @@ public class TaskChooserWindow extends JDialog {
     private final Consumer<Task> onSuccess;
     private final JTabbedPane tabs;
 
-    public TaskChooserWindow(JPanel alignTo, MaterialMap materialMap, Consumer<Task> onSuccess, final Runnable onAbort) {
+    public TaskChooserWindow(JPanel alignTo, GlobalMaterialMap materialMap, Consumer<Task> onSuccess,
+            final Runnable onAbort) {
         this.onSuccess = onSuccess;
 
         setSize(300, 465);
@@ -53,7 +54,7 @@ public class TaskChooserWindow extends JDialog {
         tabs = new JTabbedPane();
         tabs.setBorder(BorderFactory.createEmptyBorder(7, 7, 0, 7));
 
-        tabs.addTab("Change biome id", new BiomeIdChangerPanel(materialMap));
+        tabs.addTab("Change biome id", new BiomeIdChangerPanel());
         tabs.addTab("Change block id", new BlockIdChangerPanel(materialMap));
         tabs.addTab("Spawn ores", new OreSpawnerPanel(materialMap));
         tabs.addTab("Fix signs", new SignFixerPanel());

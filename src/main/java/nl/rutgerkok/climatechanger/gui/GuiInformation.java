@@ -2,6 +2,7 @@ package nl.rutgerkok.climatechanger.gui;
 
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.hammer.anvil.AnvilWorld;
+import nl.rutgerkok.hammer.material.GlobalMaterialMap;
 import nl.rutgerkok.hammer.util.Consumer;
 
 import java.util.ArrayList;
@@ -20,8 +21,9 @@ public class GuiInformation {
         REMOVE_SELECTED;
     }
 
-    private final Collection<Task> selectedTasks = new ArrayList<Task>();
+    private final GlobalMaterialMap globalMaterialMap = new GlobalMaterialMap();
 
+    private final Collection<Task> selectedTasks = new ArrayList<Task>();
     private final List<Consumer<UpdateType>> taskChangeListeners = new CopyOnWriteArrayList<>();
     private final List<Task> tasks = new ArrayList<>();
     private AnvilWorld world = null;
@@ -45,6 +47,15 @@ public class GuiInformation {
         for (Consumer<UpdateType> listener : taskChangeListeners) {
             listener.accept(type);
         }
+    }
+
+    /**
+     * Gets the global material map.
+     * 
+     * @return The global material map.
+     */
+    public GlobalMaterialMap getGlobalMaterialMap() {
+        return globalMaterialMap;
     }
 
     /**

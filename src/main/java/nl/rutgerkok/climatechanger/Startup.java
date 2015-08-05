@@ -6,6 +6,7 @@ import nl.rutgerkok.climatechanger.gui.Window;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.hammer.anvil.AnvilWorld;
+import nl.rutgerkok.hammer.material.GlobalMaterialMap;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
@@ -51,10 +52,11 @@ public class Startup {
         }
 
         try {
-            AnvilWorld world = new AnvilWorld(levelDat);
+            GlobalMaterialMap materialMap = new GlobalMaterialMap();
+            AnvilWorld world = new AnvilWorld(materialMap, levelDat);
             List<String> strings = Arrays.asList(args).subList(1, args.length);
             // Convert!
-            List<Task> tasks = parser.parse(world.getGameFactory().getMaterialMap(), strings);
+            List<Task> tasks = parser.parse(materialMap, strings);
             new ConverterExecutor(new ConsoleProgressUpdater(), world, tasks).convertAll();
         } catch (ParseException | InvalidTaskException e) {
             System.err.println("Invalid syntax: " + e.getMessage());

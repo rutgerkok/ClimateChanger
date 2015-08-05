@@ -5,7 +5,7 @@ import nl.rutgerkok.climatechanger.task.BlockIdChanger;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
-import nl.rutgerkok.hammer.material.MaterialMap;
+import nl.rutgerkok.hammer.material.GlobalMaterialMap;
 
 import java.awt.FlowLayout;
 import java.text.ParseException;
@@ -18,11 +18,11 @@ public class BlockIdChangerPanel extends TaskPanel {
     private static final long serialVersionUID = 0L;
 
     private final LabelWithField from;
+    private final GlobalMaterialMap materialMap;
+
     private final LabelWithField to;
 
-    private final MaterialMap materialMap;
-
-    public BlockIdChangerPanel(MaterialMap map) {
+    public BlockIdChangerPanel(GlobalMaterialMap map) {
         this.materialMap = map;
 
         setLayout(new FlowLayout(FlowLayout.LEFT));

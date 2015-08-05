@@ -46,7 +46,7 @@ public final class SelectWorldAction implements ActionListener {
         // Get world from file
         AnvilWorld world;
         try {
-            world = new AnvilWorld(worldFile);
+            world = new AnvilWorld(guiInformation.getGlobalMaterialMap(), worldFile);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Cannot open world", JOptionPane.ERROR_MESSAGE);
             return;

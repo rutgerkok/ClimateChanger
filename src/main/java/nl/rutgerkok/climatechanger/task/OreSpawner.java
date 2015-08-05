@@ -121,7 +121,8 @@ public final class OreSpawner implements ChunkTask {
                                 if (chunk.isOutOfBounds(x, y, z)) {
                                     continue;
                                 }
-                                if ((d13 * d13 + d14 * d14 + d15 * d15 < 1.0D) && sourceBlocks.containsId(chunk.getMaterialId(x, y, z))) {
+                                if ((d13 * d13 + d14 * d14 + d15 * d15 < 1.0D)
+                                        && sourceBlocks.contains(chunk.getMaterial(x, y, z))) {
                                     chunk.setMaterial(x, y, z, material);
                                     changed = true;
                                 }
