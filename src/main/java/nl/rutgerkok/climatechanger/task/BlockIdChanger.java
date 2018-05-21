@@ -1,13 +1,16 @@
 package nl.rutgerkok.climatechanger.task;
 
+import java.util.List;
+import java.util.Objects;
+
 import nl.rutgerkok.hammer.GameFactory;
 import nl.rutgerkok.hammer.ItemStack;
 import nl.rutgerkok.hammer.PlayerFile;
 import nl.rutgerkok.hammer.anvil.AnvilChunk;
 import nl.rutgerkok.hammer.anvil.AnvilGameFactory;
 import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.EntityTag;
+import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.OldSectionTag;
 import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.PlayerTag;
-import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.SectionTag;
 import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.TileEntityTag;
 import nl.rutgerkok.hammer.material.BlockDataMaterialMap;
 import nl.rutgerkok.hammer.material.MaterialData;
@@ -16,9 +19,6 @@ import nl.rutgerkok.hammer.tag.TagType;
 import nl.rutgerkok.hammer.util.NibbleArray;
 import nl.rutgerkok.hammer.util.Result;
 
-import java.util.List;
-import java.util.Objects;
-
 public class BlockIdChanger implements ChunkTask, PlayerDataTask {
 
     private final MaterialData newBlock;
@@ -26,7 +26,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
 
     /**
      * Creates a new block id change task.
-     * 
+     *
      * @param oldBlock
      *            Old block.
      * @param newBlock
@@ -189,7 +189,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
             MaterialData blockMaterial = materialMap.getMaterialData(blockName, blockData);
 
             if (oldBlock.equals(blockMaterial)) {
-                String newBlockName = materialMap.getBaseName(newBlock);
+                String newBlockName = newBlock.getBaseName();
                 byte newBlockData = (byte) (materialMap.getMinecraftId(newBlock) & 0xf);
                 tileEntity.setString(TileEntityTag.FLOWER_POT_BLOCK_NAME, newBlockName);
                 tileEntity.setInt(TileEntityTag.FLOWER_POT_BLOCK_DATA, newBlockData);
@@ -233,10 +233,10 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
         byte newBlockIdHighestBytes = (byte) (newBlockId >> 8);
         byte newBlockDataByte = (byte) (newBlockCombinedId & 0xf);
 
-        byte[] blockIdsBase = section.getByteArray(SectionTag.BLOCK_IDS, 4096);
-        NibbleArray blockIdsExtended = section.containsKey(SectionTag.EXT_BLOCK_IDS)
-                ? new NibbleArray(section.getByteArray(SectionTag.EXT_BLOCK_IDS, 2048)) : null;
-        NibbleArray blockDatas = new NibbleArray(section.getByteArray(SectionTag.BLOCK_DATA, 2048));
+        byte[] blockIdsBase = section.getByteArray(OldSectionTag.BLOCK_IDS, 4096);
+        NibbleArray blockIdsExtended = section.containsKey(OldSectionTag.EXT_BLOCK_IDS)
+                ? new NibbleArray(section.getByteArray(OldSectionTag.EXT_BLOCK_IDS, 2048)) : null;
+        NibbleArray blockDatas = new NibbleArray(section.getByteArray(OldSectionTag.BLOCK_DATA, 2048));
 
         // Convert ids
         for (int i = 0; i < blockIdsBase.length; i++) {
@@ -262,7 +262,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
                     if (newBlockIdHighestBytes != 0) {
                         // It is necessary to do that now
                         blockIdsExtended = new NibbleArray(blockIdsBase.length);
-                        section.setByteArray(SectionTag.EXT_BLOCK_IDS, blockIdsExtended.getHandle());
+                        section.setByteArray(OldSectionTag.EXT_BLOCK_IDS, blockIdsExtended.getHandle());
                         blockIdsExtended.set(i, newBlockIdHighestBytes);
                     }
                 }
