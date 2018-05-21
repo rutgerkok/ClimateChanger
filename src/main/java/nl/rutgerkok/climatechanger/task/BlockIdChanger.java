@@ -9,14 +9,13 @@ import nl.rutgerkok.hammer.PlayerFile;
 import nl.rutgerkok.hammer.anvil.AnvilChunk;
 import nl.rutgerkok.hammer.anvil.AnvilGameFactory;
 import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.EntityTag;
-import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.OldSectionTag;
 import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.PlayerTag;
 import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.TileEntityTag;
 import nl.rutgerkok.hammer.material.BlockDataMaterialMap;
 import nl.rutgerkok.hammer.material.MaterialData;
 import nl.rutgerkok.hammer.tag.CompoundTag;
 import nl.rutgerkok.hammer.tag.TagType;
-import nl.rutgerkok.hammer.util.NibbleArray;
+import nl.rutgerkok.hammer.util.MaterialNotFoundException;
 import nl.rutgerkok.hammer.util.Result;
 
 public class BlockIdChanger implements ChunkTask, PlayerDataTask {
@@ -37,24 +36,33 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
         this.newBlock = Objects.requireNonNull(newBlock, "newBlock");
     }
 
-    private boolean blockDataMatches(byte oldBlockData, byte newBlockData) {
-        if (oldBlockData == -1) {
-            return true;
+    private boolean convertBlocks(AnvilChunk chunk) {
+        boolean changed = false;
+        for (int y = 0; y < chunk.getSizeY(); y++) {
+            for (int x = 0; x < chunk.getSizeX(); x++) {
+                for (int z = 0; z < chunk.getSizeZ(); z++) {
+                    try {
+                    if (chunk.getMaterial(x, y, z).equals(this.oldBlock)) {
+                        chunk.setMaterial(x, y, z, newBlock);
+                        changed = true;
+                    }}catch (MaterialNotFoundException e) {
+                        // Ignore, as long as oldBlock is recognized we're fine
+                        // (And oldBlock IS recognized, otherwise it couldn't be an instance)
+                    }
+                }
+            }
         }
-        return oldBlockData == newBlockData;
+        return changed;
     }
 
     @Override
     public Result convertChunk(AnvilChunk chunk) {
         Result result = Result.NO_CHANGES;
         AnvilGameFactory gameFactory = chunk.getGameFactory();
-        BlockDataMaterialMap materialMap = gameFactory.getMaterialMap();
 
         // Replace the blocks in all sections
-        for (CompoundTag section : chunk.getChunkSections()) {
-            if (replaceSection(materialMap, section)) {
-                result = Result.CHANGED;
-            }
+        if (convertBlocks(chunk)) {
+            result = Result.CHANGED;
         }
 
         // Replace the blocks in tile entities
@@ -218,58 +226,6 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
     @Override
     public String getDescription() {
         return "Change blocks with id " + oldBlock + " into " + newBlock;
-    }
-
-    private boolean replaceSection(BlockDataMaterialMap materialMap, CompoundTag section) {
-        boolean changed = false;
-
-        char oldCombinedId = materialMap.getMinecraftId(oldBlock);
-        short oldBlockId = (short) (oldCombinedId >> 4);
-        byte oldBlockDataByte = (byte) (oldCombinedId & 0xf);
-
-        char newBlockCombinedId = materialMap.getMinecraftId(newBlock);
-        short newBlockId = (short) (newBlockCombinedId >> 4);
-        byte newBlockIdLowestBytes = (byte) newBlockId;
-        byte newBlockIdHighestBytes = (byte) (newBlockId >> 8);
-        byte newBlockDataByte = (byte) (newBlockCombinedId & 0xf);
-
-        byte[] blockIdsBase = section.getByteArray(OldSectionTag.BLOCK_IDS, 4096);
-        NibbleArray blockIdsExtended = section.containsKey(OldSectionTag.EXT_BLOCK_IDS)
-                ? new NibbleArray(section.getByteArray(OldSectionTag.EXT_BLOCK_IDS, 2048)) : null;
-        NibbleArray blockDatas = new NibbleArray(section.getByteArray(OldSectionTag.BLOCK_DATA, 2048));
-
-        // Convert ids
-        for (int i = 0; i < blockIdsBase.length; i++) {
-            // Get block id
-            int blockId = blockIdsBase[i] & 0xFF;
-            if (blockIdsExtended != null) {
-                blockId |= ((blockIdsExtended.get(i) & 0xFF) << 8);
-            }
-
-            byte blockData = blockDatas.get(i);
-
-            if (blockId == oldBlockId && blockDataMatches(oldBlockDataByte, blockData)) {
-                // Found match, replace block
-                changed = true;
-                blockIdsBase[i] = newBlockIdLowestBytes;
-                blockDatas.set(i, newBlockDataByte);
-
-                // Set extended id
-                if (blockIdsExtended != null) {
-                    blockIdsExtended.set(i, newBlockIdHighestBytes);
-                } else {
-                    // Extra ids are not initialized
-                    if (newBlockIdHighestBytes != 0) {
-                        // It is necessary to do that now
-                        blockIdsExtended = new NibbleArray(blockIdsBase.length);
-                        section.setByteArray(OldSectionTag.EXT_BLOCK_IDS, blockIdsExtended.getHandle());
-                        blockIdsExtended.set(i, newBlockIdHighestBytes);
-                    }
-                }
-            }
-        }
-
-        return changed;
     }
 
 }
