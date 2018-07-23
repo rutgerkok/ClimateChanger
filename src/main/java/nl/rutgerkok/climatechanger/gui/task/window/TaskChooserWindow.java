@@ -1,9 +1,5 @@
 package nl.rutgerkok.climatechanger.gui.task.window;
 
-import nl.rutgerkok.climatechanger.task.Task;
-import nl.rutgerkok.hammer.material.GlobalMaterialMap;
-import nl.rutgerkok.hammer.util.Consumer;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Point;
@@ -14,6 +10,10 @@ import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+
+import nl.rutgerkok.climatechanger.task.Task;
+import nl.rutgerkok.hammer.material.GlobalMaterialMap;
+import nl.rutgerkok.hammer.util.Consumer;
 
 /**
  * Pop-up window that allows the user to add a task.
@@ -59,6 +59,7 @@ public class TaskChooserWindow extends JDialog {
         tabs.addTab("Spawn ores", new OreSpawnerPanel(materialMap));
         tabs.addTab("Fix signs", new SignFixerPanel());
         tabs.addTab("Delete unused chunks", new OldChunkDeleterPanel());
+        tabs.addTab("Set LightPopulated", new LightPopulatedSetterPanel());
 
         add(tabs, BorderLayout.CENTER);
 

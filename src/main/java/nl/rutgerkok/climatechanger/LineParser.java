@@ -1,7 +1,14 @@
 package nl.rutgerkok.climatechanger;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import nl.rutgerkok.climatechanger.task.BiomeIdChanger;
 import nl.rutgerkok.climatechanger.task.BlockIdChanger;
+import nl.rutgerkok.climatechanger.task.LightPopulatedSetter;
+import nl.rutgerkok.climatechanger.task.OldChunkDeleter;
 import nl.rutgerkok.climatechanger.task.OreSpawner;
 import nl.rutgerkok.climatechanger.task.SignFixer;
 import nl.rutgerkok.climatechanger.task.Task;
@@ -12,11 +19,6 @@ import nl.rutgerkok.hammer.anvil.AnvilChunk;
 import nl.rutgerkok.hammer.material.GlobalMaterialMap;
 import nl.rutgerkok.hammer.material.MaterialData;
 import nl.rutgerkok.hammer.material.MaterialSet;
-
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class LineParser {
     private void assureMinSize(List<?> args, int minSize) throws ParseException {
@@ -36,7 +38,9 @@ public class LineParser {
                 "changeBiome <fromId> <toId>",
                 "changeBlock <fromId[:fromData]> <toId[:toData]>",
                 "spawnOre <block[:blockData]> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <spawnInBlock,anotherBlock,...>",
-                "fixSigns <encloseThisInSquareBrackets,another,...>"
+                "fixSigns <encloseThisInSquareBrackets,another,...>",
+                "deleteOldChunks <minMinutesPlayed>",
+                "setLightPopulated"
                 );
     }
 
@@ -108,6 +112,13 @@ public class LineParser {
                 assureMinSize(parts, 2);
                 String remainingArgs = StringJoiner.join(" ", 1, parts);
                 return new SignFixer(remainingArgs.split(","));
+            case "deleteoldchunks":
+                assureSize(parts, 2);
+                int minMinutesPlayed = ParseUtil.parseInt(parts.get(1), 1, 1000000);
+                return new OldChunkDeleter(minMinutesPlayed);
+            case "setlightpopulated":
+                assureSize(parts, 1);
+                return new LightPopulatedSetter();
         }
         throw new ParseException("Unknown task: " + taskName, 0);
     }
