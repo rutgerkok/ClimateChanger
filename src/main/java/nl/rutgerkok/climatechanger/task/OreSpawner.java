@@ -1,5 +1,7 @@
 package nl.rutgerkok.climatechanger.task;
 
+import java.util.Random;
+
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.MathUtil;
 import nl.rutgerkok.hammer.Chunk;
@@ -7,8 +9,6 @@ import nl.rutgerkok.hammer.anvil.AnvilChunk;
 import nl.rutgerkok.hammer.material.MaterialData;
 import nl.rutgerkok.hammer.material.MaterialSet;
 import nl.rutgerkok.hammer.util.Result;
-
-import java.util.Random;
 
 /**
  * Spawns ores in a chunk.
@@ -18,6 +18,8 @@ public final class OreSpawner implements ChunkTask {
 
     public static final int MAX_ORE_FREQUENCY = 100;
     public static final int MAX_ORE_SIZE = 64;
+    public static final int MIN_Y = -10000;
+    public static final int MAX_Y = 10000;
 
     private int frequency;
     private MaterialData material;

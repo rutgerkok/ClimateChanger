@@ -8,10 +8,11 @@ import nl.rutgerkok.hammer.ItemStack;
 import nl.rutgerkok.hammer.PlayerFile;
 import nl.rutgerkok.hammer.anvil.AnvilChunk;
 import nl.rutgerkok.hammer.anvil.AnvilGameFactory;
+import nl.rutgerkok.hammer.anvil.AnvilMaterialMap;
 import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.EntityTag;
+import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.OldTileEntityTag;
 import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.PlayerTag;
 import nl.rutgerkok.hammer.anvil.tag.AnvilFormat.TileEntityTag;
-import nl.rutgerkok.hammer.material.BlockDataMaterialMap;
 import nl.rutgerkok.hammer.material.MaterialData;
 import nl.rutgerkok.hammer.tag.CompoundTag;
 import nl.rutgerkok.hammer.tag.TagType;
@@ -38,7 +39,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
 
     private boolean convertBlocks(AnvilChunk chunk) {
         boolean changed = false;
-        for (int y = 0; y < chunk.getSizeY(); y++) {
+        for (int y = chunk.getDepth(); y < chunk.getHeight(); y++) {
             for (int x = 0; x < chunk.getSizeX(); x++) {
                 for (int z = 0; z < chunk.getSizeZ(); z++) {
                     try {
@@ -53,6 +54,16 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
             }
         }
         return changed;
+    }
+
+    private boolean convertBlockState(AnvilGameFactory gameFactory, CompoundTag tag) {
+        AnvilMaterialMap materialMap = gameFactory.getMaterialMap();
+        MaterialData blockMaterial = materialMap.parseBlockState(tag);
+        if (oldBlock.equals(blockMaterial)) {
+            materialMap.serializeToBlockState(newBlock, tag);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -87,7 +98,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
      *            The entities.
      * @return True if changes were made, false otherwise.
      */
-    private boolean convertEntities(GameFactory gameFactory, List<CompoundTag> entities) {
+    private boolean convertEntities(AnvilGameFactory gameFactory, List<CompoundTag> entities) {
         boolean changed = false;
         for (CompoundTag entity : entities) {
             if (convertEntity(gameFactory, entity)) {
@@ -106,15 +117,25 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
      *            The entity.
      * @return True if changes were made, false otherwise.
      */
-    private boolean convertEntity(GameFactory gameFactory, CompoundTag entity) {
+    private boolean convertEntity(AnvilGameFactory gameFactory, CompoundTag entity) {
         // Items on the ground, item frames
         if (entity.containsKey(EntityTag.ITEM)) {
             return convertItem(gameFactory.createItemStack(entity.getCompound(EntityTag.ITEM)));
         }
 
-        // Items in mine carts with chests/hoppers and in horses
+        // Items in minecarts with chests/hoppers and in horses
         if (entity.containsKey(EntityTag.ITEMS)) {
             return convertItemList(gameFactory, entity.getList(EntityTag.ITEMS, TagType.COMPOUND));
+        }
+
+        // Displayed block in minecarts
+        if (entity.containsKey(EntityTag.DISPLAY_STATE)) {
+            return convertBlockState(gameFactory, entity.getCompound(EntityTag.DISPLAY_STATE));
+        }
+
+        // Falling block
+        if (entity.containsKey(EntityTag.BLOCK_STATE)) {
+            return convertBlockState(gameFactory, entity.getCompound(EntityTag.BLOCK_STATE));
         }
 
         return false;
@@ -189,34 +210,47 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
             return convertItemList(gameFactory, tileEntity.getList(TileEntityTag.ITEMS, TagType.COMPOUND));
         }
 
-        // Special case for FlowerPot (uses Item and Data tag)
-        if (tileEntity.getString(TileEntityTag.ID).equalsIgnoreCase("FlowerPot")) {
-            BlockDataMaterialMap materialMap = gameFactory.getMaterialMap();
-            String blockName = tileEntity.getString(TileEntityTag.FLOWER_POT_BLOCK_NAME);
-            byte blockData = (byte) tileEntity.getInt(TileEntityTag.FLOWER_POT_BLOCK_DATA);
-            MaterialData blockMaterial = materialMap.getMaterialData(blockName, blockData);
-
-            if (oldBlock.equals(blockMaterial)) {
-                String newBlockName = newBlock.getBaseName();
-                byte newBlockData = (byte) (materialMap.getMinecraftId(newBlock) & 0xf);
-                tileEntity.setString(TileEntityTag.FLOWER_POT_BLOCK_NAME, newBlockName);
-                tileEntity.setInt(TileEntityTag.FLOWER_POT_BLOCK_DATA, newBlockData);
-                return true;
+        // Special case for (bees in) beehives
+        if (tileEntity.getString(TileEntityTag.ID).equals("beehive")) {
+            boolean changed = false;
+            for (CompoundTag bee : tileEntity.getList(TileEntityTag.BEEHIVE_BEES, TagType.COMPOUND)) {
+                if (this.convertEntity(gameFactory, bee.getCompound(TileEntityTag.BEEHIVE_ENTITY_DATA))) {
+                    changed = true;
+                }
             }
+            return changed;
+        }
+
+        // Special case for mobs in mob spawners
+        if (tileEntity.containsKey(TileEntityTag.MOB_SPAWNER_SPAWN_POTENTIALS)) {
+            boolean changed = false;
+            for (CompoundTag mobSpawn : tileEntity
+                    .getList(TileEntityTag.MOB_SPAWNER_SPAWN_POTENTIALS, TagType.COMPOUND)) {
+                if (this.convertEntity(gameFactory, mobSpawn.getCompound(TileEntityTag.MOB_SPAWNER_ENTITY))) {
+                    changed = true;
+                }
+            }
+            return changed;
         }
 
         // Special case for Piston (like FlowerPot, but uses item ids instead
         // of names and different keys)
         if (tileEntity.getString(TileEntityTag.ID).equalsIgnoreCase("Piston")) {
-            BlockDataMaterialMap materialMap = gameFactory.getMaterialMap();
-            short blockId = (short) tileEntity.getInt(TileEntityTag.PISTON_BLOCK_ID);
-            byte blockData = (byte) tileEntity.getInt(TileEntityTag.PISTON_BLOCK_DATA);
-            MaterialData blockMaterial = materialMap.getMaterialData(blockId, blockData);
-            if (oldBlock.equals(blockMaterial)) {
-                char newBlockCombinedId = materialMap.getMinecraftId(newBlock);
-                tileEntity.setInt(TileEntityTag.PISTON_BLOCK_ID, newBlockCombinedId >> 4);
-                tileEntity.setInt(TileEntityTag.PISTON_BLOCK_DATA, newBlockCombinedId & 0xf);
-                return true;
+            AnvilMaterialMap materialMap = gameFactory.getMaterialMap();
+            if (tileEntity.containsKey(OldTileEntityTag.PISTON_BLOCK_ID)) {
+                // An old chunk (MC Beta 1.7 - MC 1.12)
+                short blockId = (short) tileEntity.getInt(OldTileEntityTag.PISTON_BLOCK_ID);
+                byte blockData = (byte) tileEntity.getInt(OldTileEntityTag.PISTON_BLOCK_DATA);
+                MaterialData blockMaterial = materialMap.getMaterialDataFromOldIds(blockId, blockData);
+                if (oldBlock.equals(blockMaterial)) {
+                    char newBlockCombinedId = materialMap.getOldMinecraftId(newBlock);
+                    tileEntity.setInt(OldTileEntityTag.PISTON_BLOCK_ID, newBlockCombinedId >> 4);
+                    tileEntity.setInt(OldTileEntityTag.PISTON_BLOCK_DATA, newBlockCombinedId & 0xf);
+                    return true;
+                }
+            } else {
+                // A new chunk (MC 1.13+)
+                return convertBlockState(gameFactory, tileEntity.getCompound(TileEntityTag.PISTON_BLOCK_STATE));
             }
         }
 

@@ -104,8 +104,8 @@ public class LineParser {
                 int maxSize = ParseUtil.parseInt(parts.get(2), 1, OreSpawner.MAX_ORE_SIZE);
                 int frequency = ParseUtil.parseInt(parts.get(3), 1, OreSpawner.MAX_ORE_FREQUENCY);
                 double rarity = ParseUtil.parseDouble(parts.get(4), 0.0001, 100);
-                int minAltitude = ParseUtil.parseInt(parts.get(5), 0, AnvilChunk.CHUNK_Y_SIZE);
-                int maxAltitude = ParseUtil.parseInt(parts.get(6), 0, AnvilChunk.CHUNK_Y_SIZE);
+                int minAltitude = ParseUtil.parseInt(parts.get(5), 0, OreSpawner.MIN_Y);
+                int maxAltitude = ParseUtil.parseInt(parts.get(6), 0, OreSpawner.MAX_Y);
                 MaterialSet sourceBlocks = ParseUtil.parseMaterialSet(parts.get(7), materialMap);
                 return new OreSpawner(oreMaterial, maxSize, frequency, rarity, minAltitude, maxAltitude, sourceBlocks);
             case "fixsigns":
