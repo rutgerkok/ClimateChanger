@@ -57,9 +57,7 @@ public class TaskChooserWindow extends JDialog {
         tabs.addTab("Change biome id", new BiomeIdChangerPanel());
         tabs.addTab("Change block id", new BlockIdChangerPanel(materialMap));
         tabs.addTab("Spawn ores", new OreSpawnerPanel(materialMap));
-        tabs.addTab("Fix signs", new SignFixerPanel());
         tabs.addTab("Delete unused chunks", new OldChunkDeleterPanel());
-        tabs.addTab("Set LightPopulated", new LightPopulatedSetterPanel());
 
         add(tabs, BorderLayout.CENTER);
 

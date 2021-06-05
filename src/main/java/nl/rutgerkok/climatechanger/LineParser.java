@@ -7,26 +7,17 @@ import java.util.List;
 
 import nl.rutgerkok.climatechanger.task.BiomeIdChanger;
 import nl.rutgerkok.climatechanger.task.BlockIdChanger;
-import nl.rutgerkok.climatechanger.task.LightPopulatedSetter;
 import nl.rutgerkok.climatechanger.task.OldChunkDeleter;
 import nl.rutgerkok.climatechanger.task.OreSpawner;
-import nl.rutgerkok.climatechanger.task.SignFixer;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
-import nl.rutgerkok.climatechanger.util.StringJoiner;
 import nl.rutgerkok.hammer.anvil.AnvilChunk;
 import nl.rutgerkok.hammer.material.GlobalMaterialMap;
 import nl.rutgerkok.hammer.material.MaterialData;
 import nl.rutgerkok.hammer.material.MaterialSet;
 
 public class LineParser {
-    private void assureMinSize(List<?> args, int minSize) throws ParseException {
-        if (args.size() < minSize) {
-            throw new ParseException("Expected at least " + minSize + " args, found " + args.size() + " args.", 0);
-        }
-    }
-
     private void assureSize(List<?> args, int minSize) throws ParseException {
         if (args.size() != minSize) {
             throw new ParseException("Expected " + minSize + " args, found " + args.size() + " args.", 0);
@@ -108,17 +99,10 @@ public class LineParser {
                 int maxAltitude = ParseUtil.parseInt(parts.get(6), 0, OreSpawner.MAX_Y);
                 MaterialSet sourceBlocks = ParseUtil.parseMaterialSet(parts.get(7), materialMap);
                 return new OreSpawner(oreMaterial, maxSize, frequency, rarity, minAltitude, maxAltitude, sourceBlocks);
-            case "fixsigns":
-                assureMinSize(parts, 2);
-                String remainingArgs = StringJoiner.join(" ", 1, parts);
-                return new SignFixer(remainingArgs.split(","));
             case "deleteoldchunks":
                 assureSize(parts, 2);
                 int minMinutesPlayed = ParseUtil.parseInt(parts.get(1), 1, 1000000);
                 return new OldChunkDeleter(minMinutesPlayed);
-            case "setlightpopulated":
-                assureSize(parts, 1);
-                return new LightPopulatedSetter();
         }
         throw new ParseException("Unknown task: " + taskName, 0);
     }
