@@ -1,5 +1,6 @@
 package nl.rutgerkok.climatechanger.task;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -67,7 +68,7 @@ public class BlockIdChanger implements ChunkTask, PlayerDataTask {
     }
 
     @Override
-    public Result convertChunk(AnvilChunk chunk) {
+    public Result convertChunk(AnvilChunk chunk) throws IOException {
         Result result = Result.NO_CHANGES;
         AnvilGameFactory gameFactory = chunk.getGameFactory();
 

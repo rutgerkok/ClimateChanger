@@ -1,5 +1,10 @@
 package nl.rutgerkok.climatechanger.converter;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import nl.rutgerkok.climatechanger.ProgressUpdater;
 import nl.rutgerkok.climatechanger.task.ChunkTask;
 import nl.rutgerkok.climatechanger.task.PlayerDataTask;
@@ -10,11 +15,6 @@ import nl.rutgerkok.hammer.anvil.AnvilWorld;
 import nl.rutgerkok.hammer.util.Progress;
 import nl.rutgerkok.hammer.util.Result;
 import nl.rutgerkok.hammer.util.Visitor;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * This class converts everything. It automatically distributes the given tasks
@@ -44,7 +44,7 @@ public class ConverterExecutor {
             updater.init();
             world.walkAnvilChunks(new Visitor<AnvilChunk>() {
                 @Override
-                public Result accept(AnvilChunk chunk, Progress progress) {
+                public Result accept(AnvilChunk chunk, Progress progress) throws IOException {
                     updater.update(progress);
                     Result result = Result.NO_CHANGES;
                     for (ChunkTask chunkTask : chunkTasks) {
