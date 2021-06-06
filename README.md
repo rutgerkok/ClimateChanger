@@ -75,7 +75,6 @@ Block ids and data are replaced in:
   horses, minecarts with chest)
 * Blocks placed in entities that use the `Item` tag (in vanilla:
   items on the ground, item frames)
-* Blocks placed in flower pots.
 * Blocks being pushed by pistons.
 
 ## Ore spawning
@@ -84,20 +83,22 @@ in vanilla emeralds only spawn in the Extreme Hills biome.
 
 In vanilla Minecraft attempts per chunk is called spawn tries. In the mod Terrain Control attempts per chunk is called frequency and chance per attempt is called rarity.
 
-| Ore      | Max radius | Attempts per chunk | Altitude |
-| -------- | ---------- | ------------------ | -------- |
-| Dirt     | 33         | 20                 | 0 - 256  |
-| Gravel   | 33         | 10                 | 0 - 256  |
-| Granite  | 33         | 10                 | 0 - 80   |
-| Diorite  | 33         | 10                 | 0 - 80   |
-| Andesite | 33         | 10                 | 0 - 80   |
-| Coal     | 17         | 20                 | 0 - 128  |
-| Iron     | 9          | 20                 | 0 - 64   |
-| Gold     | 9          | 2                  | 0 - 32   |
-| Redstone | 8          | 8                  | 0 - 16   |
-| Diamond  | 8          | 1                  | 0 - 16   |
-| Lapis    | 8          | 1                  | 0 - 32   |
-| Emerald  | 6          | 1                  | 4 - 32   |
+| Ore       | Max radius | Attempts per chunk | Altitude |
+| --------- | ---------- | ------------------ | -------- |
+| Dirt      | 33         | 10                 | 0 - 256  |
+| Gravel    | 33         | 8                  | 0 - 256  |
+| Granite   | 33         | 10                 | 0 - 80   |
+| Diorite   | 33         | 10                 | 0 - 80   |
+| Andesite  | 33         | 10                 | 0 - 80   |
+| Coal      | 17         | 20                 | 0 - 128  |
+| Iron      | 9          | 20                 | 0 - 64   |
+| Gold      | 9          | 2                  | 0 - 32   |
+| Redstone  | 8          | 8                  | 0 - 16   |
+| Diamond   | 8          | 1                  | 0 - 16   |
+| Lapis     | 8          | 1                  | 0 - 32   |
+| Emerald   | 6          | 1                  | 4 - 32   |
+| Tuff      | 33         | 1                  | 0 - 16   |
+| Deepslate | 64         | 2                  | 0 - 16   |
 
 ## Sign conversion
 Minecraft 1.8 doewsn't import the Minecraft 1.7 signs correctly. For example, the text `[Private]`, used by Lockette, gets read as a JSON-array with one element `Private`. Result: the first line of your sign now reads `Private` and the container is no longer protected!
