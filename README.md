@@ -6,7 +6,7 @@ Current features include:
 
 * Change biome ids.
 * Change block ids. Not only blocks placed in the world are replaced, but also blocks in chests, inventories and many other places. See the section below.
-* Convert 1.7 signs to the 1.8 format; fix signs converted incorrectly by Minecraft.
+* Remove chunks that have been loaded for less than X minutes.
 * Spawn ores in existing chunks.
 
 ![Screenshot of the tool](http://i.imgur.com/kkvn9ZA.png)
@@ -48,10 +48,10 @@ the world.
 * `changeBiome <fromId> <toId>` changes all biomes with the `<fromId>` to
   the `<toId>`. If you use `-1` as the `<fromId>` all biomes will be
   changed to the given `<toId>`, so that you end up with a one-biome world.
-* `changeBlock <fromId[:fromData]> <toId[:toData]>` changes all blocks
+* `changeBlock <fromNamespacedId> <toNamespacedId>` changes all blocks
   with the first id to the second.
-* `spawnOre <block[:blockData]> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <spawnInBlock,anotherBlock,...>` spawns ores of the given type in each chunk.
-* `fixSigns <text,moreText,...>` will enclose `text` in brackets on signs that were converted from 1.7 to 1.8, so that the sign reads `[text]`. Unconverted 1.7 signs will be converted correctly, and signs placed in 1.8 won't be affected.
+* `spawnOre <namespacedId> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <spawnInBlock;anotherBlock,...>` spawns ores of the given type in each chunk.
+* `deleteoldchunks <minutesPlayed>` will delete all chunks that have been loaded for less than `<minutesPlayed>`.
 
 You can combine multiple actions with the syntax
 `<action> and <action> and <action>`.

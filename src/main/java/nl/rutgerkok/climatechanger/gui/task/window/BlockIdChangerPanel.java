@@ -1,14 +1,14 @@
 package nl.rutgerkok.climatechanger.gui.task.window;
 
+import java.awt.FlowLayout;
+import java.text.ParseException;
+
 import nl.rutgerkok.climatechanger.gui.LabelWithField;
 import nl.rutgerkok.climatechanger.task.BlockIdChanger;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
 import nl.rutgerkok.hammer.material.GlobalMaterialMap;
-
-import java.awt.FlowLayout;
-import java.text.ParseException;
 
 public class BlockIdChangerPanel extends TaskPanel {
 
@@ -28,10 +28,10 @@ public class BlockIdChangerPanel extends TaskPanel {
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
         // From
-        add(from = new LabelWithField("Original id or name:"));
+        add(from = new LabelWithField("Original namespaced id:"));
 
         // To
-        add(to = new LabelWithField("New id or name:"));
+        add(to = new LabelWithField("New namespaced id:"));
     }
 
     @Override

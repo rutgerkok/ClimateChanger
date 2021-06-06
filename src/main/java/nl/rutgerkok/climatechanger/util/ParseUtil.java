@@ -1,11 +1,11 @@
 package nl.rutgerkok.climatechanger.util;
 
+import java.text.ParseException;
+
 import nl.rutgerkok.hammer.material.GlobalMaterialMap;
 import nl.rutgerkok.hammer.material.MaterialData;
 import nl.rutgerkok.hammer.material.MaterialSet;
 import nl.rutgerkok.hammer.util.MaterialNotFoundException;
-
-import java.text.ParseException;
 
 public final class ParseUtil {
     /**
@@ -105,7 +105,7 @@ public final class ParseUtil {
     public static MaterialSet parseMaterialSet(String string, GlobalMaterialMap materials)
             throws ParseException {
         MaterialSet materialSet = new MaterialSet();
-        String[] split = string.split(",");
+        String[] split = string.split(";");
         for (String part : split) {
             materialSet.add(parseMaterialData(part.trim(), materials));
         }

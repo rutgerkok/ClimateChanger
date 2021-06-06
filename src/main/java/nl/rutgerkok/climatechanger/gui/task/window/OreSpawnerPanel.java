@@ -34,13 +34,13 @@ final class OreSpawnerPanel extends TaskPanel {
 
         setLayout(new FlowLayout(FlowLayout.LEADING));
 
-        add(materialField = new LabelWithField("Ore material (block:data)"));
+        add(materialField = new LabelWithField("Ore material (namespaced id)"));
         add(maxSizeField = new LabelWithField("Maximum ore radius", "33"));
         add(frequencyField = new LabelWithField("Attempts per chunk", "10"));
         add(rarityField = new LabelWithField("Chance per attempt", "100"));
         add(minHeightField = new LabelWithField("Minimum height", "0"));
         add(maxHeightField = new LabelWithField("Maximum height", "80"));
-        add(sourceBlocksField = new LabelWithField("Spawn in (block,block,...)", "stone"));
+        add(sourceBlocksField = new LabelWithField("Spawn in (block;block,...)", "stone"));
     }
 
     @Override
