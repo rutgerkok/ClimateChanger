@@ -98,7 +98,8 @@ public class LineParser {
                 int minAltitude = ParseUtil.parseInt(parts.get(5), 0, OreSpawner.MIN_Y);
                 int maxAltitude = ParseUtil.parseInt(parts.get(6), 0, OreSpawner.MAX_Y);
                 MaterialSet sourceBlocks = ParseUtil.parseMaterialSet(parts.get(7), materialMap);
-                return new OreSpawner(oreMaterial, maxSize, frequency, rarity, minAltitude, maxAltitude, sourceBlocks);
+                return new OreSpawner(materialMap, oreMaterial, maxSize, frequency, rarity, minAltitude, maxAltitude,
+                        sourceBlocks);
             case "deleteoldchunks":
                 assureSize(parts, 2);
                 int minMinutesPlayed = ParseUtil.parseInt(parts.get(1), 1, 1000000);

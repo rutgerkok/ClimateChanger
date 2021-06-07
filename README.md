@@ -83,22 +83,27 @@ in vanilla emeralds only spawn in the Extreme Hills biome.
 
 In vanilla Minecraft attempts per chunk is called spawn tries. In the mod Terrain Control attempts per chunk is called frequency and chance per attempt is called rarity.
 
-| Ore       | Max radius | Attempts per chunk | Altitude |
-| --------- | ---------- | ------------------ | -------- |
-| Dirt      | 33         | 10                 | 0 - 256  |
-| Gravel    | 33         | 8                  | 0 - 256  |
-| Granite   | 33         | 10                 | 0 - 80   |
-| Diorite   | 33         | 10                 | 0 - 80   |
-| Andesite  | 33         | 10                 | 0 - 80   |
-| Coal      | 17         | 20                 | 0 - 128  |
-| Iron      | 9          | 20                 | 0 - 64   |
-| Gold      | 9          | 2                  | 0 - 32   |
-| Redstone  | 8          | 8                  | 0 - 16   |
-| Diamond   | 8          | 1                  | 0 - 16   |
-| Lapis     | 8          | 1                  | 0 - 32   |
-| Emerald   | 6          | 1                  | 4 - 32   |
-| Tuff      | 33         | 1                  | 0 - 16   |
-| Deepslate | 64         | 2                  | 0 - 16   |
+The ore spawning automatically changes ores such as `minecraft:diamond` into `minecraft:deepslate_diamond` when you
+allow them to spawn in deepslate. When you spawn deepslate as an ore in `minecraft:stone`, it will automatically change stone ores into deepslate ores.
+
+| Ore       | Max radius | Attempts per chunk | Altitude | Distribution |
+| --------- | ---------- | ------------------ | -------- | ------------ |
+| Deepslate | 64         | 2                  | 0 - 16   | Uniform      |
+| Dirt      | 33         | 10                 | 0 - 256  | Uniform      |
+| Gravel    | 33         | 8                  | 0 - 256  | Uniform      |
+| Granite   | 33         | 10                 | 0 - 80   | Uniform      |
+| Diorite   | 33         | 10                 | 0 - 80   | Uniform      |
+| Andesite  | 33         | 10                 | 0 - 80   | Uniform      |
+| Tuff      | 33         | 1                  | 0 - 16   | Uniform      |
+| Coal      | 17         | 20                 | 0 - 128  | Uniform      |
+| Copper    | 10         | 6                  | 0 - 96   | Trapezoid    |
+| Iron      | 9          | 20                 | 0 - 64   | Uniform      |
+| Gold      | 9          | 2                  | 0 - 32   | Uniform      |
+| Redstone  | 8          | 8                  | 0 - 16   | Uniform      |
+| Diamond   | 8          | 1                  | 0 - 16   | Uniform      |
+| Lapis     | 8          | 1                  | 0 - 32   | Uniform      |
+| Emerald   | 6          | 1                  | 4 - 32   | Uniform      |
+
 
 ## Sign conversion
 Minecraft 1.8 doewsn't import the Minecraft 1.7 signs correctly. For example, the text `[Private]`, used by Lockette, gets read as a JSON-array with one element `Private`. Result: the first line of your sign now reads `Private` and the container is no longer protected!

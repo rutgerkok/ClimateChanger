@@ -2,10 +2,14 @@ package nl.rutgerkok.climatechanger.task;
 
 import java.util.Random;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
+
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.MathUtil;
 import nl.rutgerkok.hammer.Chunk;
 import nl.rutgerkok.hammer.anvil.AnvilChunk;
+import nl.rutgerkok.hammer.material.GlobalMaterialMap;
 import nl.rutgerkok.hammer.material.MaterialData;
 import nl.rutgerkok.hammer.material.MaterialSet;
 import nl.rutgerkok.hammer.util.Result;
@@ -21,6 +25,27 @@ public final class OreSpawner implements ChunkTask {
     public static final int MIN_Y = -10000;
     public static final int MAX_Y = 10000;
 
+    /**
+     * Used to automatically change ores to the correct variant.
+     */
+    private static final BiMap<String, String> DEEPSLATE_ORES = ImmutableBiMap.<String, String>builder()
+            .put("minecraft:coal_ore", "minecraft:deepslate_coal_ore")
+            .put("minecraft:copper_ore", "minecraft:deepslate_copper_ore")
+            .put("minecraft:lapis_ore", "minecraft:deepslate_lapis_ore")
+            .put("minecraft:iron_ore", "minecraft:deepslate_iron_ore")
+            .put("minecraft:gold_ore", "minecraft:deepslate_gold_ore")
+            .put("minecraft:redstone_ore", "minecraft:deepslate_redstone_ore")
+            .put("minecraft:diamond_ore", "minecraft:deepslate_diamond_ore")
+            .put("minecraft:emerald_ore", "minecraft:deepslate_emerald_ore")
+            .build();
+
+    /**
+     * Version of {@link #DEEPSLATE_ORES} that has the actual materials.
+     */
+    private final BiMap<MaterialData, MaterialData> deepslateOres;
+    private final MaterialData deepslate;
+    private final MaterialData stone;
+
     private int frequency;
     private MaterialData material;
     private int maxAltitude;
@@ -28,9 +53,10 @@ public final class OreSpawner implements ChunkTask {
     private int minAltitude;
     private Random random = new Random();
     private double rarity;
+
     private MaterialSet sourceBlocks;
 
-    public OreSpawner(MaterialData material, int maxSize, int frequency, double rarity, int minAltitude, int maxAltitude, MaterialSet sourceBlocks) throws InvalidTaskException {
+    public OreSpawner(GlobalMaterialMap map, MaterialData material, int maxSize, int frequency, double rarity, int minAltitude, int maxAltitude, MaterialSet sourceBlocks) throws InvalidTaskException {
         this.material = material;
         this.maxSize = maxSize;
         this.frequency = frequency;
@@ -45,6 +71,43 @@ public final class OreSpawner implements ChunkTask {
         if (minAltitude >= maxAltitude) {
             throw new InvalidTaskException("Minimum height must be smaller than maximum height");
         }
+
+        ImmutableBiMap.Builder<MaterialData, MaterialData> builder = ImmutableBiMap.builderWithExpectedSize(DEEPSLATE_ORES.size());
+        DEEPSLATE_ORES.forEach((key, value) -> {
+            builder.put(map.getMaterialByName(key), map.getMaterialByName(value));
+        });
+        this.deepslateOres = builder.build();
+        this.deepslate = map.getMaterialByName("minecraft:deepslate[axis=y]");
+        this.stone = map.getMaterialByName("minecraft:stone");
+    }
+
+    private void changeOreMaterial(Chunk chunk, int x, int y, int z) {
+        MaterialData newMaterial = this.material;
+        MaterialData oldMaterial = chunk.getMaterial(x, y, z);
+
+        if (sourceBlocks.contains(stone) && newMaterial.getBaseName().equals("minecraft:deepslate")) {
+            // Place deepslate ore instead of deepslate
+            MaterialData foundMaterial = deepslateOres.get(oldMaterial);
+            if (foundMaterial != null) {
+                newMaterial = foundMaterial;
+            }
+        } else if (sourceBlocks.contains(deepslate) && newMaterial.getBaseName().equals("minecraft:stone")) {
+            // Place stone ore instead of stone
+            MaterialData foundMaterial = deepslateOres.inverse().get(oldMaterial);
+            if (foundMaterial != null) {
+                newMaterial = foundMaterial;
+            }
+        } else if (sourceBlocks.contains(deepslate) && oldMaterial.getBaseName().equals("minecraft:deepslate")) {
+            // Place deepslate ore instead of normal ore
+            MaterialData foundMaterial = deepslateOres.get(newMaterial);
+            if (foundMaterial != null) {
+                newMaterial = foundMaterial;
+            }
+        } else if (sourceBlocks.contains(oldMaterial)) {
+            newMaterial = this.material;
+        }
+
+        chunk.setMaterial(x, y, z, newMaterial);
     }
 
     @Override
@@ -123,9 +186,8 @@ public final class OreSpawner implements ChunkTask {
                                 if (chunk.isOutOfBounds(x, y, z)) {
                                     continue;
                                 }
-                                if ((d13 * d13 + d14 * d14 + d15 * d15 < 1.0D)
-                                        && sourceBlocks.contains(chunk.getMaterial(x, y, z))) {
-                                    chunk.setMaterial(x, y, z, material);
+                                if ((d13 * d13 + d14 * d14 + d15 * d15 < 1.0D)) {
+                                    changeOreMaterial(chunk, x, y, z);
                                     changed = true;
                                 }
                             }

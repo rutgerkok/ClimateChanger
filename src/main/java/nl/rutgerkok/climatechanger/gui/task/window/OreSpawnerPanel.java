@@ -3,6 +3,8 @@ package nl.rutgerkok.climatechanger.gui.task.window;
 import java.awt.FlowLayout;
 import java.text.ParseException;
 
+import javax.swing.JLabel;
+
 import nl.rutgerkok.climatechanger.gui.LabelWithField;
 import nl.rutgerkok.climatechanger.task.OreSpawner;
 import nl.rutgerkok.climatechanger.task.Task;
@@ -40,7 +42,8 @@ final class OreSpawnerPanel extends TaskPanel {
         add(rarityField = new LabelWithField("Chance per attempt", "100"));
         add(minHeightField = new LabelWithField("Minimum height", "0"));
         add(maxHeightField = new LabelWithField("Maximum height", "80"));
-        add(sourceBlocksField = new LabelWithField("Spawn in (block;block,...)", "stone"));
+        add(sourceBlocksField = new LabelWithField("Spawn in (block;block,...)", "stone;deepslate[axis=y]"));
+        add(new JLabel("Note: deepslate ore variants are handled automatically."));
     }
 
     @Override
@@ -53,7 +56,8 @@ final class OreSpawnerPanel extends TaskPanel {
             int minHeight = ParseUtil.parseInt(minHeightField.getText(), 0, OreSpawner.MIN_Y);
             int maxHeight = ParseUtil.parseInt(maxHeightField.getText(), 0, OreSpawner.MAX_Y);
             MaterialSet sourceBlocks = ParseUtil.parseMaterialSet(sourceBlocksField.getText(), materialMap);
-            return new OreSpawner(material, maxSize, frequency, rarity, minHeight, maxHeight, sourceBlocks);
+            return new OreSpawner(materialMap, material, maxSize, frequency, rarity, minHeight, maxHeight,
+                    sourceBlocks);
         } catch (ParseException e) {
             throw new InvalidTaskException(e.getLocalizedMessage());
         }
