@@ -86,6 +86,8 @@ In vanilla Minecraft attempts per chunk is called spawn tries. In the mod Terrai
 The ore spawning automatically changes ores such as `minecraft:diamond` into `minecraft:deepslate_diamond` when you
 allow them to spawn in deepslate. When you spawn deepslate as an ore in `minecraft:stone`, it will automatically change stone ores into deepslate ores.
 
+### Minecraft 1.17
+
 | Ore       | Max radius | Attempts per chunk | Altitude | Distribution |
 | --------- | ---------- | ------------------ | -------- | ------------ |
 | Deepslate | 64         | 2                  | 0 - 16   | Uniform      |
@@ -101,7 +103,7 @@ allow them to spawn in deepslate. When you spawn deepslate as an ore in `minecra
 | Gold      | 9          | 2                  | 0 - 32   | Uniform      |
 | Redstone  | 8          | 8                  | 0 - 16   | Uniform      |
 | Diamond   | 8          | 1                  | 0 - 16   | Uniform      |
-| Lapis     | 8          | 1                  | 0 - 32   | Uniform      |
+| Lapis     | 8          | 1                  | 0 - 32   | Trapezoid    |
 | Emerald   | 6          | 1                  | 4 - 32   | Uniform      |
 
 
