@@ -50,7 +50,7 @@ the world.
   changed to the given `<toId>`, so that you end up with a one-biome world.
 * `changeBlock <fromNamespacedId> <toNamespacedId>` changes all blocks
   with the first id to the second.
-* `spawnOre <namespacedId> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <spawnInBlock;anotherBlock,...>` spawns ores of the given type in each chunk.
+* `spawnOre <namespacedId> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <uniform/triangle> <spawnInBlock;anotherBlock,...>` spawns ores of the given type in each chunk.
 * `deleteoldchunks <minutesPlayed>` will delete all chunks that have been loaded for less than `<minutesPlayed>`.
 
 You can combine multiple actions with the syntax
@@ -93,19 +93,21 @@ allow them to spawn in deepslate. When you spawn deepslate as an ore in `minecra
 | Deepslate | 64         | 2                  | 0 - 16   | Uniform      |
 | Dirt      | 33         | 10                 | 0 - 256  | Uniform      |
 | Gravel    | 33         | 8                  | 0 - 256  | Uniform      |
-| Granite   | 33         | 10                 | 0 - 80   | Uniform      |
-| Diorite   | 33         | 10                 | 0 - 80   | Uniform      |
-| Andesite  | 33         | 10                 | 0 - 80   | Uniform      |
+| Granite   | 33         | 10                 | 0 - 79   | Uniform      |
+| Diorite   | 33         | 10                 | 0 - 79   | Uniform      |
+| Andesite  | 33         | 10                 | 0 - 79   | Uniform      |
 | Tuff      | 33         | 1                  | 0 - 16   | Uniform      |
-| Coal      | 17         | 20                 | 0 - 128  | Uniform      |
-| Copper    | 10         | 6                  | 0 - 96   | Trapezoid    |
-| Iron      | 9          | 20                 | 0 - 64   | Uniform      |
-| Gold      | 9          | 2                  | 0 - 32   | Uniform      |
-| Redstone  | 8          | 8                  | 0 - 16   | Uniform      |
-| Diamond   | 8          | 1                  | 0 - 16   | Uniform      |
-| Lapis     | 8          | 1                  | 0 - 32   | Trapezoid    |
-| Emerald   | 6          | 1                  | 4 - 32   | Uniform      |
+| Coal      | 17         | 20                 | 0 - 127  | Uniform      |
+| Copper    | 10         | 6                  | 0 - 96   | Triangle     |
+| Iron      | 9          | 20                 | 0 - 63   | Uniform      |
+| Gold      | 9          | 2                  | 0 - 31   | Uniform      |
+| Redstone  | 8          | 8                  | 0 - 15   | Uniform      |
+| Diamond   | 8          | 1                  | 0 - 15   | Uniform      |
+| Lapis     | 8          | 1                  | 0 - 30   | Triangle     |
+| Emerald   | 6          | 1                  | 4 - 31   | Uniform      |
 
+An uniform distribution is simply `randomNumberInclusiveBetween(min, max)`, while the triangle distribution
+is `min + randomNumberInclusiveBetween(0, (max - min) / 2) + randomNumberInclusiveBetween(0, (max - min) / 2)`.
 
 ## Sign conversion
 Minecraft 1.8 doewsn't import the Minecraft 1.7 signs correctly. For example, the text `[Private]`, used by Lockette, gets read as a JSON-array with one element `Private`. Result: the first line of your sign now reads `Private` and the container is no longer protected!
