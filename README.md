@@ -109,11 +109,6 @@ allow them to spawn in deepslate. When you spawn deepslate as an ore in `minecra
 An uniform distribution is simply `randomNumberInclusiveBetween(min, max)`, while the triangle distribution
 is `min + randomNumberInclusiveBetween(0, (max - min) / 2) + randomNumberInclusiveBetween(0, (max - min) / 2)`.
 
-## Sign conversion
-Minecraft 1.8 doewsn't import the Minecraft 1.7 signs correctly. For example, the text `[Private]`, used by Lockette, gets read as a JSON-array with one element `Private`. Result: the first line of your sign now reads `Private` and the container is no longer protected!
-
-If you have not opened your map on a 1.8 server yet you can use this program to convert all your signs correctly. If you have already opened your map on 1.8, this program can fix the signs. The program can detect which signs are imported for 1.7, so you only need to specify that `Private` should be `[Private]` and the program will do the rest. Signs created in 1.8 are not affected.
-
 ## License
 The NBT files and the `RegionFile.java` were open sourced by Mojang in 2011
 and 2012. The have a `don't do evil` license. The files have been modified
