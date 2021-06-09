@@ -6,7 +6,9 @@ import java.text.ParseException;
 import javax.swing.JLabel;
 
 import nl.rutgerkok.climatechanger.gui.LabelWithField;
+import nl.rutgerkok.climatechanger.gui.LabelWithSelectionBox;
 import nl.rutgerkok.climatechanger.task.OreSpawner;
+import nl.rutgerkok.climatechanger.task.OreSpawner.HeightDistribution;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
@@ -30,6 +32,7 @@ final class OreSpawnerPanel extends TaskPanel {
     private final LabelWithField minHeightField;
     private final LabelWithField rarityField;
     private final LabelWithField sourceBlocksField;
+    private final LabelWithSelectionBox<HeightDistribution> heightDistributionField;
 
     OreSpawnerPanel(GlobalMaterialMap materialMap) {
         this.materialMap = materialMap;
@@ -42,6 +45,7 @@ final class OreSpawnerPanel extends TaskPanel {
         add(rarityField = new LabelWithField("Chance per attempt", "100"));
         add(minHeightField = new LabelWithField("Minimum height", "0"));
         add(maxHeightField = new LabelWithField("Maximum height", "80"));
+        add(heightDistributionField = new LabelWithSelectionBox<>("Height distribution", HeightDistribution.values()));
         add(sourceBlocksField = new LabelWithField("Spawn in (block;block,...)", "stone;deepslate[axis=y]"));
         add(new JLabel("Note: deepslate ore variants are handled automatically."));
     }
@@ -53,11 +57,12 @@ final class OreSpawnerPanel extends TaskPanel {
             int maxSize = ParseUtil.parseInt(maxSizeField.getText(), 1, OreSpawner.MAX_ORE_SIZE);
             int frequency = ParseUtil.parseInt(frequencyField.getText(), 1, OreSpawner.MAX_ORE_FREQUENCY);
             double rarity = ParseUtil.parseDouble(rarityField.getText(), 0.0001, 100.0);
-            int minHeight = ParseUtil.parseInt(minHeightField.getText(), 0, OreSpawner.MIN_Y);
-            int maxHeight = ParseUtil.parseInt(maxHeightField.getText(), 0, OreSpawner.MAX_Y);
+            int minHeight = ParseUtil.parseInt(minHeightField.getText(), OreSpawner.MIN_Y, OreSpawner.MAX_Y);
+            int maxHeight = ParseUtil.parseInt(maxHeightField.getText(), minHeight, OreSpawner.MAX_Y);
             MaterialSet sourceBlocks = ParseUtil.parseMaterialSet(sourceBlocksField.getText(), materialMap);
+            HeightDistribution heightDistribution = heightDistributionField.getValue();
             return new OreSpawner(materialMap, material, maxSize, frequency, rarity, minHeight, maxHeight,
-                    sourceBlocks);
+                    heightDistribution, sourceBlocks);
         } catch (ParseException e) {
             throw new InvalidTaskException(e.getLocalizedMessage());
         }

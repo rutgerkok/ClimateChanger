@@ -49,6 +49,9 @@ public class ConverterExecutor {
                     Result result = Result.NO_CHANGES;
                     for (ChunkTask chunkTask : chunkTasks) {
                         result = result.getCombined(chunkTask.convertChunk(chunk));
+                        if (result == Result.DELETE) {
+                            break; // It doesn't make sense to execute more converters
+                        }
                     }
                     return result;
                 }
@@ -60,6 +63,9 @@ public class ConverterExecutor {
                     Result result = Result.NO_CHANGES;
                     for (PlayerDataTask playerTask : playerTasks) {
                         result = result.getCombined(playerTask.convertPlayerFile(playerFile));
+                        if (result == Result.DELETE) {
+                            break; // It doesn't make sense to execute more converters
+                        }
                     }
                     return result;
                 }

@@ -1,5 +1,6 @@
 package nl.rutgerkok.climatechanger.task;
 
+import java.util.Locale;
 import java.util.Random;
 
 import com.google.common.collect.BiMap;
@@ -20,6 +21,30 @@ import nl.rutgerkok.hammer.util.Result;
  */
 public final class OreSpawner implements ChunkTask {
 
+    public enum HeightDistribution {
+        UNIFORM,
+        TRIANGLE;
+
+        int getHeight(Random random, int minY, int maxY) {
+            switch (this) {
+                case TRIANGLE:
+                    int halfHeight = (maxY - minY) / 2;
+                    return minY + randomBetweenInclusive(random, 0, halfHeight)
+                            + randomBetweenInclusive(random, 0, halfHeight);
+                case UNIFORM:
+                    return randomBetweenInclusive(random, minY, maxY);
+                default:
+                    throw new RuntimeException("Unsupported distribution: " + this);
+            }
+        }
+
+        @Override
+        public String toString() {
+            String name = name();
+            return name.substring(0, 1) + name.substring(1).toLowerCase(Locale.ROOT);
+        }
+    }
+
     public static final int MAX_ORE_FREQUENCY = 100;
     public static final int MAX_ORE_SIZE = 64;
     public static final int MIN_Y = -10000;
@@ -39,6 +64,10 @@ public final class OreSpawner implements ChunkTask {
             .put("minecraft:emerald_ore", "minecraft:deepslate_emerald_ore")
             .build();
 
+    private static int randomBetweenInclusive(Random random, int minY, int maxY) {
+        return random.nextInt(maxY - minY + 1) + minY;
+    }
+
     /**
      * Version of {@link #DEEPSLATE_ORES} that has the actual materials.
      */
@@ -46,17 +75,19 @@ public final class OreSpawner implements ChunkTask {
     private final MaterialData deepslate;
     private final MaterialData stone;
 
-    private int frequency;
-    private MaterialData material;
-    private int maxAltitude;
-    private int maxSize;
-    private int minAltitude;
-    private Random random = new Random();
-    private double rarity;
+    private final int frequency;
+    private final MaterialData material;
+    private final int maxAltitude;
+    private final int maxSize;
+    private final int minAltitude;
+    private final Random random = new Random();
+    private final double rarity;
+    private final MaterialSet sourceBlocks;
+    private final HeightDistribution heightDistribution;
 
-    private MaterialSet sourceBlocks;
-
-    public OreSpawner(GlobalMaterialMap map, MaterialData material, int maxSize, int frequency, double rarity, int minAltitude, int maxAltitude, MaterialSet sourceBlocks) throws InvalidTaskException {
+    public OreSpawner(GlobalMaterialMap map, MaterialData material, int maxSize, int frequency, double rarity,
+            int minAltitude, int maxAltitude, HeightDistribution heightDistribution, MaterialSet sourceBlocks)
+            throws InvalidTaskException {
         this.material = material;
         this.maxSize = maxSize;
         this.frequency = frequency;
@@ -64,14 +95,16 @@ public final class OreSpawner implements ChunkTask {
         this.minAltitude = minAltitude;
         this.maxAltitude = maxAltitude;
         this.sourceBlocks = sourceBlocks;
+        this.heightDistribution = heightDistribution;
 
         if (maxSize <= 0) {
             throw new InvalidTaskException("Max size must be positive");
         }
-        if (minAltitude >= maxAltitude) {
-            throw new InvalidTaskException("Minimum height must be smaller than maximum height");
+        if (minAltitude > maxAltitude) {
+            throw new InvalidTaskException("Minimum height must be smaller than or equal to the maximum height");
         }
 
+        // Some cached values
         ImmutableBiMap.Builder<MaterialData, MaterialData> builder = ImmutableBiMap.builderWithExpectedSize(DEEPSLATE_ORES.size());
         DEEPSLATE_ORES.forEach((key, value) -> {
             builder.put(map.getMaterialByName(key), map.getMaterialByName(value));
@@ -81,18 +114,18 @@ public final class OreSpawner implements ChunkTask {
         this.stone = map.getMaterialByName("minecraft:stone");
     }
 
-    private void changeOreMaterial(Chunk chunk, int x, int y, int z) {
-        MaterialData newMaterial = this.material;
+    private boolean changeOreMaterial(Chunk chunk, int x, int y, int z) {
+        MaterialData newMaterial = null;
         MaterialData oldMaterial = chunk.getMaterial(x, y, z);
 
-        if (sourceBlocks.contains(stone) && newMaterial.getBaseName().equals("minecraft:deepslate")) {
+        if (sourceBlocks.contains(stone) && this.material.getBaseName().equals("minecraft:deepslate")) {
             // Place deepslate ore instead of deepslate
             MaterialData foundMaterial = deepslateOres.get(oldMaterial);
             if (foundMaterial != null) {
                 newMaterial = foundMaterial;
             }
-        } else if (sourceBlocks.contains(deepslate) && newMaterial.getBaseName().equals("minecraft:stone")) {
-            // Place stone ore instead of stone
+        } else if (sourceBlocks.contains(deepslate) && this.material.getBaseName().equals("minecraft:stone")) {
+            // Place stone ore instead of stone if possible
             MaterialData foundMaterial = deepslateOres.inverse().get(oldMaterial);
             if (foundMaterial != null) {
                 newMaterial = foundMaterial;
@@ -103,11 +136,18 @@ public final class OreSpawner implements ChunkTask {
             if (foundMaterial != null) {
                 newMaterial = foundMaterial;
             }
-        } else if (sourceBlocks.contains(oldMaterial)) {
+        }
+
+        // Try simple block placing instead if new material is still undecided
+        if (newMaterial == null && sourceBlocks.contains(oldMaterial)) {
             newMaterial = this.material;
         }
 
-        chunk.setMaterial(x, y, z, newMaterial);
+        if (newMaterial != null) {
+            chunk.setMaterial(x, y, z, newMaterial);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -119,8 +159,9 @@ public final class OreSpawner implements ChunkTask {
                 continue;
             }
             int x = random.nextInt(chunk.getSizeX());
+            int y = heightDistribution.getHeight(random, minAltitude, maxAltitude);
             int z = random.nextInt(chunk.getSizeZ());
-            if (spawn(chunk, x, z)) {
+            if (spawn(chunk, x, y, z)) {
                 result = Result.CHANGED;
             }
         }
@@ -131,6 +172,8 @@ public final class OreSpawner implements ChunkTask {
     public String getDescription() {
         return "place ore of type " + material;
     }
+
+
 
     /**
      * Spawns this ore.
@@ -143,9 +186,8 @@ public final class OreSpawner implements ChunkTask {
      *            Z coord to spawn, should be between 0 and 16.
      * @return True if the chunk was changed, false otherwise.
      */
-    private boolean spawn(Chunk chunk, int xOrigin, int zOrigin) {
+    private boolean spawn(Chunk chunk, int xOrigin, int yOrigin, int zOrigin) {
         boolean changed = false;
-        int yOrigin = random.nextInt(maxAltitude - minAltitude) + minAltitude;
 
         float f = random.nextFloat() * (float) Math.PI;
 
@@ -187,8 +229,9 @@ public final class OreSpawner implements ChunkTask {
                                     continue;
                                 }
                                 if ((d13 * d13 + d14 * d14 + d15 * d15 < 1.0D)) {
-                                    changeOreMaterial(chunk, x, y, z);
-                                    changed = true;
+                                    if (changeOreMaterial(chunk, x, y, z)) {
+                                        changed = true;
+                                    }
                                 }
                             }
                         }

@@ -9,6 +9,7 @@ import nl.rutgerkok.climatechanger.task.BiomeIdChanger;
 import nl.rutgerkok.climatechanger.task.BlockIdChanger;
 import nl.rutgerkok.climatechanger.task.OldChunkDeleter;
 import nl.rutgerkok.climatechanger.task.OreSpawner;
+import nl.rutgerkok.climatechanger.task.OreSpawner.HeightDistribution;
 import nl.rutgerkok.climatechanger.task.Task;
 import nl.rutgerkok.climatechanger.util.InvalidTaskException;
 import nl.rutgerkok.climatechanger.util.ParseUtil;
@@ -28,7 +29,7 @@ public class LineParser {
         return Arrays.asList(
                 "changeBiome <fromId> <toId>",
                 "changeBlock <fromId[:fromData]> <toId[:toData]>",
-                "spawnOre <block[:blockData]> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <spawnInBlock,anotherBlock,...>",
+                "spawnOre <block[:blockData]> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <uniform/triangle> <spawnInBlock,anotherBlock,...>",
                 "fixSigns <encloseThisInSquareBrackets,another,...>",
                 "deleteOldChunks <minMinutesPlayed>",
                 "setLightPopulated"
@@ -90,16 +91,17 @@ public class LineParser {
                 MaterialData toBlockData = ParseUtil.parseMaterialData(parts.get(2), materialMap);
                 return new BlockIdChanger(fromBlockData, toBlockData);
             case "spawnore":
-                assureSize(parts, 8);
+                assureSize(parts, 9);
                 MaterialData oreMaterial = ParseUtil.parseMaterialData(parts.get(1), materialMap);
                 int maxSize = ParseUtil.parseInt(parts.get(2), 1, OreSpawner.MAX_ORE_SIZE);
                 int frequency = ParseUtil.parseInt(parts.get(3), 1, OreSpawner.MAX_ORE_FREQUENCY);
                 double rarity = ParseUtil.parseDouble(parts.get(4), 0.0001, 100);
-                int minAltitude = ParseUtil.parseInt(parts.get(5), 0, OreSpawner.MIN_Y);
-                int maxAltitude = ParseUtil.parseInt(parts.get(6), 0, OreSpawner.MAX_Y);
-                MaterialSet sourceBlocks = ParseUtil.parseMaterialSet(parts.get(7), materialMap);
+                int minAltitude = ParseUtil.parseInt(parts.get(5), OreSpawner.MIN_Y, OreSpawner.MAX_Y);
+                int maxAltitude = ParseUtil.parseInt(parts.get(6), minAltitude, OreSpawner.MAX_Y);
+                HeightDistribution heightDistribution = ParseUtil.parseEnum(parts.get(7), HeightDistribution.class);
+                MaterialSet sourceBlocks = ParseUtil.parseMaterialSet(parts.get(8), materialMap);
                 return new OreSpawner(materialMap, oreMaterial, maxSize, frequency, rarity, minAltitude, maxAltitude,
-                        sourceBlocks);
+                        heightDistribution, sourceBlocks);
             case "deleteoldchunks":
                 assureSize(parts, 2);
                 int minMinutesPlayed = ParseUtil.parseInt(parts.get(1), 1, 1000000);

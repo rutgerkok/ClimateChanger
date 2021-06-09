@@ -1,6 +1,7 @@
 package nl.rutgerkok.climatechanger.util;
 
 import java.text.ParseException;
+import java.util.Locale;
 
 import nl.rutgerkok.hammer.material.GlobalMaterialMap;
 import nl.rutgerkok.hammer.material.MaterialData;
@@ -34,6 +35,28 @@ public final class ParseUtil {
             return value;
         } catch (NumberFormatException e) {
             throw new ParseException("Invalid number: " + string, 0);
+        }
+    }
+
+    /**
+     * Parses the string as an enum constant. Assumes the enum to be in uppercase.
+     * The string is case insensitive.
+     *
+     * @param <E>
+     *            The type of the enum.
+     * @param string
+     *            The value to parse.
+     * @param clazz
+     *            The enum class.
+     * @return The enum constant.
+     * @throws ParseException
+     *             If parsing fails.
+     */
+    public static <E extends Enum<E>> E parseEnum(String string, Class<E> clazz) throws ParseException {
+        try {
+        return Enum.valueOf(clazz, string.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            throw new ParseException("Value \"" + string + "\" not recognized as " + clazz.getSimpleName(), 0);
         }
     }
 
