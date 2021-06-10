@@ -74,6 +74,7 @@ public final class OreSpawner implements ChunkTask {
     private final BiMap<MaterialData, MaterialData> deepslateOres;
     private final MaterialData deepslate;
     private final MaterialData stone;
+    private final MaterialData tuff;
 
     private final int frequency;
     private final MaterialData material;
@@ -112,26 +113,27 @@ public final class OreSpawner implements ChunkTask {
         this.deepslateOres = builder.build();
         this.deepslate = map.getMaterialByName("minecraft:deepslate[axis=y]");
         this.stone = map.getMaterialByName("minecraft:stone");
+        this.tuff = map.getMaterialByName("minecraft:tuff");
     }
 
     private boolean changeOreMaterial(Chunk chunk, int x, int y, int z) {
         MaterialData newMaterial = null;
         MaterialData oldMaterial = chunk.getMaterial(x, y, z);
 
-        if (sourceBlocks.contains(stone) && this.material.getBaseName().equals("minecraft:deepslate")) {
+        if (sourceBlocks.contains(stone) && deepslate.equals(this.material)) {
             // Place deepslate ore instead of deepslate
             MaterialData foundMaterial = deepslateOres.get(oldMaterial);
             if (foundMaterial != null) {
                 newMaterial = foundMaterial;
             }
-        } else if (sourceBlocks.contains(deepslate) && this.material.getBaseName().equals("minecraft:stone")) {
+        } else if (sourceBlocks.contains(deepslate) && this.material.equals(stone)) {
             // Place stone ore instead of stone if possible
             MaterialData foundMaterial = deepslateOres.inverse().get(oldMaterial);
             if (foundMaterial != null) {
                 newMaterial = foundMaterial;
             }
-        } else if (sourceBlocks.contains(deepslate) && oldMaterial.getBaseName().equals("minecraft:deepslate")) {
-            // Place deepslate ore instead of normal ore
+        } else if (isDeepslateOrTuff(oldMaterial) && sourceBlocks.contains(oldMaterial)) {
+            // Place deepslate ore instead of normal ore inside tuff or deepslate
             MaterialData foundMaterial = deepslateOres.get(newMaterial);
             if (foundMaterial != null) {
                 newMaterial = foundMaterial;
@@ -153,8 +155,7 @@ public final class OreSpawner implements ChunkTask {
     @Override
     public Result convertChunk(AnvilChunk chunk) {
         Result result = Result.NO_CHANGES;
-        for (int t = 0; t < frequency; t++)
-        {
+        for (int t = 0; t < frequency; t++) {
             if (random.nextDouble() * 100.0 > rarity) {
                 continue;
             }
@@ -171,6 +172,10 @@ public final class OreSpawner implements ChunkTask {
     @Override
     public String getDescription() {
         return "place ore of type " + material;
+    }
+
+    private boolean isDeepslateOrTuff(MaterialData material) {
+        return tuff.equals(material) || deepslate.equals(material);
     }
 
 

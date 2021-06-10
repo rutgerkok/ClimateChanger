@@ -46,7 +46,8 @@ final class OreSpawnerPanel extends TaskPanel {
         add(minHeightField = new LabelWithField("Minimum height", "0"));
         add(maxHeightField = new LabelWithField("Maximum height", "80"));
         add(heightDistributionField = new LabelWithSelectionBox<>("Height distribution", HeightDistribution.values()));
-        add(sourceBlocksField = new LabelWithField("Spawn in (block;block,...)", "stone;deepslate[axis=y]"));
+        add(sourceBlocksField = new LabelWithField("Spawn in (block;block,...)",
+                "stone;deepslate[axis=y];tuff;granite;diorite;andesite"));
         add(new JLabel("Note: deepslate ore variants are handled automatically."));
     }
 
