@@ -13,6 +13,7 @@ import nl.rutgerkok.hammer.anvil.AnvilChunk;
 import nl.rutgerkok.hammer.material.GlobalMaterialMap;
 import nl.rutgerkok.hammer.material.MaterialData;
 import nl.rutgerkok.hammer.material.MaterialSet;
+import nl.rutgerkok.hammer.util.MaterialNotFoundException;
 import nl.rutgerkok.hammer.util.Result;
 
 /**
@@ -106,7 +107,8 @@ public final class OreSpawner implements ChunkTask {
         }
 
         // Some cached values
-        ImmutableBiMap.Builder<MaterialData, MaterialData> builder = ImmutableBiMap.builderWithExpectedSize(DEEPSLATE_ORES.size());
+        ImmutableBiMap.Builder<MaterialData, MaterialData> builder = ImmutableBiMap
+                .builderWithExpectedSize(DEEPSLATE_ORES.size());
         DEEPSLATE_ORES.forEach((key, value) -> {
             builder.put(map.getMaterialByName(key), map.getMaterialByName(value));
         });
@@ -155,16 +157,20 @@ public final class OreSpawner implements ChunkTask {
     @Override
     public Result convertChunk(AnvilChunk chunk) {
         Result result = Result.NO_CHANGES;
-        for (int t = 0; t < frequency; t++) {
-            if (random.nextDouble() * 100.0 > rarity) {
-                continue;
+        try {
+            for (int t = 0; t < frequency; t++) {
+                if (random.nextDouble() * 100.0 > rarity) {
+                    continue;
+                }
+                int x = random.nextInt(chunk.getSizeX());
+                int y = heightDistribution.getHeight(random, minAltitude, maxAltitude);
+                int z = random.nextInt(chunk.getSizeZ());
+                if (spawn(chunk, x, y, z)) {
+                    result = Result.CHANGED;
+                }
             }
-            int x = random.nextInt(chunk.getSizeX());
-            int y = heightDistribution.getHeight(random, minAltitude, maxAltitude);
-            int z = random.nextInt(chunk.getSizeZ());
-            if (spawn(chunk, x, y, z)) {
-                result = Result.CHANGED;
-            }
+        } catch (MaterialNotFoundException e) {
+            // Ignore this chunk, it doesn't support this ore
         }
         return result;
     }
@@ -177,8 +183,6 @@ public final class OreSpawner implements ChunkTask {
     private boolean isDeepslateOrTuff(MaterialData material) {
         return tuff.equals(material) || deepslate.equals(material);
     }
-
-
 
     /**
      * Spawns this ore.
