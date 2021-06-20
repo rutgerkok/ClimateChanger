@@ -16,12 +16,17 @@ public class ConsoleProgressUpdater implements ProgressUpdater {
     }
 
     @Override
-    public void update(Progress progress) {
-        System.out.println(progress.getIntPercentage() + "%");
+    public void init() {
+    }
+
+    private double roundToSingleDigit(double number) {
+        int intNumber = (int) (number * 10);
+        return intNumber / 10.0;
     }
 
     @Override
-    public void init() {
+    public void update(Progress progress) {
+        System.out.println(roundToSingleDigit(progress.getPercentage()) + "%");
     }
 
 }
