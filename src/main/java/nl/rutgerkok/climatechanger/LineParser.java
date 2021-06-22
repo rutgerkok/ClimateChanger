@@ -28,11 +28,9 @@ public class LineParser {
     public List<String> getActionsHelp() {
         return Arrays.asList(
                 "changeBiome <fromId> <toId>",
-                "changeBlock <fromId[:fromData]> <toId[:toData]>",
-                "spawnOre <block[:blockData]> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <uniform/triangle> <spawnInBlock,anotherBlock,...>",
+                "changeBlock <fromId> <toId>", "spawnOre <block> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <uniform/triangle> <spawnInBlock,anotherBlock,...>",
                 "fixSigns <encloseThisInSquareBrackets,another,...>",
-                "deleteOldChunks <minMinutesPlayed>",
-                "setLightPopulated"
+                "deleteOldChunks <minMinutesPlayed>"
                 );
     }
 
