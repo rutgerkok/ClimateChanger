@@ -29,7 +29,6 @@ public class LineParser {
         return Arrays.asList(
                 "changeBiome <fromId> <toId>",
                 "changeBlock <fromId> <toId>", "spawnOre <block> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <uniform/triangle> <spawnInBlock,anotherBlock,...>",
-                "fixSigns <encloseThisInSquareBrackets,another,...>",
                 "deleteOldChunks <minMinutesPlayed>"
                 );
     }
