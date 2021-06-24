@@ -28,7 +28,7 @@ public class LineParser {
     public List<String> getActionsHelp() {
         return Arrays.asList(
                 "changeBiome <fromId> <toId>",
-                "changeBlock <fromId> <toId>", "spawnOre <block> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <uniform/triangle> <spawnInBlock,anotherBlock,...>",
+                "changeBlock <fromId> <toId>", "spawnOre <block> <maxRadius> <attemptsPerChunk> <chancePerAttempt> <minAltitude> <maxAltitude> <uniform/triangle> <spawnInBlock;anotherBlock;...>",
                 "deleteOldChunks <minMinutesPlayed>"
                 );
     }
@@ -41,7 +41,7 @@ public class LineParser {
         for (String arg : args) {
             if (arg.equalsIgnoreCase("and")) {
                 // New section
-                if (parsed.isEmpty()) {
+                if (currentParts.isEmpty()) {
                     throw new ParseException("\"and\" on wrong position", 0);
                 }
                 parsed.add(parseChunkTask(materialMap, currentParts));

@@ -4,6 +4,8 @@ import nl.rutgerkok.hammer.util.Progress;
 
 public class ConsoleProgressUpdater implements ProgressUpdater {
 
+    private volatile double previousUpdate = -1;
+
     @Override
     public void complete() {
         System.out.println("Done! Converted everything without fatal errors.");
@@ -26,7 +28,12 @@ public class ConsoleProgressUpdater implements ProgressUpdater {
 
     @Override
     public void update(Progress progress) {
-        System.out.println(roundToSingleDigit(progress.getPercentage()) + "%");
+        double percentage = progress.getPercentage();
+        if (percentage == this.previousUpdate) {
+            return;
+        }
+        System.out.println(roundToSingleDigit(percentage) + "%");
+        this.previousUpdate = percentage;
     }
 
 }
