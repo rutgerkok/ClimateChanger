@@ -32,7 +32,7 @@
 		<dependency>
 			<groupId>nl.rutgerkok</groupId>
 			<artifactId>hammer</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>1.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
