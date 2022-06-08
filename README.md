@@ -1,5 +1,7 @@
 # ClimateChanger
 
+> ## **No longer maintained.** You can use [MCASelector](https://github.com/Querz/mcaselector), which gives you a nice overview of the world. It has a [command-line tool](https://github.com/Querz/mcaselector/wiki/CLI-Mode) built-in for mass processing of your world.
+
 This program was created originally to change the biome ids of your map. Since then, it has been expanded to make it a more general batch-editor for chunks. Only one chunk is loaded at a time, so the program has a small memory footprint.
 
 Current features include:
